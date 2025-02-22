@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <script src="https://cdn.jsdelivr.net/npm/phaser@3.88.2/dist/phaser-arcade-physics.min.js"></script>
+</head>
+
+<body>
+
+    <script>
+        const config = {
+            type: Phaser.AUTO,
+            width: 600,
+            height: 800,
+            scene: {
+                preload: preload,
+                create: create,
+                update: update
+            },
+            physics: {
+                default: 'arcade',
+                arcade: {
+                    gravity: { y: 300 },
+                    debug: false,
+                }
+            }
+        };
+        var player;
+        var direction;
+        var cursors;
+        var lines;
+        const game = new Phaser.Game(config);
+
+        function preload() {
+            this.load.image('player', 'assets/shermie.png');
+
+            this.load.image('tiles', 'assets/tilemap/ground_tileset.png');
+            this.load.tilemapTiledJSON('map', 'assets/tilemap/map_1.json');
+
+            //  TODO: turn the below into a spreadsheet
+            this.load.image('r_tunnel_1', 'assets/r_tunnel_1.png');
+            this.load.image('r_tunnel_2', 'assets/r_tunnel_2.png');
+            this.load.image('r_tunnel_3', 'assets/r_tunnel_3.png');
+            this.load.image('r_tunnel_4', 'assets/r_tunnel_4.png');
+            this.load.image('r_tunnel_5', 'assets/r_tunnel_1.png');
+            this.load.image('r_tunnel_6', 'assets/r_tunnel_6.png');
+            this.load.image('r_tunnel_7', 'assets/r_tunnel_7.png');
+            this.load.image('r_tunnel_8', 'assets/r_tunnel_8.png');
+
+            //  INITIAL APPROACH TO CREATING THE CANVAS
+            // fetch("map1.txt")
+            //     .then(r => r.text())
+            //     .then(text => {
+            //         lines = text.split("\n")
+            //     });
+        }
+
+        function create() {
+            this.add.text(0, 0, 'Hello world');
+            const map = this.make.tilemap({ key: "map" });
+            const tileset = map.addTilesetImage("ground_tiles", "tiles");
+            const groundLayer = map.createLayer("Ground", tileset, 0, 0);
+
+            player = this.physics.add.sprite(100, 450, 'player').setOrigin(0, 0);
+            player.displayWidth = 50;
+            player.scaleY = player.scaleX;
+            player.body.setAllowGravity(false);
+
+            //  USE THIS TO UPDATE TILES WHEN PLAYER MOVES THROUGH THEM
+            // this.physics.add.overlap(player, groundLayer, () => {
+            //     console.log('Player touched the ground!');
+            // });
+
+            cursors = this.input.keyboard.createCursorKeys();
+        }
+
+        function update() {
+            //  LEFT-ARROW key
+            if (cursors.left.isDown) {
+                if (player.getTopLeft().y % 50 == 0) {
+                    moveInDirection('left', false)
+                }
+                else {
+                    moveInDirection(direction, true);
+                }
+            }
+            //  RIGHT-ARROW key
+            else if (cursors.right.isDown) {
+                if (player.getTopLeft().y % 50 == 0) {
+                    moveInDirection('right', false)
+                }
+                else {
+                    moveInDirection(direction, true);
+                }
+            }
+            //  UP-ARROW key
+            else if (cursors.up.isDown) {
+                if (player.getTopLeft().x % 50 == 0) {
+                    moveInDirection('up', false)
+                }
+                else {
+                    moveInDirection(direction, true);
+                }
+            }
+            //  DOWN-ARROW key
+            else if (cursors.down.isDown) {
+                if (player.getTopLeft().x % 50 == 0) {
+                    moveInDirection('down', false)
+                }
+                else {
+                    moveInDirection(direction, true);
+                }
+            }
+            else {
+
+            }
+        }
+
+        //  Set player's position according to what direction they are facing (determined by key presses)
+        //  bool isSliding determines if direction variable should be updated or not
+        //      - Used for "sliding" the player when they are positioned between tiles
+        function moveInDirection(dir, isSliding) {
+            if (!isSliding) {
+                direction = dir;
+            }
+            switch (dir) {
+                case 'left':
+                    if (player.x != 0) {
+                        player.flipX = true;
+                        player.setPosition(player.x - 2, player.y);
+                    }
+                    break;
+                case 'right':
+                    if (player.x != 550) {
+                        player.flipX = false;
+                        player.setPosition(player.x + 2, player.y);
+                    }
+                    break;
+                case 'up':
+                    if (player.y != 150) {
+                        player.setPosition(player.x, player.y - 2);
+                    }
+                    break;
+                case 'down':
+                    if (player.y != 750) {
+                        player.setPosition(player.x, player.y + 2);
+                    }
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        //  Used to simulate the digging effect when the player moves through the tiles
+        let lastCollidedPlatform = null;
+        function updateTile(player, platform) {
+            console.log("Collision detected with tile:", tile);
+            if (platform.texture.key !== 'r_tunnel_8') {
+                //  Full dug out tunnel
+                if ((parseInt(player.getCenter().x) == parseInt(platform.getCenter().x)) &&
+                    (parseInt(player.getCenter().y) == parseInt(platform.getCenter().y))) {
+                    platform.setTexture('r_tunnel_8');
+                }
+
+                //  Update the tile ONLY if the player is positioned properly inside it
+                if (checkPlayerInPlatform(player, platform, direction)) {
+                    changePlatformTexture(player, platform, direction);
+                }
+            }
+        }
+
+        //  TODO: Update to handle all directions, currently only handles LEFT
+        function checkPlayerInPlatform(player, platform, direction) {
+            let isInPlatform = false;
+            switch (direction) {
+                case 'left':
+                    if ((player.getCenter().x - 25 <= platform.getCenter().x + 25) && (player.getCenter().x - 25 >= platform.getCenter().x - 25)) {
+                        // if ((player.getCenter().y <= platform.getCenter().y + 25) && (player.getLeftCenter().y >= platform.getCenter().y - 25)) {
+                        //     return true;
+                        // }
+                        isInPlatform = true;
+                    }
+                    break;
+                case 'right':
+                    if ((player.getCenter().x + 25 <= platform.getCenter().x + 25) && (player.getCenter().x + 25 >= platform.getCenter().x - 25)) {
+                        isInPlatform = true;
+                    }
+                    break;
+                case 'up':
+                    break;
+                case 'down':
+                    break;
+                default:
+                    break;
+            }
+            return isInPlatform;
+        }
+
+        function changePlatformTexture(player, platform, direction) {
+            let newTexture = null;
+            switch (direction) {
+                case 'left':
+                    if (player.getCenter().x - 25 >= platform.getCenter().x + 20) {
+                        newTexture = 'r_tunnel_1';
+                    }
+                    else if (player.getCenter().x - 25 >= platform.getCenter().x + 13) {
+                        newTexture = 'r_tunnel_2';
+                    }
+                    else if (player.getCenter().x - 25 >= platform.getCenter().x + 6) {
+                        newTexture = 'r_tunnel_3';
+                    }
+                    else if (player.getCenter().x - 25 >= platform.getCenter().x) {
+                        newTexture = 'r_tunnel_4';
+                    }
+                    else if (player.getCenter().x - 25 >= platform.getCenter().x - 6) {
+                        newTexture = 'r_tunnel_5';
+                    }
+                    else if (player.getCenter().x - 25 >= platform.getCenter().x - 13) {
+                        newTexture = 'r_tunnel_6';
+                    }
+                    else if (player.getCenter().x - 25 >= platform.getCenter().x - 20) {
+                        newTexture = 'r_tunnel_7';
+                    }
+                    break;
+                case 'right':
+                    if (player.getCenter().x + 25 >= platform.getCenter().x - 20) {
+                        newTexture = 'r_tunnel_1';
+                    }
+                    else if (player.getCenter().x + 25 <= platform.getCenter().x - 13) {
+                        newTexture = 'r_tunnel_2';
+                    }
+                    else if (player.getCenter().x + 25 <= platform.getCenter().x - 6) {
+                        newTexture = 'r_tunnel_3';
+                    }
+                    else if (player.getCenter().x + 25 <= platform.getCenter().x) {
+                        newTexture = 'r_tunnel_4';
+                    }
+                    else if (player.getCenter().x + 25 <= platform.getCenter().x + 6) {
+                        newTexture = 'r_tunnel_5';
+                    }
+                    else if (player.getCenter().x + 25 <= platform.getCenter().x + 13) {
+                        newTexture = 'r_tunnel_6';
+                    }
+                    else if (player.getCenter().x + 25 <= platform.getCenter().x + 20) {
+                        newTexture = 'r_tunnel_7';
+                    }
+                    break;
+                case 'up':
+                    break;
+                case 'down':
+                    break;
+                default:
+                    break;
+            }
+            if (newTexture) {
+                let currentTexture = platform.texture.key;
+                let currentNumber = parseInt(currentTexture.split('_').pop()) || 0;
+                let newNumber = parseInt(newTexture.split('_').pop()) || 0;
+
+                if (newNumber > currentNumber) {
+                    platform.setTexture(newTexture);
+                    if (direction == 'right') {
+                        platform.flipX = true;
+                        platform.setOrigin(0.5, 0.5);
+                        platform.angle -= 90;
+                    }
+                }
+            }
+        }
+    </script>
+
+</body>
+
+</html>
