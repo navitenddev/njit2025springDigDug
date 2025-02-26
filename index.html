@@ -34,48 +34,31 @@
 
         function preload() {
             this.load.image('player', 'assets/shermie.png');
-
             this.load.image('tiles', 'assets/tilemap/ground_tileset.png');
             this.load.tilemapTiledJSON('map', 'assets/tilemap/map_1.json');
-
-            //  TODO: turn the below into a spreadsheet
-            this.load.image('r_tunnel_1', 'assets/r_tunnel_1.png');
-            this.load.image('r_tunnel_2', 'assets/r_tunnel_2.png');
-            this.load.image('r_tunnel_3', 'assets/r_tunnel_3.png');
-            this.load.image('r_tunnel_4', 'assets/r_tunnel_4.png');
-            this.load.image('r_tunnel_5', 'assets/r_tunnel_1.png');
-            this.load.image('r_tunnel_6', 'assets/r_tunnel_6.png');
-            this.load.image('r_tunnel_7', 'assets/r_tunnel_7.png');
-            this.load.image('r_tunnel_8', 'assets/r_tunnel_8.png');
-
-            //  INITIAL APPROACH TO CREATING THE CANVAS
-            // fetch("map1.txt")
-            //     .then(r => r.text())
-            //     .then(text => {
-            //         lines = text.split("\n")
-            //     });
         }
 
         function create() {
-            this.add.text(0, 0, 'Hello world');
+            //  Creates the map with an assigned tileset + sets the ground layer
             const map = this.make.tilemap({ key: "map" });
             const tileset = map.addTilesetImage("ground_tiles", "tiles");
             const groundLayer = map.createLayer("Ground", tileset, 0, 0);
 
+            //  Places Shermie on the map to an appropriate size
             player = this.physics.add.sprite(100, 450, 'player').setOrigin(0, 0);
             player.displayWidth = 50;
             player.scaleY = player.scaleX;
             player.body.setAllowGravity(false);
 
-            //  USE THIS TO UPDATE TILES WHEN PLAYER MOVES THROUGH THEM
-            // this.physics.add.overlap(player, groundLayer, () => {
-            //     console.log('Player touched the ground!');
-            // });
+            //  Checks for player collision with ground tiles
+            this.physics.add.overlap(player, groundLayer, () => {
+                updateTile(map, groundLayer);
+            });
 
 
             /* Handles movement with arrow and wasd keys */
             cursors = this.input.keyboard.createCursorKeys();
-            wasdKeys= {
+            wasdKeys = {
                 up: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.W),
                 left: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A),
                 down: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.S),
@@ -121,9 +104,6 @@
                     moveInDirection(direction, true);
                 }
             }
-            else {
-
-            }
         }
 
         //  Set player's position according to what direction they are facing (determined by key presses)
@@ -162,117 +142,89 @@
         }
 
         //  Used to simulate the digging effect when the player moves through the tiles
-        let lastCollidedPlatform = null;
-        function updateTile(player, platform) {
-            console.log("Collision detected with tile:", tile);
-            if (platform.texture.key !== 'r_tunnel_8') {
-                //  Full dug out tunnel
-                if ((parseInt(player.getCenter().x) == parseInt(platform.getCenter().x)) &&
-                    (parseInt(player.getCenter().y) == parseInt(platform.getCenter().y))) {
-                    platform.setTexture('r_tunnel_8');
-                }
+        function updateTile(map, groundLayer) {
+            // if (platform.texture.key !== 'r_tunnel_8') {
+            //     //  Full dug out tunnel
+            //     if ((parseInt(player.getCenter().x) == parseInt(platform.getCenter().x)) &&
+            //         (parseInt(player.getCenter().y) == parseInt(platform.getCenter().y))) {
+            //         platform.setTexture('r_tunnel_8');
+            //     }
+            // }
 
-                //  Update the tile ONLY if the player is positioned properly inside it
-                if (checkPlayerInPlatform(player, platform, direction)) {
-                    changePlatformTexture(player, platform, direction);
-                }
+            //  Update the tile ONLY if the player is properly positioned inside it
+            let currentTile = getPlayerTile(map, direction);
+            if (currentTile) {
+                changeTileTexture(map, currentTile, direction);
             }
         }
 
-        //  TODO: Update to handle all directions, currently only handles LEFT
-        function checkPlayerInPlatform(player, platform, direction) {
-            let isInPlatform = false;
+        //  Returns the tile the player is currently moving INTO.
+        function getPlayerTile(map, direction) {
+            let tile = null;
+            let tileCoords = null;
+            let tileWorldCoords = null;
+
             switch (direction) {
                 case 'left':
-                    if ((player.getCenter().x - 25 <= platform.getCenter().x + 25) && (player.getCenter().x - 25 >= platform.getCenter().x - 25)) {
-                        // if ((player.getCenter().y <= platform.getCenter().y + 25) && (player.getLeftCenter().y >= platform.getCenter().y - 25)) {
-                        //     return true;
-                        // }
-                        isInPlatform = true;
-                    }
+                    tileCoords = map.worldToTileXY(player.getCenter().x - 25, player.getCenter().y);
+                    tileWorldCoords = map.tileToWorldXY(tileCoords.x, tileCoords.y)
                     break;
                 case 'right':
-                    if ((player.getCenter().x + 25 <= platform.getCenter().x + 25) && (player.getCenter().x + 25 >= platform.getCenter().x - 25)) {
-                        isInPlatform = true;
-                    }
+                    tileCoords = map.worldToTileXY(player.getCenter().x + 25, player.getCenter().y);
+                    tileWorldCoords = map.tileToWorldXY(tileCoords.x, tileCoords.y)
                     break;
                 case 'up':
+                    tileCoords = map.worldToTileXY(player.getCenter().x, player.getCenter().y - 25);
+                    tileWorldCoords = map.tileToWorldXY(tileCoords.x, tileCoords.y)
                     break;
                 case 'down':
+                    tileCoords = map.worldToTileXY(player.getCenter().x, player.getCenter().y + 25);
+                    tileWorldCoords = map.tileToWorldXY(tileCoords.x, tileCoords.y)
                     break;
                 default:
                     break;
             }
-            return isInPlatform;
+            return tileWorldCoords;
         }
 
-        function changePlatformTexture(player, platform, direction) {
+        function changeTileTexture(map, tile, direction) {
             let newTexture = null;
-            switch (direction) {
-                case 'left':
-                    if (player.getCenter().x - 25 >= platform.getCenter().x + 20) {
-                        newTexture = 'r_tunnel_1';
-                    }
-                    else if (player.getCenter().x - 25 >= platform.getCenter().x + 13) {
-                        newTexture = 'r_tunnel_2';
-                    }
-                    else if (player.getCenter().x - 25 >= platform.getCenter().x + 6) {
-                        newTexture = 'r_tunnel_3';
-                    }
-                    else if (player.getCenter().x - 25 >= platform.getCenter().x) {
-                        newTexture = 'r_tunnel_4';
-                    }
-                    else if (player.getCenter().x - 25 >= platform.getCenter().x - 6) {
-                        newTexture = 'r_tunnel_5';
-                    }
-                    else if (player.getCenter().x - 25 >= platform.getCenter().x - 13) {
-                        newTexture = 'r_tunnel_6';
-                    }
-                    else if (player.getCenter().x - 25 >= platform.getCenter().x - 20) {
-                        newTexture = 'r_tunnel_7';
-                    }
-                    break;
-                case 'right':
-                    if (player.getCenter().x + 25 >= platform.getCenter().x - 20) {
-                        newTexture = 'r_tunnel_1';
-                    }
-                    else if (player.getCenter().x + 25 <= platform.getCenter().x - 13) {
-                        newTexture = 'r_tunnel_2';
-                    }
-                    else if (player.getCenter().x + 25 <= platform.getCenter().x - 6) {
-                        newTexture = 'r_tunnel_3';
-                    }
-                    else if (player.getCenter().x + 25 <= platform.getCenter().x) {
-                        newTexture = 'r_tunnel_4';
-                    }
-                    else if (player.getCenter().x + 25 <= platform.getCenter().x + 6) {
-                        newTexture = 'r_tunnel_5';
-                    }
-                    else if (player.getCenter().x + 25 <= platform.getCenter().x + 13) {
-                        newTexture = 'r_tunnel_6';
-                    }
-                    else if (player.getCenter().x + 25 <= platform.getCenter().x + 20) {
-                        newTexture = 'r_tunnel_7';
-                    }
-                    break;
-                case 'up':
-                    break;
-                case 'down':
-                    break;
-                default:
-                    break;
-            }
-            if (newTexture) {
-                let currentTexture = platform.texture.key;
-                let currentNumber = parseInt(currentTexture.split('_').pop()) || 0;
-                let newNumber = parseInt(newTexture.split('_').pop()) || 0;
+            let thresholds = [5, 12, 19, 25, 31, 38, 45]
+            let offsetX = null;
+            let offsetY = null;
 
-                if (newNumber > currentNumber) {
-                    platform.setTexture(newTexture);
+            switch (direction) {
+                case 'left': offsetX = -25; break;
+                case 'right': offsetX = 25; break;
+                case 'up': offsetY = -25; break;
+                case 'down': offsetY = 25; break;
+                default: return;
+            }
+
+            let playerCoord = offsetX ? player.getCenter().x + offsetX : player.getCenter().y + offsetY;
+            let tileCoord = offsetX ? tile.x : tile.y;
+            let isPositive = (offsetX || offsetY) > 0;
+
+            for (let i = 0; i < thresholds.length; i++) {
+                if ((isPositive && playerCoord >= tileCoord + thresholds[i]) || (!isPositive && playerCoord <= tileCoord + thresholds[thresholds.length - i - 1])) {
+                    newTexture = i + 2;
+                    break;
+                }
+            }
+
+            //  Check if newTexture exists (pretty sure it should always exist, but who knows ¯\_(ツ)_/¯)
+            if (newTexture) {
+                let currentTexture = map.getTileAt(map.worldToTileX(tile.x), map.worldToTileY(tile.y))?.index;
+                if (newTexture > currentTexture) {
+                    const newTile = map.putTileAt(newTexture, map.worldToTileX(tile.x), map.worldToTileY(tile.y), false, map.getLayer('Ground').tilemapLayer);
                     if (direction == 'right') {
-                        platform.flipX = true;
-                        platform.setOrigin(0.5, 0.5);
-                        platform.angle -= 90;
+                        newTile.flipX = true;
+                    }
+                    else if (direction == 'up') {
+                        newTile.rotation = Phaser.Math.DegToRad(90);
+                    }
+                    else if (direction == 'down') {
+                        newTile.rotation = Phaser.Math.DegToRad(-90);
                     }
                 }
             }
