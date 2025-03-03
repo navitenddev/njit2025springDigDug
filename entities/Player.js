@@ -3,6 +3,7 @@ export default class player extends Phaser.Physics.Arcade.Sprite {
         super(scene, x, y, "player");
         // scene.add.existing(this);
         // scene.physics.add.existing(this);
+        
 
         this.displayWidth = 50;
         this.scaleY = this.scaleX;
@@ -55,13 +56,13 @@ export default class player extends Phaser.Physics.Arcade.Sprite {
         switch (dir) {
             case 'left':
                 if (this.x != 0) {
-                    this.flipX = true;
+                    this.flipX = false;
                     this.setPosition(this.x - 2, this.y);
                 }
                 break;
             case 'right':
                 if (this.x != 550) {
-                    this.flipX = false;
+                    this.flipX = true;
                     this.setPosition(this.x + 2, this.y);
                 }
                 break;

@@ -12,6 +12,12 @@ export default class PreloadScene extends Phaser.Scene {
         });
         this.load.image("tiles", "assets/tilemap/ground_tileset.png");
         this.load.tilemapTiledJSON("map", "assets/tilemap/map_1.json");
+        this.anims.create({
+            key:'walk',
+            frames:this.anims.generateFrameNumbers('player', {start:0, end:1}),
+            framerate: 10,
+            repeat: -1
+        });
     }
 
     create() {
