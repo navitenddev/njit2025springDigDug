@@ -12,8 +12,8 @@ export default class GameScene extends Phaser.Scene {
         const groundLayer = map.createLayer("Ground", tileset, 0, 0);
 
         // Create player object
-        
-        this.player = new Player(this, 100, 450).setOrigin(0,0);
+
+        this.player = new Player(this, 100, 450).setOrigin(0, 0);
         this.add.existing(this.player);
         this.physics.add.existing(this.player);
         this.player.body.setAllowGravity(false);
@@ -30,6 +30,13 @@ export default class GameScene extends Phaser.Scene {
         // Collision with ground layer
         this.physics.add.overlap(this.player, groundLayer, () => {
             this.updateTile(map, groundLayer);
+        });
+
+        //  Player movement animations
+        this.anims.create({
+            key: 'move',
+            frames: this.anims.generateFrameNumbers('player', { start: 0, end: 3 }),
+            frameRate: 10
         });
     }
 
