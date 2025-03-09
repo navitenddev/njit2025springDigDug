@@ -35,7 +35,7 @@ export default class GameScene extends Phaser.Scene {
         //  Player movement animations
         this.anims.create({
             key: 'move',
-            frames: this.anims.generateFrameNumbers('player', { start: 0, end: 3 }),
+            frames: this.anims.generateFrameNumbers('player', { start: 0, end: 1 }),
             frameRate: 10
         });
     }
