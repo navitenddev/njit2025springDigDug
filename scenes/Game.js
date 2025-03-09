@@ -31,6 +31,26 @@ export default class GameScene extends Phaser.Scene {
         this.physics.add.overlap(this.player, groundLayer, () => {
             this.updateTile(map, groundLayer);
         });
+
+        this.rt = this.make.renderTexture({
+            x: 300, y: 400,
+            width: map.widthInPixels,
+            height: map.heightInPixels,
+            add: false
+        });
+        this.mask = new Phaser.Display.Masks.BitmapMask(this, this.rt);
+        this.mask.invertAlpha = true;
+        groundLayer.setMask(this.mask);
+        this.input.on("pointermove", (pointer) => {
+            if (pointer.isDown) {
+                this.mineAt(pointer.x, pointer.y);
+            }
+        });
+    }
+
+    mineAt(x, y) {
+        // Draw a transparent circle on the render texture to "dig"
+        this.rt.draw("blue_tile", x, y);
     }
 
     update() {
@@ -121,62 +141,7 @@ export default class GameScene extends Phaser.Scene {
                     newTile.rotation = Phaser.Math.DegToRad(-90);
                 }
 
-                // const rt = this.make.renderTexture({ width: 50, height: 50 }, true);
-
-                // // Get the tile at the given position
-                // const tile1 = map.layers[0].tilemapLayer.getTileAtWorldXY(this.player.x, this.player.y);
-
-                // if (tile1) {
-                //     const tileset = map.layers[0].tilemapLayer.tileset[0]; // Assuming 1 tileset
-
-                //     // Calculate the tile's position in the tileset texture
-                //     const tileIndex = tile1.index - tileset.firstgid;
-                //     const tileX = (tileIndex % (tileset.image.width / tileset.tileWidth)) * tileset.tileWidth;
-                //     const tileY = Math.floor(tileIndex / (tileset.image.width / tileset.tileWidth)) * tileset.tileHeight;
-
-                //     // Draw the tile from the tileset image onto the render texture
-                //     rt.draw(tileset.image, tileX, tileY, tileset.tileWidth, tileset.tileHeight, 0, 0, 50, 50);
-                // }
-
-                // rt.fill(0x000000); // Be careful with this, as it might cover the drawn tile.
-
-                // const maskGraphics = this.make.graphics();
-                // maskGraphics.fillStyle(0xffffff);
-                // maskGraphics.fillCircle(25, 25, 100);
-                // maskGraphics.generateTexture('maskTexture', 50, 50);
-                // maskGraphics.destroy();
-
-                // const maskImage = this.add.image(0, 0, 'maskTexture').setVisible(false);
-                // const mask = new Phaser.Display.Masks.BitmapMask(this, maskImage);
-                // rt.setMask(mask);
-
-                // rt.setPosition(this.player.x, this.player.y);
-
-                // Create a RenderTexture (size can be adjusted as needed)
-                const rt = this.make.renderTexture({ width: 100, height: 100 }, true);
-
-                // Draw a black circle on the RenderTexture
-                // rt.fill(0x000000);
-                // const graphics = this.make.graphics();
-                // graphics.fillStyle(0x000000, 1);
-                // graphics.fillCircle(25, 25, 25); // Draw a circle centered in the texture
-                // const sprite = this.add.sprite(50, 50, "blue_tile");
-                //console.log(map.tilesets[0].image)
-                rt.drawFrame("tileset", 1, 0, 0);
-                rt.depth = 0;
-                // var maskGraphics = this.make.graphics();
-                // maskGraphics.fillStyle(0x000000);
-                // maskGraphics.fillCircle(tile.x, tile.y, 50 / 2, 25);
-                // var circleMask = maskGraphics.createBitmapMask();
-                // rt.setMask(circleMask);
-
-                newTile.alpha = 0;
-                //rt.draw(map.tilesets[0].image, 0, 0);
-                //sprite.destroy();
-                // graphics.destroy(); // Clean up the temporary graphics object
-
-                // Position the RenderTexture over the player
-                rt.setPosition(tile.x + 50, tile.y + 50);
+                this.rt.draw("blue_tile", tile.x, tile.y);
             }
         }
     }
