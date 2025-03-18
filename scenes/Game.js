@@ -41,32 +41,13 @@ export default class GameScene extends Phaser.Scene {
         this.mask = new Phaser.Display.Masks.BitmapMask(this, this.rt);
         this.mask.invertAlpha = true;
         groundLayer.setMask(this.mask);
-        this.input.on("pointermove", (pointer) => {
-            if (pointer.isDown) {
-                this.mineAt(pointer.x, pointer.y);
-            }
-        });
-    }
-
-    mineAt(x, y) {
-        // Draw a transparent circle on the render texture to "dig"
-        this.rt.draw("blue_tile", x, y);
     }
 
     update() {
         this.player.handleInput(this.cursors, this.wasdKeys);
     }
 
-    updateTile(map, groundLayer) {
-        // if (platform.texture.key !== 'r_tunnel_8') {
-        //     //  Full dug out tunnel
-        //     if ((parseInt(player.getCenter().x) == parseInt(platform.getCenter().x)) &&
-        //         (parseInt(player.getCenter().y) == parseInt(platform.getCenter().y))) {
-        //         platform.setTexture('r_tunnel_8');
-        //     }
-        // }
-
-        //  Update the tile ONLY if the player is properly positioned inside it
+    updateTile(map) {
         let currentTile = this.getPlayerTile(map, this.player.direction);
         if (currentTile) {
             this.changeTileTexture(map, currentTile, this.player.direction);
@@ -75,74 +56,91 @@ export default class GameScene extends Phaser.Scene {
 
     //  Returns the tile the player is currently moving INTO.
     getPlayerTile(map, direction) {
-        let tile = null;
         let tileCoords = null;
-        let tileWorldCoords = null;
+
+        //  Base Case: player isn't moving into a tile, therefore return null.
+        if (this.player.x % 50 == 0 && this.player.y % 50 == 0) {
+            return null;
+        }
 
         switch (direction) {
             case 'left':
                 tileCoords = map.worldToTileXY(this.player.getCenter().x - 25, this.player.getCenter().y);
-                tileWorldCoords = map.tileToWorldXY(tileCoords.x, tileCoords.y)
                 break;
             case 'right':
                 tileCoords = map.worldToTileXY(this.player.getCenter().x + 25, this.player.getCenter().y);
-                tileWorldCoords = map.tileToWorldXY(tileCoords.x, tileCoords.y)
                 break;
             case 'up':
                 tileCoords = map.worldToTileXY(this.player.getCenter().x, this.player.getCenter().y - 25);
-                tileWorldCoords = map.tileToWorldXY(tileCoords.x, tileCoords.y)
                 break;
             case 'down':
                 tileCoords = map.worldToTileXY(this.player.getCenter().x, this.player.getCenter().y + 25);
-                tileWorldCoords = map.tileToWorldXY(tileCoords.x, tileCoords.y)
                 break;
             default:
-                break;
+                return null;
         }
-        return tileWorldCoords;
+        const tile = map.getTileAt(tileCoords.x, tileCoords.y, false, map.groundLayer);
+        return tile;
     }
 
+    //  Draws the appropriate mask over the tile the player is moving in.
     changeTileTexture(map, tile, direction) {
         let newTexture = null;
-        let thresholds = [5, 12, 19, 25, 31, 38, 45]
+        let thresholds = [8, 16, 24, 32, 40, 46]
+
         let offsetX = null;
         let offsetY = null;
 
+        let offsetTexture = null;
+        let shermieMaskFrame = null;
+
+        //  Depending on which direction the player is moving, we need to extract a different 
+        //  frame from their respective tile and shermie mask tilesets.
         switch (direction) {
-            case 'left': offsetX = -25; break;
-            case 'right': offsetX = 25; break;
-            case 'up': offsetY = -25; break;
-            case 'down': offsetY = 25; break;
+            case 'right':
+                offsetX = 25;
+                offsetTexture = 0;
+                shermieMaskFrame = 0;
+                break;
+            case 'left':
+                offsetX = -25;
+                offsetTexture = 6;
+                shermieMaskFrame = 1;
+                break;
+            case 'up':
+                offsetY = -25;
+                offsetTexture = 12;
+                shermieMaskFrame = 2;
+                break;
+            case 'down':
+                offsetY = 25;
+                offsetTexture = 18;
+                shermieMaskFrame = 3;
+                break;
             default: return;
         }
 
+        let tileWorldXY = map.tileToWorldXY(tile.x, tile.y);
         let playerCoord = offsetX ? this.player.getCenter().x + offsetX : this.player.getCenter().y + offsetY;
-        let tileCoord = offsetX ? tile.x : tile.y;
+        let tileCoord = offsetX ? tileWorldXY.x : tileWorldXY.y;
+
+        //  If TRUE:  player is moving RIGHT or DOWN
+        //  If FALSE: player is moving LEFT or UP
         let isPositive = (offsetX || offsetY) > 0;
 
+        //  Checks if the player is within a specific threshold in the tile.
         for (let i = 0; i < thresholds.length; i++) {
-            if ((isPositive && playerCoord >= tileCoord + thresholds[i]) || (!isPositive && playerCoord <= tileCoord + thresholds[thresholds.length - i - 1])) {
-                newTexture = i + 2;
+            if ((isPositive && playerCoord <= tileCoord + thresholds[i]) || (!isPositive && playerCoord >= tileCoord + thresholds[thresholds.length - i - 1])) {
+                newTexture = i + 1;
+                break;
             }
         }
 
-        //  Check if newTexture exists (pretty sure it should always exist, but who knows ¯\_(ツ)_/¯)
-        if (newTexture) {
-            let currentTexture = map.getTileAt(map.worldToTileX(tile.x), map.worldToTileY(tile.y))?.index;
-            if (newTexture > currentTexture) {
-                const newTile = map.putTileAt(newTexture, map.worldToTileX(tile.x), map.worldToTileY(tile.y), false, map.getLayer('Ground').tilemapLayer);
-                if (direction == 'right') {
-                    newTile.flipX = true;
-                }
-                else if (direction == 'up') {
-                    newTile.rotation = Phaser.Math.DegToRad(90);
-                }
-                else if (direction == 'down') {
-                    newTile.rotation = Phaser.Math.DegToRad(-90);
-                }
-
-                this.rt.draw("blue_tile", tile.x, tile.y);
-            }
+        //  If-Statement prevents multiple drawFrame calls
+        if (newTexture && newTexture > tile.properties[direction]) {
+            this.rt.drawFrame("shermie_mask", shermieMaskFrame, this.player.x, this.player.y)
+            this.rt.drawFrame("mask_tileset", newTexture + offsetTexture - 1, tileWorldXY.x, tileWorldXY.y);
+            tile.properties[direction] += 1;
         }
     }
 }

@@ -209,7 +209,7 @@
                      "y": 0
               }
        ],
-       "nextlayerid": 2,
+       "nextlayerid": 3,
        "nextobjectid": 1,
        "orientation": "orthogonal",
        "renderorder": "right-down",
@@ -219,14 +219,46 @@
               {
                      "columns": 9,
                      "firstgid": 1,
-                     "image": "./ground_tileset.png",
-                     "imageheight": 50,
+                     "image": "ground_tileset.png",
+                     "imageheight": 450,
                      "imagewidth": 450,
                      "margin": 0,
                      "name": "ground_tiles",
                      "spacing": 0,
-                     "tilecount": 9,
+                     "tilecount": 81,
                      "tileheight": 50,
+                     "tiles": [
+                            {
+                                   "id": 0,
+                                   "properties": [
+                                          {
+                                                 "name": "digProgress",
+                                                 "type": "string",
+                                                 "value": "0"
+                                          },
+                                          {
+                                                 "name": "down",
+                                                 "type": "int",
+                                                 "value": 0
+                                          },
+                                          {
+                                                 "name": "left",
+                                                 "type": "int",
+                                                 "value": 0
+                                          },
+                                          {
+                                                 "name": "right",
+                                                 "type": "int",
+                                                 "value": 0
+                                          },
+                                          {
+                                                 "name": "up",
+                                                 "type": "int",
+                                                 "value": 0
+                                          }
+                                   ]
+                            }
+                     ],
                      "tilewidth": 50
               }
        ],
