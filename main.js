@@ -1,9 +1,10 @@
 import PreloadScene from "./scenes/Preload.js";
 import GameScene from "./scenes/Game.js";
+import GameUI from "./scenes/GameUI.js";
 
 const config = {
     type: Phaser.AUTO,
-    width: 600,
+    width: 850,
     height: 800,
     physics: {
         default: 'arcade',
@@ -17,7 +18,7 @@ const config = {
         target: 60,
         forceSetTimeOut: true
     },
-    scene: [PreloadScene, GameScene] // Load Scenes
+    scene: [PreloadScene, GameScene, GameUI] // Load Scenes
 };
 
 new Phaser.Game(config);
