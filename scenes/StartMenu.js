@@ -18,7 +18,7 @@ export default class StartMenu extends Phaser.Scene {
         const titleText = this.add.text(
             this.cameras.main.centerX,
             this.cameras.main.centerY - 100,
-            'My Game',
+            'Shermie Digs',
             { fontSize: '64px', fill: '#000000' }
         );
         titleText.setOrigin(0.5);
