@@ -19,7 +19,7 @@ export default class StartMenu extends Phaser.Scene {
             this.cameras.main.centerX,
             this.cameras.main.centerY - 100,
             'My Game',
-            { fontSize: '64px', fill: '#fff' }
+            { fontSize: '64px', fill: '#000000' }
         );
         titleText.setOrigin(0.5);
     
@@ -28,7 +28,7 @@ export default class StartMenu extends Phaser.Scene {
             this.cameras.main.centerX,
             this.cameras.main.centerY,
             'Press SPACE to Start',
-            { fontSize: '32px', fill: '#fff' }
+            { fontSize: '32px', fill: '#000000' }
         );
         startText.setOrigin(0.5);
         titleText.setDepth(1);
