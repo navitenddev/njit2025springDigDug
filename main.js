@@ -19,7 +19,7 @@ const config = {
         target: 60,
         forceSetTimeOut: true
     },
-    scene: [StartMenu, PreloadScene, GameScene, GameUI] // Load Scenes
+    scene: [PreloadScene, StartMenu, GameScene, GameUI] // Load Scenes
 };
 
 new Phaser.Game(config);

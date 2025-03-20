@@ -35,11 +35,11 @@ export default class StartMenu extends Phaser.Scene {
         startText.setDepth(1);
   
         this.input.keyboard.on('keydown-SPACE', () => {
-            this.scene.start('PreloadScene');
+            this.scene.start('GameScene');
         });
   
         this.input.on('pointerdown', () => {
-            this.scene.start('PreloadScene');
+            this.scene.start('GameScene');
         });
     }
   }
