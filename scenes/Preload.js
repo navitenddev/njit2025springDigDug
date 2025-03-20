@@ -28,6 +28,8 @@ export default class PreloadScene extends Phaser.Scene {
 
         this.load.spritesheet("shermie_mask", "assets/tilemap/shermie_mask_tileset.png", { frameWidth: 50, frameHeight: 50 });
 
+        this.load.image("StartBG", "assets/StartBackground.jpeg");
+
     }
 
     create() {

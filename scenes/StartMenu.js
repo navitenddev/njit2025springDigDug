@@ -3,10 +3,6 @@ export default class StartMenu extends Phaser.Scene {
       super({ key: 'StartMenu' });
     }
   
-    preload() {
-        this.load.image("StartBG", "assets/StartBackground.jpeg");
-    }
-  
     create() {
         let bg = this.add.image(this.cameras.main.centerX, this.cameras.main.centerY, "StartBG");
         let scaleX = this.cameras.main.width / bg.width;
@@ -19,7 +15,7 @@ export default class StartMenu extends Phaser.Scene {
             this.cameras.main.centerX,
             this.cameras.main.centerY - 100,
             'Shermie Digs',
-            { fontSize: '64px', fill: '#000000' }
+            { fontSize: '64px', fill: '#000000' , fontFamily: 'PressStart2P'}
         );
         titleText.setOrigin(0.5);
     
@@ -28,7 +24,7 @@ export default class StartMenu extends Phaser.Scene {
             this.cameras.main.centerX,
             this.cameras.main.centerY,
             'Press SPACE to Start',
-            { fontSize: '32px', fill: '#000000' }
+            { fontSize: '32px', fill: '#000000' , fontFamily: 'PressStart2P'}
         );
         startText.setOrigin(0.5);
         titleText.setDepth(1);
