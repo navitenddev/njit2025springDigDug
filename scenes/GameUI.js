@@ -1,6 +1,6 @@
 export default class GameUI extends Phaser.Scene {
     constructor() {
-        super({ key: "GameUI", active: true });
+        super({ key: "GameUI" });
     }
     
     create() {
