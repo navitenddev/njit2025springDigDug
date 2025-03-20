@@ -34,6 +34,14 @@ export default class GameScene extends Phaser.Scene {
             this.updateTile(map, groundLayer);
         });
 
+
+        //  Player movement animations
+        this.anims.create({
+            key: 'move',
+            frames: this.anims.generateFrameNumbers('player', { start: 0, end: 1 }),
+            frameRate: 10
+        });
+
         this.rt = this.make.renderTexture({
             x: 300, y: 400,
             width: map.widthInPixels,
@@ -43,6 +51,7 @@ export default class GameScene extends Phaser.Scene {
         this.mask = new Phaser.Display.Masks.BitmapMask(this, this.rt);
         this.mask.invertAlpha = true;
         groundLayer.setMask(this.mask);
+
     }
 
     update() {
