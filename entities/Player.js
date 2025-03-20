@@ -9,9 +9,15 @@ export default class player extends Phaser.Physics.Arcade.Sprite {
         this.displayHeight = 50;
         this.direction = null;
         this.depth = 1;
+        this.controlsDisabled = false;
     }
 
     handleInput(cursors, wasdKeys) {
+        //  Prevent movement for the initial shermie movement path
+        if (this.controlsDisabled) {
+            return;
+        }
+
         //  LEFT-ARROW key or A key
         if (cursors.left.isDown || wasdKeys.left.isDown) {
             if (this.getTopLeft().y % 50 == 0) {
@@ -70,7 +76,7 @@ export default class player extends Phaser.Physics.Arcade.Sprite {
                 }
                 break;
             case 'up':
-                if (this.y != 150) {
+                if (this.y != 100) {
                     this.setPosition(this.x, this.y - 2);
                     this.anims.play('move', true);
                 }

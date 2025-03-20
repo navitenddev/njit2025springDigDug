@@ -13,7 +13,7 @@ export default class GameScene extends Phaser.Scene {
 
         // Create player object
 
-        this.player = new Player(this, 100, 450).setOrigin(0, 0);
+        this.player = new Player(this, 550, 100).setOrigin(0, 0);
         this.add.existing(this.player);
         this.physics.add.existing(this.player);
         this.player.body.setAllowGravity(false);
@@ -50,6 +50,36 @@ export default class GameScene extends Phaser.Scene {
         this.mask.invertAlpha = true;
         groundLayer.setMask(this.mask);
 
+        //  Start Shermie's auto move path (using tween)
+        //  Enables keyboard controls upon completion
+        this.player.controlsDisabled = true;
+        this.tweens.addCounter({
+            from: 0,
+            to: 1,
+            duration: 2500,
+            ease: 'Linear',
+            onUpdate: () => {
+                if (this.player.x !== 250) {
+                    this.player.move('left', false);
+                }
+            },
+            onComplete: () => {
+                this.tweens.addCounter({
+                    from: 0,
+                    to: 1,
+                    duration: 2200,
+                    ease: 'Linear',
+                    onUpdate: () => {
+                        if (this.player.y !== 350) {
+                            this.player.move('down', false);
+                        }
+                    },
+                    onComplete: () => {
+                        this.player.controlsDisabled = false;
+                    }
+                });
+            }
+        });
     }
 
     update() {
