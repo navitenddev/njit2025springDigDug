@@ -11,11 +11,7 @@ export default class PreloadScene extends Phaser.Scene {
             
         });
         this.load.image("tiles", "assets/tilemap/ground_tileset.png");
-        this.load.font(
-            'PressStart2P',
-            'https://raw.githubusercontent.com/google/fonts/refs/heads/main/ofl/pressstart2p/PressStart2P-Regular.ttf',
-            'truetype'
-          );
+        this.load.font('PressStart2P', "assets/fonts/PressStart2P-Regular.ttf", 'truetype'); // Current Default game font
         this.load.spritesheet("mask_tileset", "assets/tilemap/mask_tileset.png", { frameWidth: 50, frameHeight: 50 });
         this.load.tilemapTiledJSON("map", "assets/tilemap/map_1.json");
 
