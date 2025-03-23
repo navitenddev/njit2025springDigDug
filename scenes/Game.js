@@ -6,6 +6,8 @@ export default class GameScene extends Phaser.Scene {
     }
 
     create() {
+
+        this.scene.launch('GameUI')
         // Create tilemap
         const map = this.make.tilemap({ key: "map" });
         const tileset = map.addTilesetImage("ground_tiles", "tiles");
