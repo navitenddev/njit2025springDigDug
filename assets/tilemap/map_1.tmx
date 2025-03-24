@@ -1,10 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="12" height="16" tilewidth="50" tileheight="50" infinite="0" nextlayerid="2" nextobjectid="1">
+<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="12" height="16" tilewidth="50" tileheight="50" infinite="0" nextlayerid="3" nextobjectid="1">
  <editorsettings>
   <export target="map_1.json" format="json"/>
  </editorsettings>
- <tileset firstgid="1" name="ground_tiles" tilewidth="50" tileheight="50" tilecount="9" columns="9">
-  <image source="ground_tileset.png" width="450" height="50"/>
+ <tileset firstgid="1" name="ground_tiles" tilewidth="50" tileheight="50" tilecount="81" columns="9">
+  <image source="ground_tileset.png" width="450" height="450"/>
+  <tile id="0">
+   <properties>
+    <property name="digProgress" value="0"/>
+    <property name="down" type="int" value="0"/>
+    <property name="left" type="int" value="0"/>
+    <property name="right" type="int" value="0"/>
+    <property name="up" type="int" value="0"/>
+   </properties>
+  </tile>
  </tileset>
  <layer id="1" name="Ground" width="12" height="16">
   <data encoding="csv">
