@@ -67,7 +67,7 @@ export default class GameScene extends Phaser.Scene {
         this.player.handleInput(this.cursors, this.wasdKeys);
 
         this.enemyGroup.getChildren().forEach(enemy => {
-            enemy.update();
+            enemy.update(this.player);
         });
     }
 
@@ -119,8 +119,6 @@ export default class GameScene extends Phaser.Scene {
             }
         }, this, 0, 0, 12, 16, null, "Enemies");
     }
-
-
 
     updateTile(map) {
         let currentTile = this.getPlayerTile(map, this.player.direction);
