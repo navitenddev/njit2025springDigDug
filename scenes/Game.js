@@ -1,4 +1,5 @@
 import Player from "../entities/Player.js";
+import Enemy from "../entities/Enemy.js";
 
 export default class GameScene extends Phaser.Scene {
     constructor() {
@@ -9,9 +10,9 @@ export default class GameScene extends Phaser.Scene {
 
         this.scene.launch('GameUI')
         // Create tilemap
-        const map = this.make.tilemap({ key: "map" });
-        const tileset = map.addTilesetImage("ground_tiles", "tiles");
-        const groundLayer = map.createLayer("Ground", tileset, 0, 0);
+        this.map = this.make.tilemap({ key: "map" });
+        const tileset = this.map.addTilesetImage("ground_tiles", "tiles");
+        const groundLayer = this.map.createLayer("Ground", tileset, 0, 0);
 
         // Create player object
 
@@ -31,7 +32,7 @@ export default class GameScene extends Phaser.Scene {
 
         // Collision with ground layer
         this.physics.add.overlap(this.player, groundLayer, () => {
-            this.updateTile(map, groundLayer);
+            this.updateTile(this.map, groundLayer);
         });
 
 
@@ -44,19 +45,82 @@ export default class GameScene extends Phaser.Scene {
 
         this.rt = this.make.renderTexture({
             x: 300, y: 400,
-            width: map.widthInPixels,
-            height: map.heightInPixels,
+            width: this.map.widthInPixels,
+            height: this.map.heightInPixels,
             add: false
         });
         this.mask = new Phaser.Display.Masks.BitmapMask(this, this.rt);
         this.mask.invertAlpha = true;
         groundLayer.setMask(this.mask);
 
+        //  Spawn Enemies and their tunnels in the level
+        this.digEnemyTunnels(this.map, groundLayer);
+        this.enemyGroup = this.physics.add.group({
+            allowGravity: false
+        });
+        this.enemyGroup.isActive = false;
+        this.spawnEnemies(this.map, this.enemyGroup);
+        this.enemyGroup.isActive = true;
     }
 
     update() {
         this.player.handleInput(this.cursors, this.wasdKeys);
+
+        this.enemyGroup.getChildren().forEach(enemy => {
+            enemy.update();
+        });
     }
+
+    /**
+     * digEnemyTunnels - digs out the preset tunnels which the enemies first spawn in
+     * @param {Phaser.Tilemaps.Tilemap} map - The current map
+     */
+    digEnemyTunnels(map, layer) {
+        let coordX;
+        let coordY;
+        map.forEachTile(tile => {
+            coordX = tile.x * map.tileWidth;
+            coordY = tile.y * map.tileHeight;
+            if (tile.properties['left'] > 0) {
+                this.rt.drawFrame("mask_tileset", 11, coordX, coordY);
+            }
+            if (tile.properties['right'] > 0) {
+                this.rt.drawFrame("mask_tileset", 5, coordX, coordY);
+            }
+            if (tile.properties['up'] > 0) {
+                this.rt.drawFrame("mask_tileset", 17, coordX, coordY);
+            }
+            if (tile.properties['down'] > 0) {
+                this.rt.drawFrame("mask_tileset", 23, coordX, coordY);
+            }
+        }, this, 0, 0, 12, 16, null, layer);
+    }
+
+    /**
+     * spawnEnemies - creates and places new enemies in their preset locations on the tilemap
+     * @param {Phaser.Tilemaps.Tilemap} map - The current map
+     * @param {Phaser.Physics.group} enemyGroup - The enemies container
+     */
+    spawnEnemies(map, enemyGroup) {
+        let coordX;
+        let coordY;
+        map.forEachTile(tile => {
+            if (tile.index === -1) return;
+
+            coordX = tile.x * map.tileWidth;
+            coordY = tile.y * map.tileHeight;
+
+            console.log(tile);
+
+            //  Check if enemy is set to spawn on this tile
+            if (tile.properties['SpawnEnemy'].length !== 0) {
+                let enemy = new Enemy(this, coordX, coordY, tile.properties['SpawnEnemy'], enemyGroup).setOrigin(0, 0);
+                enemyGroup.add(enemy);
+            }
+        }, this, 0, 0, 12, 16, null, "Enemies");
+    }
+
+
 
     updateTile(map) {
         let currentTile = this.getPlayerTile(map, this.player.direction);
