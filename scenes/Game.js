@@ -124,6 +124,7 @@ export default class GameScene extends Phaser.Scene {
         let currentTile = this.getPlayerTile(map, this.player.direction);
         if (currentTile) {
             this.changeTileTexture(map, currentTile, this.player.direction);
+            this.player.lastTile = currentTile;
         }
     }
 
@@ -214,6 +215,14 @@ export default class GameScene extends Phaser.Scene {
             this.rt.drawFrame("shermie_mask", shermieMaskFrame, this.player.x, this.player.y)
             this.rt.drawFrame("mask_tileset", newTexture + offsetTexture - 1, tileWorldXY.x, tileWorldXY.y);
             tile.properties[direction] += 1;
+        }
+
+        //  Update the tile the player has just exited
+        if (this.player.lastTile && tile !== this.player.lastTile) {
+            if (this.player.direction == 'left') { this.player.lastTile.properties['right'] = 6; }
+            else if (this.player.direction == 'right') { this.player.lastTile.properties['left'] = 6; }
+            else if (this.player.direction == 'up') { this.player.lastTile.properties['down'] = 6; }
+            else if (this.player.direction == 'down') { this.player.lastTile.properties['up'] = 6; }
         }
     }
 }
