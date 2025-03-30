@@ -36,8 +36,8 @@ export default class LevelSelect extends Phaser.Scene {
         levelText.setOrigin(0.5);
         levelText.setInteractive({ useHandCursor: true });
         levelText.on('pointerdown', () => {
-          // TODO: Add logs to which level numbers are returned
           // TODO: use level number passed into gamescene for the level loading
+          console.log(`Starting level ${index + 1}`);
           this.scene.start('GameScene', { level: index + 1 });
         });
       });
