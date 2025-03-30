@@ -29,6 +29,7 @@ export default class PreloadScene extends Phaser.Scene {
             frameHeight: 64,
         })
         this.load.image("StartBG", "assets/StartBackground.jpeg");
+        this.load.image("LevelBG", "assets/bg2.jpeg");
 
     }
 

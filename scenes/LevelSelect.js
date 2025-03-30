@@ -6,7 +6,7 @@ export default class LevelSelect extends Phaser.Scene {
   
     create() {
       // Background image.
-      let bg = this.add.image(this.cameras.main.centerX, this.cameras.main.centerY, "StartBG");
+      let bg = this.add.image(this.cameras.main.centerX, this.cameras.main.centerY, "LevelBG");
       let scaleX = this.cameras.main.width / bg.width;
       let scaleY = this.cameras.main.height / bg.height;
       let scale = Math.max(scaleX, scaleY);
