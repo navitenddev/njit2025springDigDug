@@ -23,7 +23,7 @@ export default class LevelSelect extends Phaser.Scene {
   
       // Interactive Level Options
       const levels = ['Level 1', 'Level 2', 'Level 3', 'Level 4', 'Level 5'];
-      const startY = this.cameras.main.centerY - 25;
+      const startY = this.cameras.main.centerY - 85;
       const spacingY = 80;
   
       levels.forEach((levelName, index) => {
