@@ -1,4 +1,5 @@
 import PreloadScene from "./scenes/Preload.js";
+import LevelSelect from "./scenes/LevelSelect.js";
 import GameScene from "./scenes/Game.js";
 import GameUI from "./scenes/GameUI.js";
 import StartMenu from "./scenes/StartMenu.js";
@@ -19,7 +20,7 @@ const config = {
         target: 60,
         forceSetTimeOut: true
     },
-    scene: [PreloadScene, StartMenu, GameScene, GameUI] // Load Scenes
+    scene: [PreloadScene, StartMenu, LevelSelect, GameScene, GameUI] // Load Scenes
 };
 
 new Phaser.Game(config);
