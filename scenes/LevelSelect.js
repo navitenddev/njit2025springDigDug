@@ -12,12 +12,15 @@ export default class LevelSelect extends Phaser.Scene {
       let scale = Math.max(scaleX, scaleY);
       bg.setScale(scale);
       bg.setDepth(-1);
+
+      const outlineColor = "#d3d3d3" // Controls the outline color that surrounds the text"
+      const outlineThickness = 6; // higher value means thicker outline
   
       const titleText = this.add.text(
         this.cameras.main.centerX,
         50,
         'Select Level',
-        { fontSize: '48px', fill: '#000000', fontFamily: 'PressStart2P' }
+        { fontSize: '48px', fill: '#000000', fontFamily: 'PressStart2P', stroke: outlineColor, strokeThickness: outlineThickness}
       );
       titleText.setOrigin(0.5);
   
@@ -31,7 +34,7 @@ export default class LevelSelect extends Phaser.Scene {
           this.cameras.main.centerX,
           startY + spacingY * index,
           levelName,
-          { fontSize: '32px', fill: '#000000', fontFamily: 'PressStart2P' }
+          { fontSize: '32px', fill: '#000000', fontFamily: 'PressStart2P' , stroke: outlineColor, stroke: outlineColor, strokeThickness: outlineThickness}
         );
         levelText.setOrigin(0.5);
         levelText.setInteractive({ useHandCursor: true });
@@ -47,7 +50,7 @@ export default class LevelSelect extends Phaser.Scene {
         this.cameras.main.centerX,
         this.cameras.main.height - 50,
         'Click a level to start',
-        { fontSize: '24px', fill: '#000000', fontFamily: 'PressStart2P' }
+        { fontSize: '24px', fill: '#000000', fontFamily: 'PressStart2P', stroke: outlineColor, strokeThickness: outlineThickness}
       );
       instructionText.setOrigin(0.5);
     }
