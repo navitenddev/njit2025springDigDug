@@ -36,13 +36,27 @@ export default class GameUI extends Phaser.Scene {
             fontFamily: 'PressStart2P'
         });
 
-        const currentScoreText = this.add.text(scaleX, scaleY + 225, "Current\nScore:", {
+        const currentScoreText = this.add.text(scaleX, scaleY + 250, "Current\nScore:", {
             fontSize: "25px",
             fill: "#ffffff",
             fontFamily: 'PressStart2P'
         });
 
-        const showPowerUps = this.add.text(scaleX, scaleY + 350, "Active\nPowers:", {
+        /*
+        * Score that dynamically changes when a player talks over the tile
+        *
+        */
+        const score = this.add.text(scaleX, scaleY + 315, "0", {
+            fontSize: "25px",
+            fill: "#ffffff",
+            fontFamily: 'PressStart2P'
+        });
+
+        this.game.events.on("updateScore", (newScore) => {
+            score.setText(newScore.toString());
+        });
+
+        const showPowerUps = this.add.text(scaleX, scaleY + 400, "Active\nPowers:", {
             fontSize: "25px",
             fill: "#ffffff",
             fontFamily: 'PressStart2P'

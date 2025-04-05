@@ -8,7 +8,14 @@ export default class GameScene extends Phaser.Scene {
 
     create() {
 
+        /*
+        * Launching the scene so the ingameUI can be scene while the game is being played
+        * this.score & visitedTiles is needed in order to record the score
+        */
         this.scene.launch('GameUI')
+        this.score = 0;
+        this.visitedTiles = new Set();
+
         // Create tilemap
         this.map = this.make.tilemap({ key: "map" });
         const tileset = this.map.addTilesetImage("ground_tiles", "tiles");
@@ -122,7 +129,18 @@ export default class GameScene extends Phaser.Scene {
 
     updateTile(map) {
         let currentTile = this.getPlayerTile(map, this.player.direction);
+
         if (currentTile) {
+
+            const tileKey = `${currentTile.x},${currentTile.y}`;
+            // If this tile hasn't been discovered yet, add to set and give points
+            if (!this.visitedTiles.has(tileKey)) {
+                this.visitedTiles.add(tileKey);
+                this.score += 10;
+
+                // Emit score update to UI
+                this.game.events.emit("updateScore", this.score);
+            }
             this.changeTileTexture(map, currentTile, this.player.direction);
             this.player.lastTile = currentTile;
         }
