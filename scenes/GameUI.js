@@ -22,12 +22,25 @@ export default class GameUI extends Phaser.Scene {
         const livesX = 650; 
         const livesY = 85;
 
+        /*
+        * Lives are stored in an array that is changed when a game event is emitted (player is hit by enemy)
+        */
+        this.livesIcons = []; // Store references for later updates
+
         for (let i = 0; i < maxLives; i++) {
-            this.add.image(livesX + (i * lifeSpacing), livesY, 'player')
+            const icon = this.add.image(livesX + (i * lifeSpacing), livesY, 'player')
                 .setScale(0.5)
                 .setOrigin(0.5)
                 .setFrame(0);
+        
+            this.livesIcons.push(icon); // Save each icon
         }
+        this.game.events.on("updateLives", (newLives) => {
+            this.livesIcons.forEach((icon, index) => {
+                icon.setVisible(index < newLives);
+            });
+        });
+        
         
         // highScore, currentscore, & powerUps Text -> functionality incomplete
         const highScoreText = this.add.text(scaleX, scaleY + 100, "High\nScore:", {
@@ -46,14 +59,16 @@ export default class GameUI extends Phaser.Scene {
         * Score that dynamically changes when a player talks over the tile
         *
         */
-        const score = this.add.text(scaleX, scaleY + 315, "0", {
+        this.score = this.add.text(scaleX, scaleY + 315, "0", {
             fontSize: "25px",
             fill: "#ffffff",
             fontFamily: 'PressStart2P'
         });
 
         this.game.events.on("updateScore", (newScore) => {
-            score.setText(newScore.toString());
+            if (this.score?.setText) {
+                this.score.setText(newScore.toString());
+            }
         });
 
         const showPowerUps = this.add.text(scaleX, scaleY + 400, "Active\nPowers:", {

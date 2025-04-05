@@ -21,8 +21,8 @@ export default class GameScene extends Phaser.Scene {
         const tileset = this.map.addTilesetImage("ground_tiles", "tiles");
         const groundLayer = this.map.createLayer("Ground", tileset, 0, 0);
 
-        // Create player object
-
+        // Create player object & added amount of lives to player
+        this.lives = 3;
         this.player = new Player(this, 100, 450).setOrigin(0, 0);
         this.add.existing(this.player);
         this.physics.add.existing(this.player);
@@ -68,6 +68,12 @@ export default class GameScene extends Phaser.Scene {
         this.enemyGroup.isActive = false;
         this.spawnEnemies(this.map, this.enemyGroup);
         this.enemyGroup.isActive = true;
+
+        /*
+        * Overlap check when a player comes into contact with an enemy
+        * This overlap check must be put after the player and enemy has been created
+        */
+        this.physics.add.overlap(this.player, this.enemyGroup, this.handlePlayerHit, null, this);
     }
 
     update() {
@@ -127,18 +133,55 @@ export default class GameScene extends Phaser.Scene {
         }, this, 0, 0, 12, 16, null, "Enemies");
     }
 
+    /*
+    * If a player is hit by the enemy, it gives them invulnerability for a short time
+    * Duration of the invulnerability can be changed
+    * SUBJECT TO CHANGE: upon player having no lives the scene restarts.
+    */ 
+    handlePlayerHit(player) {
+        if (!player.invulnerable) {
+            this.lives--;
+            this.game.events.emit("updateLives", this.lives);
+    
+            // Temporary invulnerability
+            
+            player.invulnerable = true;
+            this.tweens.add({
+                targets: player,
+                alpha: 0.3,
+                duration: 100,
+                yoyo: true,
+                repeat: 5,
+                onComplete: () => {
+                    player.setAlpha(1);
+                    player.invulnerable = false;
+                }
+            });
+    
+            if (this.lives <= 0) {
+                this.scene.stop('GameUI');
+                this.scene.restart();
+            }
+        }
+    }
+    
+    /*
+    * Changes tile texture (applies bitmask) when player walks over an undiscovered tile
+    * If this tile hasn't been discovered yet, add to set and give 10 points
+    * Emit score update to UI
+    */ 
     updateTile(map) {
         let currentTile = this.getPlayerTile(map, this.player.direction);
 
         if (currentTile) {
 
             const tileKey = `${currentTile.x},${currentTile.y}`;
-            // If this tile hasn't been discovered yet, add to set and give points
+            
             if (!this.visitedTiles.has(tileKey)) {
                 this.visitedTiles.add(tileKey);
                 this.score += 10;
 
-                // Emit score update to UI
+                
                 this.game.events.emit("updateScore", this.score);
             }
             this.changeTileTexture(map, currentTile, this.player.direction);
