@@ -30,6 +30,8 @@ export default class LevelSelect extends Phaser.Scene {
       const spacingY = 80;
   
       levels.forEach((levelName, index) => {
+        //todo: use the images instead and add logic for locked and unlocked levels
+        // need to save a state of the max level a user is at in order to display the unlocked levels correctly
         let levelText = this.add.text(
           this.cameras.main.centerX,
           startY + spacingY * index,
