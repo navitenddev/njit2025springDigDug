@@ -240,10 +240,10 @@ export default class GameScene extends Phaser.Scene {
 
         //  Update the tile the player has just exited
         if (this.player.lastTile && tile !== this.player.lastTile) {
-            if (this.player.direction == 'left') { this.player.lastTile.properties['right'] = 6; }
-            else if (this.player.direction == 'right') { this.player.lastTile.properties['left'] = 6; }
-            else if (this.player.direction == 'up') { this.player.lastTile.properties['down'] = 6; }
-            else if (this.player.direction == 'down') { this.player.lastTile.properties['up'] = 6; }
+            if (this.player.direction == 'left' && this.player.lastTile.properties['right'] == 0) { this.player.lastTile.properties['right'] = 6; }
+            else if (this.player.direction == 'right' && this.player.lastTile.properties['left'] == 0) { this.player.lastTile.properties['left'] = 6; }
+            else if (this.player.direction == 'up' && this.player.lastTile.properties['down'] == 0) { this.player.lastTile.properties['down'] = 6; }
+            else if (this.player.direction == 'down' && this.player.lastTile.properties['up'] == 0) { this.player.lastTile.properties['up'] = 6; }
         }
     }
 }
