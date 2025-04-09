@@ -1,5 +1,6 @@
 import Player from "../entities/Player.js";
 import Enemy from "../entities/Enemy.js";
+import Bullets from "../entities/Bullets.js";
 
 export default class GameScene extends Phaser.Scene {
     constructor() {
@@ -61,6 +62,13 @@ export default class GameScene extends Phaser.Scene {
         this.enemyGroup.isActive = false;
         this.spawnEnemies(this.map, this.enemyGroup);
         this.enemyGroup.isActive = true;
+
+        //  Initialize Bullets Group
+        this.bullets = new Bullets(this);
+        this.physics.add.overlap(this.bullets, this.enemyGroup, this.handleBulletEnemyCollision, null, this);
+        this.input.keyboard.on('keydown-SPACE', (event) => {
+            this.bullets.fireBullet(this.player.x, this.player.y, this.player.direction);
+        });
     }
 
     update() {
@@ -69,6 +77,19 @@ export default class GameScene extends Phaser.Scene {
         this.enemyGroup.getChildren().forEach(enemy => {
             enemy.update(this.player);
         });
+    }
+
+    /**
+     * handleBulletEnemyCollision - handle enemy damage if hit by a bullet
+     * @param {*} bullet 
+     * @param {*} enemy 
+     */
+    handleBulletEnemyCollision(bullet, enemy) {
+        if (!bullet.active) return; // Safety check
+        bullet.setActive(false);
+        bullet.setVisible(false);
+
+        enemy.takeDamage();
     }
 
     /**
