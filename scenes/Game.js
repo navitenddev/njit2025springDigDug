@@ -90,6 +90,18 @@ export default class GameScene extends Phaser.Scene {
         bullet.setVisible(false);
 
         enemy.takeDamage();
+        this.tweens.addCounter({
+            from: 0,
+            to: 1,
+            duration: 500,
+            ease: 'Linear',
+            onStart: () => {
+                enemy.isActive = false;
+            },
+            onComplete: () => {
+                enemy.isActive = true;
+            }
+        });
     }
 
     /**
