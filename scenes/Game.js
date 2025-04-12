@@ -1,4 +1,5 @@
 import Player from "../entities/Player.js";
+import Enemy from "../entities/Enemy.js";
 
 export default class GameScene extends Phaser.Scene {
     constructor() {
@@ -7,14 +8,23 @@ export default class GameScene extends Phaser.Scene {
 
     create() {
 
+        /*
+        * Launching the scene so the ingameUI can be scene while the game is being played
+        * this.score & visitedTiles is needed in order to record the score
+        * this.highScore needed to save the score to localstorage if currentscore surpasses highscore
+        */
         this.scene.launch('GameUI')
+        this.score = 0;
+        this.visitedTiles = new Set();
+        this.highScore = parseInt(localStorage.getItem("highScore")) || 0;
+
         // Create tilemap
-        const map = this.make.tilemap({ key: "map" });
-        const tileset = map.addTilesetImage("ground_tiles", "tiles");
-        const groundLayer = map.createLayer("Ground", tileset, 0, 0);
+        this.map = this.make.tilemap({ key: "map" });
+        const tileset = this.map.addTilesetImage("ground_tiles", "tiles");
+        const groundLayer = this.map.createLayer("Ground", tileset, 0, 0);
 
-        // Create player object
-
+        // Create player object & added amount of lives to player
+        this.lives = 3;
         this.player = new Player(this, 100, 450).setOrigin(0, 0);
         this.add.existing(this.player);
         this.physics.add.existing(this.player);
@@ -31,7 +41,7 @@ export default class GameScene extends Phaser.Scene {
 
         // Collision with ground layer
         this.physics.add.overlap(this.player, groundLayer, () => {
-            this.updateTile(map, groundLayer);
+            this.updateTile(this.map, groundLayer);
         });
 
 
@@ -44,24 +54,156 @@ export default class GameScene extends Phaser.Scene {
 
         this.rt = this.make.renderTexture({
             x: 300, y: 400,
-            width: map.widthInPixels,
-            height: map.heightInPixels,
+            width: this.map.widthInPixels,
+            height: this.map.heightInPixels,
             add: false
         });
         this.mask = new Phaser.Display.Masks.BitmapMask(this, this.rt);
         this.mask.invertAlpha = true;
         groundLayer.setMask(this.mask);
 
+        //  Spawn Enemies and their tunnels in the level
+        this.digEnemyTunnels(this.map, groundLayer);
+        this.enemyGroup = this.physics.add.group({
+            allowGravity: false
+        });
+        this.enemyGroup.isActive = false;
+        this.spawnEnemies(this.map, this.enemyGroup);
+        this.enemyGroup.isActive = true;
+
+        /*
+        * Overlap check when a player comes into contact with an enemy
+        * This overlap check must be put after the player and enemy has been created
+        */
+        this.physics.add.overlap(this.player, this.enemyGroup, this.handlePlayerHit, null, this);
     }
 
     update() {
         this.player.handleInput(this.cursors, this.wasdKeys);
+
+        this.enemyGroup.getChildren().forEach(enemy => {
+            enemy.update(this.player);
+        });
     }
 
+    /**
+     * digEnemyTunnels - digs out the preset tunnels which the enemies first spawn in
+     * @param {Phaser.Tilemaps.Tilemap} map - The current map
+     */
+    digEnemyTunnels(map, layer) {
+        let coordX;
+        let coordY;
+        map.forEachTile(tile => {
+            coordX = tile.x * map.tileWidth;
+            coordY = tile.y * map.tileHeight;
+            if (tile.properties['left'] > 0) {
+                this.rt.drawFrame("mask_tileset", 11, coordX, coordY);
+            }
+            if (tile.properties['right'] > 0) {
+                this.rt.drawFrame("mask_tileset", 5, coordX, coordY);
+            }
+            if (tile.properties['up'] > 0) {
+                this.rt.drawFrame("mask_tileset", 17, coordX, coordY);
+            }
+            if (tile.properties['down'] > 0) {
+                this.rt.drawFrame("mask_tileset", 23, coordX, coordY);
+            }
+        }, this, 0, 0, 12, 16, null, layer);
+    }
+
+    /**
+     * spawnEnemies - creates and places new enemies in their preset locations on the tilemap
+     * @param {Phaser.Tilemaps.Tilemap} map - The current map
+     * @param {Phaser.Physics.group} enemyGroup - The enemies container
+     */
+    spawnEnemies(map, enemyGroup) {
+        let coordX;
+        let coordY;
+        map.forEachTile(tile => {
+            if (tile.index === -1) return;
+
+            coordX = tile.x * map.tileWidth;
+            coordY = tile.y * map.tileHeight;
+
+            console.log(tile);
+
+            //  Check if enemy is set to spawn on this tile
+            if (tile.properties['SpawnEnemy'].length !== 0) {
+                let enemy = new Enemy(this, coordX, coordY, tile.properties['SpawnEnemy'], enemyGroup).setOrigin(0, 0);
+                enemyGroup.add(enemy);
+            }
+        }, this, 0, 0, 12, 16, null, "Enemies");
+    }
+
+    /*
+    * If a player is hit by the enemy, it gives them invulnerability for a short time
+    * Duration of the invulnerability can be changed
+    * SUBJECT TO CHANGE: upon player having no lives the scene restarts.
+    */ 
+    handlePlayerHit(player) {
+        if (!player.invulnerable) {
+            this.lives--;
+            this.game.events.emit("updateLives", this.lives);
+    
+            // Temporary invulnerability
+            
+            player.invulnerable = true;
+            this.tweens.add({
+                targets: player,
+                alpha: 0.3,
+                duration: 100,
+                yoyo: true,
+                repeat: 5,
+                onComplete: () => {
+                    player.setAlpha(1);
+                    player.invulnerable = false;
+                }
+            });
+    
+            if (this.lives <= 0) {
+
+                // Save high score to localStorage
+                const prevHighScore = parseInt(localStorage.getItem("highScore")) || 0;
+                if (this.score > prevHighScore) {
+                    localStorage.setItem("highScore", this.score);
+                }
+                this.scene.stop('GameUI');
+                this.scene.restart();
+            }
+        }
+    }
+    
+    /*
+    * Changes tile texture (applies bitmask) when player walks over an undiscovered tile
+    * If this tile hasn't been discovered yet, add to set and give 10 points
+    * Emit score update to UI
+    */ 
     updateTile(map) {
         let currentTile = this.getPlayerTile(map, this.player.direction);
+
         if (currentTile) {
+
+            const tileKey = `${currentTile.x},${currentTile.y}`;
+            
+            if (!this.visitedTiles.has(tileKey)) {
+                this.visitedTiles.add(tileKey);
+                this.score += 10;
+
+                this.game.events.emit("updateScore", this.score);
+
+                // Check if new high score
+                if (this.score > this.highScore) {
+                    this.highScore = this.score;
+
+                    // Save new high score to localStorage
+                    localStorage.setItem("highScore", this.highScore);
+
+                    // Emit update to GameUI
+                    this.game.events.emit("updateHighScore", this.highScore);
+                }
+            }
             this.changeTileTexture(map, currentTile, this.player.direction);
+            this.player.lastTile = currentTile;
         }
     }
 
@@ -152,6 +294,14 @@ export default class GameScene extends Phaser.Scene {
             this.rt.drawFrame("shermie_mask", shermieMaskFrame, this.player.x, this.player.y)
             this.rt.drawFrame("mask_tileset", newTexture + offsetTexture - 1, tileWorldXY.x, tileWorldXY.y);
             tile.properties[direction] += 1;
+        }
+
+        //  Update the tile the player has just exited
+        if (this.player.lastTile && tile !== this.player.lastTile) {
+            if (this.player.direction == 'left') { this.player.lastTile.properties['right'] = 6; }
+            else if (this.player.direction == 'right') { this.player.lastTile.properties['left'] = 6; }
+            else if (this.player.direction == 'up') { this.player.lastTile.properties['down'] = 6; }
+            else if (this.player.direction == 'down') { this.player.lastTile.properties['up'] = 6; }
         }
     }
 }
