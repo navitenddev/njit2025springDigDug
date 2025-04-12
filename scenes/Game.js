@@ -1,5 +1,6 @@
 import Player from "../entities/Player.js";
 import Enemy from "../entities/Enemy.js";
+import Rock from "../entities/Rock.js";
 
 export default class GameScene extends Phaser.Scene {
     constructor() {
@@ -53,13 +54,22 @@ export default class GameScene extends Phaser.Scene {
         this.mask.invertAlpha = true;
         groundLayer.setMask(this.mask);
 
-        //  Spawn Enemies and their tunnels in the level
+        //  Create enemy tunnels and enemies group
         this.digEnemyTunnels(this.map, groundLayer);
         this.enemyGroup = this.physics.add.group({
             allowGravity: false
         });
         this.enemyGroup.isActive = false;
-        this.spawnEnemies(this.map, this.enemyGroup);
+
+        //  Create rocks group
+        this.rockGroup = this.physics.add.group({
+            allowGravity: false
+        })
+
+        //  Spawn enemies and rocks
+        this.spawnEntities(this.map, this.enemyGroup, this.rockGroup);
+
+        //  Activate enemy movement
         this.enemyGroup.isActive = true;
     }
 
@@ -69,6 +79,10 @@ export default class GameScene extends Phaser.Scene {
         this.enemyGroup.getChildren().forEach(enemy => {
             enemy.update(this.player);
         });
+
+        this.rockGroup.getChildren().forEach(rock => {
+            rock.update(this.player);
+        })
     }
 
     /**
@@ -97,11 +111,12 @@ export default class GameScene extends Phaser.Scene {
     }
 
     /**
-     * spawnEnemies - creates and places new enemies in their preset locations on the tilemap
-     * @param {Phaser.Tilemaps.Tilemap} map - The current map
+     * spawnEntities - creates and places new enemies and rocks in their preset locations on the tilemap
+     * @param {Phaser.Tilemaps.Tilemap} map
      * @param {Phaser.Physics.group} enemyGroup - The enemies container
+     * @param {Phaser.Physics.group} rockGroup - The rocks container
      */
-    spawnEnemies(map, enemyGroup) {
+    spawnEntities(map, enemyGroup, rockGroup) {
         let coordX;
         let coordY;
         map.forEachTile(tile => {
@@ -110,14 +125,18 @@ export default class GameScene extends Phaser.Scene {
             coordX = tile.x * map.tileWidth;
             coordY = tile.y * map.tileHeight;
 
-            console.log(tile);
+            //  Create a rock entity
+            if (tile.properties['entity_name'] == "rock") {
+                let rock = new Rock(this, coordX, coordY, tile.properties['entity_name'], rockGroup).setOrigin(0.5, 0.5);
+                rockGroup.add(rock);
+            }
 
-            //  Check if enemy is set to spawn on this tile
-            if (tile.properties['SpawnEnemy'].length !== 0) {
-                let enemy = new Enemy(this, coordX, coordY, tile.properties['SpawnEnemy'], enemyGroup).setOrigin(0, 0);
+            //  Create an enemy entity
+            if (tile.properties['entity_name'].length !== 0 && tile.properties['entity_name'] !== "rock") {
+                let enemy = new Enemy(this, coordX, coordY, tile.properties['entity_name'], enemyGroup).setOrigin(0, 0);
                 enemyGroup.add(enemy);
             }
-        }, this, 0, 0, 12, 16, null, "Enemies");
+        }, this, 0, 0, 12, 16, null, "Entities");
     }
 
     updateTile(map) {
