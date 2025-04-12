@@ -86,6 +86,12 @@ export default class GameScene extends Phaser.Scene {
         * This overlap check must be put after the player and enemy has been created
         */
         this.physics.add.overlap(this.player, this.enemyGroup, this.handlePlayerHit, null, this);
+
+        //  Player hit collision with rock
+        this.physics.add.overlap(this.player, this.rockGroup, this.handleRockHitEntity, null, this);
+
+        //  Enemy hit collision with rock
+        this.physics.add.overlap(this.enemyGroup, this.rockGroup, this.handleRockHitEntity, null, this);
     }
 
     update() {
@@ -158,14 +164,14 @@ export default class GameScene extends Phaser.Scene {
     * If a player is hit by the enemy, it gives them invulnerability for a short time
     * Duration of the invulnerability can be changed
     * SUBJECT TO CHANGE: upon player having no lives the scene restarts.
-    */ 
+    */
     handlePlayerHit(player) {
         if (!player.invulnerable) {
             this.lives--;
             this.game.events.emit("updateLives", this.lives);
-    
+
             // Temporary invulnerability
-            
+
             player.invulnerable = true;
             this.tweens.add({
                 targets: player,
@@ -178,7 +184,7 @@ export default class GameScene extends Phaser.Scene {
                     player.invulnerable = false;
                 }
             });
-    
+
             if (this.lives <= 0) {
 
                 // Save high score to localStorage
@@ -191,19 +197,25 @@ export default class GameScene extends Phaser.Scene {
             }
         }
     }
-    
+
+    handleRockHitEntity(entity, rock) {
+        if (entity == this.player) { this.handlePlayerHit(entity); }
+        else { entity.destroy(); }
+        rock.destroy();
+    }
+
     /*
     * Changes tile texture (applies bitmask) when player walks over an undiscovered tile
     * If this tile hasn't been discovered yet, add to set and give 10 points
     * Emit score update to UI
-    */ 
+    */
     updateTile(map) {
         let currentTile = this.getPlayerTile(map, this.player.direction);
 
         if (currentTile) {
 
             const tileKey = `${currentTile.x},${currentTile.y}`;
-            
+
             if (!this.visitedTiles.has(tileKey)) {
                 this.visitedTiles.add(tileKey);
                 this.score += 10;
