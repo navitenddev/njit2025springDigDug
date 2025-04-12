@@ -10,11 +10,17 @@ export default class GameUI extends Phaser.Scene {
         const scaleX = 630; 
         const scaleY = 35;
 
+        // other optional choice of slightly darker blue -> #242957
+        const outlineColor = "#343d94" // Controls the outline color that surrounds the text"
+        const outlineThickness = 5; // higher value means thicker outline
+
         // Display "Player Lives:" text -> Partially completed
         const livesText = this.add.text(scaleX, scaleY, "Lives:", {
             fontSize: "25px",
             fill: "#ffffff",
-            fontFamily: 'PressStart2P'
+            fontFamily: 'PressStart2P',
+            stroke: outlineColor, 
+            strokeThickness: outlineThickness
         });
 
         const maxLives = 3;
@@ -40,29 +46,51 @@ export default class GameUI extends Phaser.Scene {
                 icon.setVisible(index < newLives);
             });
         });
-        
-        
-        // highScore, currentscore, & powerUps Text -> functionality incomplete
+
+        /*
+        * HighScore that changes when a player surpasses his highscore
+        * Will change in realtime if player surpasses his highscore and is still alive
+        */
         const highScoreText = this.add.text(scaleX, scaleY + 100, "High\nScore:", {
             fontSize: "25px",
             fill: "#ffffff",
-            fontFamily: 'PressStart2P'
+            fontFamily: 'PressStart2P',
+            stroke: outlineColor, 
+            strokeThickness: outlineThickness
+        });
+        const highScoreValue = parseInt(localStorage.getItem("highScore")) || 0;
+        
+        this.highScoreValueText = this.add.text(scaleX, scaleY + 175, highScoreValue.toString(), {
+            fontSize: "25px",
+            fill: "#ffffff",
+            fontFamily: 'PressStart2P',
+            stroke: outlineColor, 
+            strokeThickness: outlineThickness
+        });
+
+        this.game.events.on("updateHighScore", (newHighScore) => {
+            if (this.highScoreValueText?.setText) {
+                this.highScoreValueText.setText(newHighScore.toString());
+            }
         });
 
         const currentScoreText = this.add.text(scaleX, scaleY + 250, "Current\nScore:", {
             fontSize: "25px",
             fill: "#ffffff",
-            fontFamily: 'PressStart2P'
+            fontFamily: 'PressStart2P',
+            stroke: outlineColor, 
+            strokeThickness: outlineThickness
         });
 
         /*
         * Score that dynamically changes when a player talks over the tile
-        *
         */
         this.score = this.add.text(scaleX, scaleY + 315, "0", {
             fontSize: "25px",
             fill: "#ffffff",
-            fontFamily: 'PressStart2P'
+            fontFamily: 'PressStart2P',
+            stroke: outlineColor, 
+            strokeThickness: outlineThickness
         });
 
         this.game.events.on("updateScore", (newScore) => {
@@ -71,11 +99,23 @@ export default class GameUI extends Phaser.Scene {
             }
         });
 
+        /*
+        * Functionality for showPowerUps and showing the Level your on is incomplete
+        */
         const showPowerUps = this.add.text(scaleX, scaleY + 400, "Active\nPowers:", {
             fontSize: "25px",
             fill: "#ffffff",
-            fontFamily: 'PressStart2P'
+            fontFamily: 'PressStart2P',
+            stroke: outlineColor, 
+            strokeThickness: outlineThickness
         });
 
+        const levelText = this.add.text(scaleX, scaleY + 700, "Level: ", {
+            fontSize: "25px",
+            fill: "#ffffff",
+            fontFamily: 'PressStart2P',
+            stroke: outlineColor, 
+            strokeThickness: outlineThickness
+        });
     }
 }

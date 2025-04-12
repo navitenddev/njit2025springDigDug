@@ -11,10 +11,12 @@ export default class GameScene extends Phaser.Scene {
         /*
         * Launching the scene so the ingameUI can be scene while the game is being played
         * this.score & visitedTiles is needed in order to record the score
+        * this.highScore needed to save the score to localstorage if currentscore surpasses highscore
         */
         this.scene.launch('GameUI')
         this.score = 0;
         this.visitedTiles = new Set();
+        this.highScore = parseInt(localStorage.getItem("highScore")) || 0;
 
         // Create tilemap
         this.map = this.make.tilemap({ key: "map" });
@@ -159,6 +161,12 @@ export default class GameScene extends Phaser.Scene {
             });
     
             if (this.lives <= 0) {
+
+                // Save high score to localStorage
+                const prevHighScore = parseInt(localStorage.getItem("highScore")) || 0;
+                if (this.score > prevHighScore) {
+                    localStorage.setItem("highScore", this.score);
+                }
                 this.scene.stop('GameUI');
                 this.scene.restart();
             }
@@ -181,8 +189,18 @@ export default class GameScene extends Phaser.Scene {
                 this.visitedTiles.add(tileKey);
                 this.score += 10;
 
-                
                 this.game.events.emit("updateScore", this.score);
+
+                // Check if new high score
+                if (this.score > this.highScore) {
+                    this.highScore = this.score;
+
+                    // Save new high score to localStorage
+                    localStorage.setItem("highScore", this.highScore);
+
+                    // Emit update to GameUI
+                    this.game.events.emit("updateHighScore", this.highScore);
+                }
             }
             this.changeTileTexture(map, currentTile, this.player.direction);
             this.player.lastTile = currentTile;
