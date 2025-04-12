@@ -28,8 +28,36 @@ export default class LevelSelect extends Phaser.Scene {
       const levels = ['Level 1', 'Level 2', 'Level 3', 'Level 4', 'Level 5'];
       const startY = this.cameras.main.centerY - 85;
       const spacingY = 80;
+      
+      //TIDO: After a player completes a level, this number needs to be incremented
+      let maxUnlocked = 3; //Tracks levels user unlocked
+
+
+      const spacingX = 150;
+      for (let i = 1; i <= 5; i++) {
+        // Choose image key based on whether the level is unlocked
+        let imageKey = (i <= maxUnlocked) ? `lvl${i}_unlocked` : `lvl${i}_locked`;
   
-      levels.forEach((levelName, index) => {
+        let posX = 100 + (i - 1) * spacingX;
+        let posY = this.cameras.main.centerY;
+  
+      
+        let levelImage = this.add.image(posX, posY, imageKey).setInteractive({ useHandCursor: true });
+        levelImage.setOrigin(0.5);
+  
+        // Pointer event for level selection.
+        levelImage.on('pointerdown', () => {
+          if (i <= maxUnlocked) {
+            console.log(`Starting level ${i}`);
+            this.scene.start('GameScene', { level: i });
+          } else {
+            console.log(`Level ${i} is locked.`);
+          }
+        });
+      }
+
+
+      /*levels.forEach((levelName, index) => {
         //todo: use the images instead and add logic for locked and unlocked levels
         // need to save a state of the max level a user is at in order to display the unlocked levels correctly
         let levelText = this.add.text(
@@ -45,13 +73,13 @@ export default class LevelSelect extends Phaser.Scene {
           console.log(`Starting level ${index + 1}`);
           this.scene.start('GameScene', { level: index + 1 });
         });
-      });
+      });*/
   
       // Optionally add an instruction text at the bottom.
       const instructionText = this.add.text(
         this.cameras.main.centerX,
         this.cameras.main.height - 50,
-        'Click a level to start',
+        'Click a level to start!',
         { fontSize: '24px', fill: '#000000', fontFamily: 'PressStart2P', stroke: outlineColor, strokeThickness: outlineThickness}
       );
       instructionText.setOrigin(0.5);
