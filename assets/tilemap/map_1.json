@@ -48,7 +48,7 @@
             0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
          "height":16,
          "id":3,
-         "name":"Enemies",
+         "name":"Entities",
          "opacity":1,
          "type":"tilelayer",
          "visible":true,
