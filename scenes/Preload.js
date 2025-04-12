@@ -5,6 +5,8 @@ export default class PreloadScene extends Phaser.Scene {
 
     preload() {
         //this.load.image("player", "assets/shermie.png");
+
+
         this.load.spritesheet("player", "assets/ShermieAnimation_v1.png", {
             frameWidth: 64,
             frameHeight: 64,
@@ -31,6 +33,17 @@ export default class PreloadScene extends Phaser.Scene {
         this.load.image("StartBG", "assets/StartBackground.jpeg");
         this.load.image("LevelBG", "assets/bg2.jpeg");
 
+        //load level select screens
+        //todo: add when all images are done
+            //    for (let i = 1; i <= 5; i++) {
+        //this.load.image(`lvl${i}_unlocked`, `assets/lvl${i}_unlocked.png`);
+        //this.load.image(`lvl${i}_locked`, `assets/lvl${i}_locked.png`);} }
+        this.load.image("lvl1_locked","assets/levelselectassets/level1_locked_v2.png");
+        this.load.image("lvl1_unlocked", "assets/levelselectassets/level1_unlocked_v2.png");
+        this.load.image("lvl2_locked", "assets/levelselectassets/level2_locked.png");
+        this.load.image("lvl2_unlocked", "assets/levelselectassets/level2_unlocked.png");
+        this.load.image("lvl3_locked", "assets/levelselectassets/level3_locked.png");
+        this.load.image("lvl3_unlocked", "assets/levelselectassets/level3_unlocked.png");
     }
 
     create() {
