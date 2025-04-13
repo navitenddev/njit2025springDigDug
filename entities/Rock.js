@@ -30,9 +30,25 @@ export default class rock extends Phaser.Physics.Arcade.Sprite {
         //  Rock is falling
         else {
             let tile = this.scene.map.getTileAtWorldXY(this.x, this.y + 30);
+            let stopRock = false;
+            //  Stop rock if...
+            //      - Has reached end of map
+            //      - The tile below is not traversable
+            //      - The tile below is partially dug out
+            if (!tile || tile !== this.belowTile) {
+                if (!tile || tile.properties['down'] == 0) {
+                    stopRock = true;
+                } else if (tile.properties['down'] !== 6) {
+                    let thresholds = [8, 16, 24, 32, 40, 46];
+                    let offsetY = thresholds[tile.properties['down'] - 1] || 0;
 
-            //  Check if rock is colliding with dirt OR if it has reached the end of the map
-            if ((this.playerCollision && tile && tile !== this.belowTile && tile.properties['down'] == 0) || this.y + 25 >= 800) {
+                    if (this.y + 25 >= this.scene.map.tileToWorldY(tile.y) + offsetY) {
+                        stopRock = true;
+                    }
+                }
+            }
+
+            if (stopRock && this.playerCollision) {
                 this.setVelocityY(0);
                 this.scene.tweens.addCounter({
                     from: 0,
