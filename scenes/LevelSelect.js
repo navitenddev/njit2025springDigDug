@@ -30,7 +30,7 @@ export default class LevelSelect extends Phaser.Scene {
       const spacingY = 80;
       
       //TIDO: After a player completes a level, this number needs to be incremented
-      let maxUnlocked = 3; //Tracks levels user unlocked
+      let maxUnlocked = 5; //Tracks levels user unlocked
 
 
       const spacingX = 150;
@@ -44,6 +44,16 @@ export default class LevelSelect extends Phaser.Scene {
       
         let levelImage = this.add.image(posX, posY, imageKey).setInteractive({ useHandCursor: true });
         levelImage.setOrigin(0.5);
+
+        let border = this.add.graphics();
+        border.lineStyle(4, 0xffffff, 1);
+        border.strokeRect(
+          levelImage.x - levelImage.displayWidth * levelImage.originX,
+          levelImage.y - levelImage.displayHeight * levelImage.originY,
+          levelImage.displayWidth,
+          levelImage.displayHeight
+        );
+
   
         // Pointer event for level selection.
         levelImage.on('pointerdown', () => {
