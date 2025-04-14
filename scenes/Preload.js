@@ -36,17 +36,20 @@ export default class PreloadScene extends Phaser.Scene {
         //  Rock sprite
         this.load.image("rock", "assets/rock.png");
 
-        //load level select screens
-        //todo: add when all images are done
-        //    for (let i = 1; i <= 5; i++) {
-        //this.load.image(`lvl${i}_unlocked`, `assets/lvl${i}_unlocked.png`);
-        //this.load.image(`lvl${i}_locked`, `assets/lvl${i}_locked.png`);} }
-        this.load.image("lvl1_locked", "assets/levelselectassets/level1_locked_v2.png");
+        //  Bullet
+        this.load.image("bullet", "assets/bullet.png");
+      
+        // Level Select Screen Images
+        this.load.image("lvl1_locked","assets/levelselectassets/level1_locked_v2.png");
         this.load.image("lvl1_unlocked", "assets/levelselectassets/level1_unlocked_v2.png");
         this.load.image("lvl2_locked", "assets/levelselectassets/level2_locked.png");
         this.load.image("lvl2_unlocked", "assets/levelselectassets/level2_unlocked.png");
         this.load.image("lvl3_locked", "assets/levelselectassets/level3_locked.png");
         this.load.image("lvl3_unlocked", "assets/levelselectassets/level3_unlocked.png");
+        this.load.image("lvl4_locked", "assets/levelselectassets/level4_locked.png");
+        this.load.image("lvl4_unlocked", "assets/levelselectassets/level4_unlocked.png");
+        this.load.image("lvl5_locked", "assets/levelselectassets/level5_locked.png");
+        this.load.image("lvl5_unlocked", "assets/levelselectassets/level5_unlocked.png");
     }
 
     create() {

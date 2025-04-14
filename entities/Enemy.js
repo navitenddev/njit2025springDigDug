@@ -8,6 +8,8 @@ export default class enemy extends Phaser.Physics.Arcade.Sprite {
         this.displayHeight = 50;
         this.direction = null;
         this.depth = 1;
+        this.health = 3;
+        this.isActive = true;
 
         this.enemyGroup = enemyGroup;
     }
@@ -17,7 +19,7 @@ export default class enemy extends Phaser.Physics.Arcade.Sprite {
     }
 
     move(player) {
-        if (this.enemyGroup.isActive) {
+        if (this.enemyGroup.isActive && this.isActive) {
             switch (this.direction) {
                 case 'left':
                     if (this.x != 0) {
@@ -113,5 +115,14 @@ export default class enemy extends Phaser.Physics.Arcade.Sprite {
         }
         //  Just in case, move enemy in a random direction
         return availableDirections[Phaser.Math.Between(0, availableDirections.length - 1)];
+    }
+
+    takeDamage() {
+        if (this.health > 1) {
+            this.health -= 1;
+        }
+        else {
+            this.destroy();
+        }
     }
 }
