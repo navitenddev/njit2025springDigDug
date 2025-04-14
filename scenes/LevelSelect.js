@@ -59,7 +59,7 @@ export default class LevelSelect extends Phaser.Scene {
         levelImage.on('pointerdown', () => {
           if (i <= maxUnlocked) {
             console.log(`Starting level ${i}`);
-            this.scene.start('Games', { level: i });
+            this.scene.start('GameScene', { level: i });
           } else {
             console.log(`Level ${i} is locked.`);
           }

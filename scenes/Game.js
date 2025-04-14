@@ -7,6 +7,9 @@ export default class GameScene extends Phaser.Scene {
     constructor() {
         super("GameScene");
     }
+    init(data){
+        this.level = data.level || 1 ; //Default 1
+    }
 
     create() {
 
@@ -21,7 +24,7 @@ export default class GameScene extends Phaser.Scene {
         this.highScore = parseInt(localStorage.getItem("highScore")) || 0;
 
         // Create tilemap
-        this.map = this.make.tilemap({ key: "map2" });
+        this.map = this.make.tilemap({ key: `map${this.level}` });
         const tileset = this.map.addTilesetImage("ground_tiles", "tiles");
         const groundLayer = this.map.createLayer("Ground", tileset, 0, 0);
 
