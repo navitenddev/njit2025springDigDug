@@ -1,5 +1,6 @@
 import Player from "../entities/Player.js";
 import Enemy from "../entities/Enemy.js";
+import Bullets from "../entities/Bullets.js";
 
 export default class GameScene extends Phaser.Scene {
     constructor() {
@@ -71,6 +72,13 @@ export default class GameScene extends Phaser.Scene {
         this.spawnEnemies(this.map, this.enemyGroup);
         this.enemyGroup.isActive = true;
 
+        //  Initialize Bullets Group
+        this.bullets = new Bullets(this);
+        this.physics.add.overlap(this.bullets, this.enemyGroup, this.handleBulletEnemyCollision, null, this);
+        this.input.keyboard.on('keydown-SPACE', (event) => {
+            this.bullets.fireBullet(this.player.x, this.player.y, this.player.direction);
+        });
+      
         /*
         * Overlap check when a player comes into contact with an enemy
         * This overlap check must be put after the player and enemy has been created
@@ -83,6 +91,31 @@ export default class GameScene extends Phaser.Scene {
 
         this.enemyGroup.getChildren().forEach(enemy => {
             enemy.update(this.player);
+        });
+    }
+
+    /**
+     * handleBulletEnemyCollision - handle enemy damage if hit by a bullet
+     * @param {*} bullet 
+     * @param {*} enemy 
+     */
+    handleBulletEnemyCollision(bullet, enemy) {
+        if (!bullet.active) return; // Safety check
+        bullet.setActive(false);
+        bullet.setVisible(false);
+
+        enemy.takeDamage();
+        this.tweens.addCounter({
+            from: 0,
+            to: 1,
+            duration: 500,
+            ease: 'Linear',
+            onStart: () => {
+                enemy.isActive = false;
+            },
+            onComplete: () => {
+                enemy.isActive = true;
+            }
         });
     }
 
@@ -298,10 +331,10 @@ export default class GameScene extends Phaser.Scene {
 
         //  Update the tile the player has just exited
         if (this.player.lastTile && tile !== this.player.lastTile) {
-            if (this.player.direction == 'left') { this.player.lastTile.properties['right'] = 6; }
-            else if (this.player.direction == 'right') { this.player.lastTile.properties['left'] = 6; }
-            else if (this.player.direction == 'up') { this.player.lastTile.properties['down'] = 6; }
-            else if (this.player.direction == 'down') { this.player.lastTile.properties['up'] = 6; }
+            if (this.player.direction == 'left' && this.player.lastTile.properties['right'] == 0) { this.player.lastTile.properties['right'] = 6; }
+            else if (this.player.direction == 'right' && this.player.lastTile.properties['left'] == 0) { this.player.lastTile.properties['left'] = 6; }
+            else if (this.player.direction == 'up' && this.player.lastTile.properties['down'] == 0) { this.player.lastTile.properties['down'] = 6; }
+            else if (this.player.direction == 'down' && this.player.lastTile.properties['up'] == 0) { this.player.lastTile.properties['up'] = 6; }
         }
     }
 }
