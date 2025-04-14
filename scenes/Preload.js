@@ -33,6 +33,12 @@ export default class PreloadScene extends Phaser.Scene {
         this.load.image("StartBG", "assets/StartBackground.jpeg");
         this.load.image("LevelBG", "assets/bg2.jpeg");
 
+        //  Rock sprite
+        this.load.image("rock", "assets/rock.png");
+
+        //  Bullet
+        this.load.image("bullet", "assets/bullet.png");
+      
         // Level Select Screen Images
         this.load.image("lvl1_locked","assets/levelselectassets/level1_locked_v2.png");
         this.load.image("lvl1_unlocked", "assets/levelselectassets/level1_unlocked_v2.png");

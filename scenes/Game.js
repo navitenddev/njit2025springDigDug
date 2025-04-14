@@ -1,5 +1,7 @@
 import Player from "../entities/Player.js";
 import Enemy from "../entities/Enemy.js";
+import Rock from "../entities/Rock.js";
+import Bullets from "../entities/Bullets.js";
 
 export default class GameScene extends Phaser.Scene {
     constructor() {
@@ -62,20 +64,42 @@ export default class GameScene extends Phaser.Scene {
         this.mask.invertAlpha = true;
         groundLayer.setMask(this.mask);
 
-        //  Spawn Enemies and their tunnels in the level
+        //  Create enemy tunnels and enemies group
         this.digEnemyTunnels(this.map, groundLayer);
         this.enemyGroup = this.physics.add.group({
             allowGravity: false
         });
         this.enemyGroup.isActive = false;
-        this.spawnEnemies(this.map, this.enemyGroup);
+
+        //  Create rocks group
+        this.rockGroup = this.physics.add.group({
+            allowGravity: false
+        })
+
+        //  Spawn enemies and rocks
+        this.spawnEntities(this.map, this.enemyGroup, this.rockGroup);
+
+        //  Activate enemy movement
         this.enemyGroup.isActive = true;
 
+        //  Initialize Bullets Group
+        this.bullets = new Bullets(this);
+        this.physics.add.overlap(this.bullets, this.enemyGroup, this.handleBulletEnemyCollision, null, this);
+        this.input.keyboard.on('keydown-SPACE', (event) => {
+            this.bullets.fireBullet(this.player.x, this.player.y, this.player.direction);
+        });
+      
         /*
         * Overlap check when a player comes into contact with an enemy
         * This overlap check must be put after the player and enemy has been created
         */
         this.physics.add.overlap(this.player, this.enemyGroup, this.handlePlayerHit, null, this);
+
+        //  Player hit collision with rock
+        this.physics.add.overlap(this.player, this.rockGroup, this.handleRockHitEntity, null, this);
+
+        //  Enemy hit collision with rock
+        this.physics.add.overlap(this.enemyGroup, this.rockGroup, this.handleRockHitEntity, null, this);
     }
 
     update() {
@@ -83,6 +107,35 @@ export default class GameScene extends Phaser.Scene {
 
         this.enemyGroup.getChildren().forEach(enemy => {
             enemy.update(this.player);
+        });
+
+        this.rockGroup.getChildren().forEach(rock => {
+            rock.update(this.player);
+        })
+    }
+
+    /**
+     * handleBulletEnemyCollision - handle enemy damage if hit by a bullet
+     * @param {*} bullet 
+     * @param {*} enemy 
+     */
+    handleBulletEnemyCollision(bullet, enemy) {
+        if (!bullet.active) return; // Safety check
+        bullet.setActive(false);
+        bullet.setVisible(false);
+
+        enemy.takeDamage();
+        this.tweens.addCounter({
+            from: 0,
+            to: 1,
+            duration: 500,
+            ease: 'Linear',
+            onStart: () => {
+                enemy.isActive = false;
+            },
+            onComplete: () => {
+                enemy.isActive = true;
+            }
         });
     }
 
@@ -112,11 +165,12 @@ export default class GameScene extends Phaser.Scene {
     }
 
     /**
-     * spawnEnemies - creates and places new enemies in their preset locations on the tilemap
-     * @param {Phaser.Tilemaps.Tilemap} map - The current map
+     * spawnEntities - creates and places new enemies and rocks in their preset locations on the tilemap
+     * @param {Phaser.Tilemaps.Tilemap} map
      * @param {Phaser.Physics.group} enemyGroup - The enemies container
+     * @param {Phaser.Physics.group} rockGroup - The rocks container
      */
-    spawnEnemies(map, enemyGroup) {
+    spawnEntities(map, enemyGroup, rockGroup) {
         let coordX;
         let coordY;
         map.forEachTile(tile => {
@@ -125,28 +179,32 @@ export default class GameScene extends Phaser.Scene {
             coordX = tile.x * map.tileWidth;
             coordY = tile.y * map.tileHeight;
 
-            console.log(tile);
+            //  Create a rock entity
+            if (tile.properties['entity_name'] == "rock") {
+                let rock = new Rock(this, coordX, coordY, tile.properties['entity_name'], rockGroup).setOrigin(0.5, 0.5);
+                rockGroup.add(rock);
+            }
 
-            //  Check if enemy is set to spawn on this tile
-            if (tile.properties['SpawnEnemy'].length !== 0) {
-                let enemy = new Enemy(this, coordX, coordY, tile.properties['SpawnEnemy'], enemyGroup).setOrigin(0, 0);
+            //  Create an enemy entity
+            if (tile.properties['entity_name'].length !== 0 && tile.properties['entity_name'] !== "rock") {
+                let enemy = new Enemy(this, coordX, coordY, tile.properties['entity_name'], enemyGroup).setOrigin(0, 0);
                 enemyGroup.add(enemy);
             }
-        }, this, 0, 0, 12, 16, null, "Enemies");
+        }, this, 0, 0, 12, 16, null, "Entities");
     }
 
     /*
     * If a player is hit by the enemy, it gives them invulnerability for a short time
     * Duration of the invulnerability can be changed
     * SUBJECT TO CHANGE: upon player having no lives the scene restarts.
-    */ 
+    */
     handlePlayerHit(player) {
         if (!player.invulnerable) {
             this.lives--;
             this.game.events.emit("updateLives", this.lives);
-    
+
             // Temporary invulnerability
-            
+
             player.invulnerable = true;
             this.tweens.add({
                 targets: player,
@@ -159,7 +217,7 @@ export default class GameScene extends Phaser.Scene {
                     player.invulnerable = false;
                 }
             });
-    
+
             if (this.lives <= 0) {
 
                 // Save high score to localStorage
@@ -172,19 +230,25 @@ export default class GameScene extends Phaser.Scene {
             }
         }
     }
-    
+
+    handleRockHitEntity(entity, rock) {
+        if (entity == this.player) { this.handlePlayerHit(entity); }
+        else { entity.destroy(); }
+        rock.destroy();
+    }
+
     /*
     * Changes tile texture (applies bitmask) when player walks over an undiscovered tile
     * If this tile hasn't been discovered yet, add to set and give 10 points
     * Emit score update to UI
-    */ 
+    */
     updateTile(map) {
         let currentTile = this.getPlayerTile(map, this.player.direction);
 
         if (currentTile) {
 
             const tileKey = `${currentTile.x},${currentTile.y}`;
-            
+
             if (!this.visitedTiles.has(tileKey)) {
                 this.visitedTiles.add(tileKey);
                 this.score += 10;
@@ -298,10 +362,18 @@ export default class GameScene extends Phaser.Scene {
 
         //  Update the tile the player has just exited
         if (this.player.lastTile && tile !== this.player.lastTile) {
-            if (this.player.direction == 'left') { this.player.lastTile.properties['right'] = 6; }
-            else if (this.player.direction == 'right') { this.player.lastTile.properties['left'] = 6; }
-            else if (this.player.direction == 'up') { this.player.lastTile.properties['down'] = 6; }
-            else if (this.player.direction == 'down') { this.player.lastTile.properties['up'] = 6; }
+            if (this.player.direction == 'left') {
+                this.player.lastTile.properties['right'] = this.player.lastTile.properties['left'] == 6 || this.player.lastTile.properties['up'] == 6 || this.player.lastTile.properties['down'] == 6 ? 6 : this.player.lastTile.properties['right'];
+            }
+            else if (this.player.direction == 'right') {
+                this.player.lastTile.properties['left'] = this.player.lastTile.properties['right'] == 6 || this.player.lastTile.properties['up'] == 6 || this.player.lastTile.properties['down'] == 6 ? 6 : this.player.lastTile.properties['left'];
+            }
+            else if (this.player.direction == 'up') {
+                this.player.lastTile.properties['down'] = this.player.lastTile.properties['up'] == 6 || this.player.lastTile.properties['left'] == 6 || this.player.lastTile.properties['right'] == 6 ? 6 : this.player.lastTile.properties['down'];
+            }
+            else if (this.player.direction == 'down') {
+                this.player.lastTile.properties['up'] = this.player.lastTile.properties['down'] == 6 || this.player.lastTile.properties['left'] == 6 || this.player.lastTile.properties['right'] == 6 ? 6 : this.player.lastTile.properties['up'];
+            }
         }
     }
 }
