@@ -89,7 +89,14 @@ export default class enemy extends Phaser.Physics.Arcade.Sprite {
         }
     }
 
-    //  TEMP NAME (use the next tile to move to and update the Enemy's direction)
+    /**
+     * Gets new direction for enemy to move in.
+     * 
+     * Used when no direct path is found between enemy and player.
+     * 
+     * @param {Player} player 
+     * @returns {string} Direction for enemy to move in.
+     */
     getNextDirection(player) {
         //  Keeps track of the directions the enemy COULD move towards
         let availableDirections = [];
