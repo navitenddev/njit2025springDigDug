@@ -3,6 +3,7 @@ export default class enemy extends Phaser.Physics.Arcade.Sprite {
         super(scene, x, y, sprite);
         scene.add.existing(this);
         scene.physics.add.existing(this);
+        this.body.setSize(25, 25, true);
 
         this.displayWidth = 50;
         this.displayHeight = 50;
