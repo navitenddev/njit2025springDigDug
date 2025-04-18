@@ -12,46 +12,79 @@ export default class enemy extends Phaser.Physics.Arcade.Sprite {
         this.isActive = true;
 
         this.enemyGroup = enemyGroup;
+
+        this.targetPosition = null;
+        this.hasFoundPlayer = false;
+        this.alignMode = false;
+        this.ghostMode = false;
+        this.elapsedTime = 0;
+
+        this.baseSpeed = 2;
+        this.isSlowed = false;
     }
 
     update(player) {
-        this.move(player);
+        if (this.ghostMode) {
+            this.ghostMove(player);
+        }
+        else if (this.alignMode) {
+            this.alignMove(player);
+        }
+        else {
+            this.move(player);
+        }
     }
 
+    /**
+     * Handles default enemy movement based on current direction and tile alignment.
+     * @param {Player} player 
+     */
     move(player) {
+        //  Check if enemy is able to move
         if (this.enemyGroup.isActive && this.isActive) {
-            switch (this.direction) {
-                case 'left':
-                    if (this.x != 0) {
-                        this.flipX = false;
-                        this.setPosition(this.x - 2, this.y);
-                        //this.anims.play('move', true);
-                    }
-                    break;
-                case 'right':
-                    if (this.x != 550) {
-                        this.flipX = true;
-                        this.setPosition(this.x + 2, this.y);
-                        //this.anims.play('move', true);
-                    }
-                    break;
-                case 'up':
-                    if (this.y != 150) {
-                        this.setPosition(this.x, this.y - 2);
-                        //this.anims.play('move', true);
-                    }
-                    break;
-                case 'down':
-                    if (this.y != 750) {
-                        this.setPosition(this.x, this.y + 2);
-                        //this.anims.play('move', true);
-                    }
-                    break;
-                default:
-                    break;
+            //  Enemy is moving to the next tile
+            if (this.targetPosition) {
+                const speed = this.isSlowed ? 1 : this.baseSpeed;
+
+                const dx = this.targetPosition.x - this.x;
+                const dy = this.targetPosition.y - this.y;
+
+                const stepX = Phaser.Math.Clamp(dx, -speed, speed);
+                const stepY = Phaser.Math.Clamp(dy, -speed, speed);
+
+                this.setPosition(this.x + stepX, this.y + stepY);
+
+                //  Snaps Enemy to new tile if it is close enough to it
+                if (Phaser.Math.Fuzzy.Equal(this.x, this.targetPosition.x, 1) &&
+                    Phaser.Math.Fuzzy.Equal(this.y, this.targetPosition.y, 1)) {
+                    this.setPosition(this.targetPosition.x, this.targetPosition.y);
+                    this.targetPosition = null;
+                }
             }
-            if (this.x % 50 == 0 && this.y % 50 == 0) {
-                this.direction = this.getNextDirection(player);
+            //  Enemy needs a new tile to move to
+            else {
+                this.alignMode = false;
+                this.direction = this.getNextDirectionInPath(player);
+
+                const offset = {
+                    left: { x: -50, y: 0 },
+                    right: { x: 50, y: 0 },
+                    up: { x: 0, y: -50 },
+                    down: { x: 0, y: 50 }
+                }[this.direction];
+
+                this.targetPosition = {
+                    x: this.x + offset.x,
+                    y: this.y + offset.y
+                };
+
+                //  If no path exists, start ghost movement after a delay.
+                if (!this.currentPath) {
+                    if (!this.ghostTimer || this.ghostTimer.getElapsed() == this.elapsedTime) {
+                        this.elapsedTime = Math.random() * (10000 - 5000) + 5000;
+                        this.ghostTimer = this.scene.time.delayedCall(this.elapsedTime, this.startGhostMovement, [], this);
+                    }
+                }
             }
         }
     }
@@ -290,3 +323,106 @@ export default class enemy extends Phaser.Physics.Arcade.Sprite {
         return null;
     }
 
+    /**
+     * Sets this enemy to be in ghost mode.
+     */
+    startGhostMovement() {
+        if (!this.hasFoundPlayer) {
+            this.targetPosition = null;
+            this.ghostMode = true;
+            this.lastTile = this.scene.map.getTileAtWorldXY(this.x, this.y);
+            //  End ghost movement (USED FOR TESTING)
+            //this.ghostTimer = this.scene.time.delayedCall(5000, this.endGhostMovement, [], this);
+        }
+    }
+
+    /**
+     * Sets this enemy to be in normal mode.
+     * @note ⚠️ FOR TESTING PURPOSES ONLY
+     */
+    endGhostMovement() {
+        if (!this.hasFoundPlayer) {
+            this.ghostMode = false;
+            this.setVelocity(0);
+            this.ghostTimer = this.scene.time.delayedCall(1000, this.startGhostMovement, [], this);
+        }
+    }
+
+    /**
+     * Enemy moves through walls until having reached a dug out tile.
+     * 
+     * Enemy moves towards the player.
+     * @param {*} player 
+     */
+    ghostMove(player) {
+        this.scene.physics.moveToObject(this, player, 60);
+
+        let newTile = this.scene.map.getTileAtWorldXY(this.x + 25, this.y + 25)
+        let availableTiles = [];
+
+        //  Ensures the enemy's current tile is NOT next to the tile it first entered ghost mode from
+        if (Math.abs(this.lastTile.x - this.x) >= 50 || Math.abs(this.lastTile.y - this.y) >= 50) {
+            //  Get the tunnels surrounding the enemy
+            let upTile = this.scene.map.getTileAt(this.lastTile.x, this.lastTile.y - 1);    // Tile above
+            let downTile = this.scene.map.getTileAt(this.lastTile.x, this.lastTile.y + 1);  // Tile below
+            let leftTile = this.scene.map.getTileAt(this.lastTile.x - 1, this.lastTile.y);  // Tile to the left
+            let rightTile = this.scene.map.getTileAt(this.lastTile.x + 1, this.lastTile.y); // Tile to the right
+
+            //  Push the tiles into the array if possible
+            if (upTile && upTile.properties['up'] > 0) {
+                availableTiles.push(upTile);
+            }
+            if (downTile && downTile.properties['down'] > 0) {
+                availableTiles.push(downTile);
+            }
+            if (leftTile && leftTile.properties['left'] > 0) {
+                availableTiles.push(leftTile);
+            }
+            if (rightTile && rightTile.properties['right'] > 0) {
+                availableTiles.push(rightTile);
+            }
+        }
+
+        /*
+        Get out of ghost mode if:
+            - New tile is not the enemy's current tile
+            - New tile is traversable in any 1 of the 4 directions
+            - New tile is not one of the surrounding tiles from where the enemy first began ghost mode
+        */
+        if (newTile !== this.lastTile && Object.values(newTile.properties).some(value => value == 6) && !availableTiles.find(tile => tile == newTile)) {
+            this.setVelocity(0);
+            this.ghostMode = false;
+            this.alignMode = true;
+            this.direction = null;
+        }
+    }
+
+    /**
+     * alignMove - adjusts enemy's position to get closer to the new tile's center
+     */
+    alignMove() {
+        let tile = this.scene.map.getTileAtWorldXY(this.x + 25, this.y + 25);
+        if (tile) {
+            const targetX = tile.x * 50 + 25;
+            const targetY = tile.y * 50 + 25;
+
+            const tolerance = 1; // acceptable drift in pixels
+
+            const diffX = targetX - (this.x + 25);
+            const diffY = targetY - (this.y + 25);
+
+            // If not centered, move to center
+            if (Math.abs(diffX) > tolerance || Math.abs(diffY) > tolerance) {
+                const newX = Math.abs(diffX) > tolerance ? this.x + Math.sign(diffX) : this.x;
+                const newY = Math.abs(diffY) > tolerance ? this.y + Math.sign(diffY) : this.y;
+                this.setPosition(newX, newY);
+            }
+            // If centered, stop align mode and go to normal movement
+            else {
+                this.setPosition(targetX - 25, targetY - 25); // Snap exactly to center
+                this.direction = null;
+                this.alignMode = false;
+            }
+        }
+    }
+}
