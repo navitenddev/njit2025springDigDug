@@ -1,13 +1,9 @@
 export default class player extends Phaser.Physics.Arcade.Sprite {
     constructor(scene, x, y) {
         super(scene, x, y, "player");
-        // scene.add.existing(this);
-        // scene.physics.add.existing(this);
-
         scene.add.existing(this);
         scene.physics.add.existing(this);
         this.body.setSize(10, 10, true);           // Set body size (width, height)
-        //this.body.setOffset(15, 15);         // Offset to center the body
 
         this.displayWidth = 50;
         this.displayHeight = 50;
