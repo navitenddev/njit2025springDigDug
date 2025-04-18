@@ -103,6 +103,19 @@ export default class GameScene extends Phaser.Scene {
 
         //  Enemy hit collision with rock
         this.physics.add.overlap(this.enemyGroup, this.rockGroup, this.handleRockHitEntity, null, this);
+
+        this.powerups = this.physics.add.group();
+
+        // Create a test powerup somewhere in the map
+        this.slowdownPowerups = this.physics.add.staticGroup();
+
+        const powerup = this.slowdownPowerups.create(200, 500, "powerup_slowdown");
+        powerup.setScale(0.5).setOrigin(0, 0);
+        powerup.setOrigin(0, 0);
+        // powerup.body.setAllowGravity(false);
+        // powerup.body.setImmovable(true);
+
+        this.physics.add.overlap(this.player, this.slowdownPowerups, this.activateSlowdown, null, this);
     }
 
     update() {
@@ -234,6 +247,28 @@ export default class GameScene extends Phaser.Scene {
         }
     }
 
+    activateSlowdown(player, powerup) {
+        powerup.destroy(); // remove from game
+    
+        // Slow all enemies
+        this.enemyGroup.getChildren().forEach(enemy => {
+            enemy.isSlowed = true;
+        });
+    
+        // Optional: add tint or UI effect
+        this.enemyGroup.children.iterate(enemy => {
+            enemy.setTint(0x9999ff); // light blue tint while slowed
+        });
+    
+        // Reset slowdown after 5 seconds
+        this.time.delayedCall(5000, () => {
+            this.enemyGroup.getChildren().forEach(enemy => {
+                enemy.isSlowed = false;
+                enemy.clearTint();
+            });
+        });
+    }
+    
     handleRockHitEntity(entity, rock) {
         if (entity == this.player) { this.handlePlayerHit(entity); }
         else { entity.destroy(); }

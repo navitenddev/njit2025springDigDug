@@ -53,6 +53,9 @@ export default class PreloadScene extends Phaser.Scene {
         this.load.image("lvl4_unlocked", "assets/levelselectassets/level4_unlocked.png");
         this.load.image("lvl5_locked", "assets/levelselectassets/level5_locked.png");
         this.load.image("lvl5_unlocked", "assets/levelselectassets/level5_unlocked.png");
+
+
+        this.load.image("powerup_slowdown", "assets/slowdown.png");
     }
 
     create() {
