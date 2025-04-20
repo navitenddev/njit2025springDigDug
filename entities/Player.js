@@ -20,6 +20,7 @@ export default class player extends Phaser.Physics.Arcade.Sprite {
 
     getSpeed() {
         return this.speedBoost ? this.boostedSpeed : this.baseSpeed;
+        this.lastTile = this.scene.map.getTileAtWorldXY(x, y);
     }
 
     handleInput(cursors, wasdKeys) {

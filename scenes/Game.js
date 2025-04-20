@@ -122,7 +122,9 @@ export default class GameScene extends Phaser.Scene {
         this.player.handleInput(this.cursors, this.wasdKeys);
 
         this.enemyGroup.getChildren().forEach(enemy => {
-            enemy.update(this.player);
+            if (enemy.isActive) {
+                enemy.update(this.player);
+            }
         });
 
         this.rockGroup.getChildren().forEach(rock => {
@@ -271,9 +273,9 @@ export default class GameScene extends Phaser.Scene {
     
     handleRockHitEntity(entity, rock) {
         if (entity == this.player) { this.handlePlayerHit(entity); }
-        else { 
+        else {
             entity.isActive = false;
-            entity.destroy(); 
+            entity.destroy();
         }
         rock.destroy();
     }
