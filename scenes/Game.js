@@ -88,7 +88,7 @@ export default class GameScene extends Phaser.Scene {
         this.input.keyboard.on('keydown-SPACE', (event) => {
             this.bullets.fireBullet(this.player.x, this.player.y, this.player.direction);
         });
-      
+
         /*
         * Overlap check when a player comes into contact with an enemy
         * This overlap check must be put after the player and enemy has been created
@@ -232,9 +232,15 @@ export default class GameScene extends Phaser.Scene {
     }
 
     handleRockHitEntity(entity, rock) {
-        if (entity == this.player) { this.handlePlayerHit(entity); }
-        else { entity.destroy(); }
-        rock.destroy();
+        if (rock.isMoving && rock.entityCollision) {
+            if (entity == this.player) {
+                this.handlePlayerHit(entity);
+            }
+            else {
+                entity.destroy();
+            }
+            rock.destroy();
+        }
     }
 
     /*
