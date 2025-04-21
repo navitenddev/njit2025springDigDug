@@ -107,13 +107,11 @@ export default class GameScene extends Phaser.Scene {
         this.powerups = this.physics.add.group();
 
         // Create a test powerup somewhere in the map
-        this.slowdownPowerups = this.physics.add.staticGroup();
+        this.slowdownPowerups = this.physics.add.group({allowGravity: false});
 
         const powerup = this.slowdownPowerups.create(200, 500, "powerup_slowdown");
-        powerup.setScale(0.5).setOrigin(0, 0);
         powerup.setOrigin(0, 0);
-        // powerup.body.setAllowGravity(false);
-        // powerup.body.setImmovable(true);
+        powerup.body.setSize(40, 40, true);
 
         this.physics.add.overlap(this.player, this.slowdownPowerups, this.activateSlowdown, null, this);
     }
