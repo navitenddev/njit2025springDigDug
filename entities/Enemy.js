@@ -235,19 +235,20 @@ export default class enemy extends Phaser.Physics.Arcade.Sprite {
                 tileCoords = this.scene.map.worldToTileXY(player.getCenter().x - 25, player.getCenter().y);
                 break;
             case 'right':
-                tileCoords = this.scene.map.worldToTileXY(player.getCenter().x + 25, player.getCenter().y);
+                tileCoords = this.scene.map.worldToTileXY(player.getCenter().x + 24, player.getCenter().y);
                 break;
             case 'up':
                 tileCoords = this.scene.map.worldToTileXY(player.getCenter().x, player.getCenter().y - 25);
                 break;
             case 'down':
-                tileCoords = this.scene.map.worldToTileXY(player.getCenter().x, player.getCenter().y + 25);
+                tileCoords = this.scene.map.worldToTileXY(player.getCenter().x, player.getCenter().y + 24);
                 break;
             default:
                 tileCoords = this.scene.map.worldToTileXY(player.getCenter().x, player.getCenter().y);
                 break;
         }
         const playerTile = this.scene.map.getTileAt(tileCoords.x, tileCoords.y, false, this.scene.map.groundLayer);
+
 
         if (!currentTile || !playerTile) return null;
 
