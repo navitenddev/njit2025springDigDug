@@ -7,8 +7,8 @@ export default class GameScene extends Phaser.Scene {
     constructor() {
         super("GameScene");
     }
-    init(data){
-        this.level = data.level || 1 ; //Default 1
+    init(data) {
+        this.level = data.level || 1; //Default 1
     }
 
     create() {
@@ -91,7 +91,7 @@ export default class GameScene extends Phaser.Scene {
         this.input.keyboard.on('keydown-SPACE', (event) => {
             this.bullets.fireBullet(this.player.x, this.player.y, this.player.direction);
         });
-      
+
         /*
         * Overlap check when a player comes into contact with an enemy
         * This overlap check must be put after the player and enemy has been created
@@ -110,7 +110,12 @@ export default class GameScene extends Phaser.Scene {
 
         this.enemyGroup.getChildren().forEach(enemy => {
             if (enemy.isActive) {
-                enemy.update(this.player);
+                if (this.enemyGroup.getLength() > 1) {
+                    enemy.update(this.player);
+                }
+                else {
+                    enemy.update(this.map.getTileAt(0, 2))
+                }
             }
         });
 
