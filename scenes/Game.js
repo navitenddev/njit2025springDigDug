@@ -35,6 +35,10 @@ export default class GameScene extends Phaser.Scene {
         this.physics.add.existing(this.player);
         this.player.body.setAllowGravity(false);
 
+        //  Create escape goal entity
+        this.goal = this.add.sprite(0, 100, "goal").setOrigin(0, 0);
+        this.goal.visible = false;
+
         // Keyboard controls
         this.cursors = this.input.keyboard.createCursorKeys();
         this.wasdKeys = this.input.keyboard.addKeys({
@@ -79,6 +83,13 @@ export default class GameScene extends Phaser.Scene {
             allowGravity: false
         })
 
+        // Corrupted CD Enemy movement animation
+        this.anims.create({
+            key: 'cd_move',
+            frames: this.anims.generateFrameNumbers('cd_enemy', { start: 0, end: 1 }),
+            frameRate: 10
+        });
+
         //  Spawn enemies and rocks
         this.spawnEntities(this.map, this.enemyGroup, this.rockGroup);
 
@@ -110,11 +121,12 @@ export default class GameScene extends Phaser.Scene {
 
         this.enemyGroup.getChildren().forEach(enemy => {
             if (enemy.isActive) {
-                if (this.enemyGroup.getLength() > 1) {
-                    enemy.update(this.player);
+                if (this.enemyGroup.getLength() == 1) {
+                    enemy.isEscaping = true;
+                    enemy.update(this.goal);
                 }
                 else {
-                    enemy.update(this.map.getTileAt(0, 2))
+                    enemy.update(this.player);
                 }
             }
         });
