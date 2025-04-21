@@ -5,7 +5,7 @@
         {
          "data":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
             0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13,
             1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
             1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
             1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
@@ -36,13 +36,13 @@
             0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
             0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
             0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-            0, 0, 0, 11, 0, 0, 0, 0, 0, 8, 0, 0,
+            0, 0, 0, 18, 0, 0, 0, 0, 0, 15, 0, 0,
             0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-            0, 0, 0, 0, 0, 0, 0, 0, 11, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 18, 0, 0, 0,
             0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-            0, 8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-            0, 0, 0, 0, 0, 0, 0, 0, 8, 0, 0, 0,
-            0, 0, 0, 0, 11, 0, 0, 0, 0, 0, 0, 0,
+            0, 15, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 15, 0, 0, 0,
+            0, 0, 0, 0, 18, 0, 0, 0, 0, 0, 0, 0,
             0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
             0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
             0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -67,12 +67,12 @@
          "columns":7,
          "firstgid":1,
          "image":"ground_tileset.png",
-         "imageheight":50,
+         "imageheight":100,
          "imagewidth":350,
          "margin":0,
          "name":"ground_tiles",
          "spacing":0,
-         "tilecount":7,
+         "tilecount":14,
          "tileheight":50,
          "tiles":[
                 {
@@ -242,12 +242,181 @@
                          "type":"int",
                          "value":0
                         }]
+                }, 
+                {
+                 "id":7,
+                 "properties":[
+                        {
+                         "name":"down",
+                         "type":"int",
+                         "value":0
+                        }, 
+                        {
+                         "name":"left",
+                         "type":"int",
+                         "value":0
+                        }, 
+                        {
+                         "name":"right",
+                         "type":"int",
+                         "value":0
+                        }, 
+                        {
+                         "name":"up",
+                         "type":"int",
+                         "value":0
+                        }]
+                }, 
+                {
+                 "id":8,
+                 "properties":[
+                        {
+                         "name":"down",
+                         "type":"int",
+                         "value":0
+                        }, 
+                        {
+                         "name":"left",
+                         "type":"int",
+                         "value":0
+                        }, 
+                        {
+                         "name":"right",
+                         "type":"int",
+                         "value":0
+                        }, 
+                        {
+                         "name":"up",
+                         "type":"int",
+                         "value":6
+                        }]
+                }, 
+                {
+                 "id":9,
+                 "properties":[
+                        {
+                         "name":"down",
+                         "type":"int",
+                         "value":6
+                        }, 
+                        {
+                         "name":"left",
+                         "type":"int",
+                         "value":0
+                        }, 
+                        {
+                         "name":"right",
+                         "type":"int",
+                         "value":0
+                        }, 
+                        {
+                         "name":"up",
+                         "type":"int",
+                         "value":6
+                        }]
+                }, 
+                {
+                 "id":10,
+                 "properties":[
+                        {
+                         "name":"down",
+                         "type":"int",
+                         "value":6
+                        }, 
+                        {
+                         "name":"left",
+                         "type":"int",
+                         "value":0
+                        }, 
+                        {
+                         "name":"right",
+                         "type":"int",
+                         "value":0
+                        }, 
+                        {
+                         "name":"up",
+                         "type":"int",
+                         "value":0
+                        }]
+                }, 
+                {
+                 "id":11,
+                 "properties":[
+                        {
+                         "name":"down",
+                         "type":"int",
+                         "value":0
+                        }, 
+                        {
+                         "name":"left",
+                         "type":"int",
+                         "value":6
+                        }, 
+                        {
+                         "name":"right",
+                         "type":"int",
+                         "value":0
+                        }, 
+                        {
+                         "name":"up",
+                         "type":"int",
+                         "value":0
+                        }]
+                },
+            
+                {
+                 "id":12,
+                 "properties":[
+                        {
+                         "name":"down",
+                         "type":"int",
+                         "value":0
+                        }, 
+                        {
+                         "name":"left",
+                         "type":"int",
+                         "value":6
+                        }, 
+                        {
+                         "name":"right",
+                         "type":"int",
+                         "value":6
+                        }, 
+                        {
+                         "name":"up",
+                         "type":"int",
+                         "value":0
+                        }]
+                }, 
+                {
+                 "id":13,
+                 "properties":[
+                        {
+                         "name":"down",
+                         "type":"int",
+                         "value":0
+                        }, 
+                        {
+                         "name":"left",
+                         "type":"int",
+                         "value":0
+                        }, 
+                        {
+                         "name":"right",
+                         "type":"int",
+                         "value":6
+                        }, 
+                        {
+                         "name":"up",
+                         "type":"int",
+                         "value":0
+                        }]
                 }],
          "tilewidth":50
         }, 
         {
          "columns":4,
-         "firstgid":8,
+         "firstgid":15,
          "image":"entities_tileset.png",
          "imageheight":50,
          "imagewidth":200,
