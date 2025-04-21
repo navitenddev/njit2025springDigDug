@@ -7,6 +7,9 @@ export default class GameScene extends Phaser.Scene {
     constructor() {
         super("GameScene");
     }
+    init(data){
+        this.level = data.level || 1 ; //Default 1
+    }
 
     create() {
 
@@ -21,7 +24,7 @@ export default class GameScene extends Phaser.Scene {
         this.highScore = parseInt(localStorage.getItem("highScore")) || 0;
 
         // Create tilemap
-        this.map = this.make.tilemap({ key: "map" });
+        this.map = this.make.tilemap({ key: `map${this.level}` });
         const tileset = this.map.addTilesetImage("ground_tiles", "tiles");
         const groundLayer = this.map.createLayer("Ground", tileset, 0, 0);
 
@@ -106,7 +109,9 @@ export default class GameScene extends Phaser.Scene {
         this.player.handleInput(this.cursors, this.wasdKeys);
 
         this.enemyGroup.getChildren().forEach(enemy => {
-            enemy.update(this.player);
+            if (enemy.isActive) {
+                enemy.update(this.player);
+            }
         });
 
         this.rockGroup.getChildren().forEach(rock => {
@@ -233,7 +238,10 @@ export default class GameScene extends Phaser.Scene {
 
     handleRockHitEntity(entity, rock) {
         if (entity == this.player) { this.handlePlayerHit(entity); }
-        else { entity.destroy(); }
+        else {
+            entity.isActive = false;
+            entity.destroy();
+        }
         rock.destroy();
     }
 

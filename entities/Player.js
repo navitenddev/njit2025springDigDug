@@ -1,14 +1,16 @@
 export default class player extends Phaser.Physics.Arcade.Sprite {
     constructor(scene, x, y) {
         super(scene, x, y, "player");
-        // scene.add.existing(this);
-        // scene.physics.add.existing(this);
-
+        scene.add.existing(this);
+        scene.physics.add.existing(this);
+        this.body.setSize(10, 10, true);           // Set body size (width, height)
 
         this.displayWidth = 50;
         this.displayHeight = 50;
         this.direction = null;
         this.depth = 1;
+
+        this.lastTile = this.scene.map.getTileAtWorldXY(x, y);
     }
 
     handleInput(cursors, wasdKeys) {

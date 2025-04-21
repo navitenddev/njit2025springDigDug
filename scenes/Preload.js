@@ -15,6 +15,9 @@ export default class PreloadScene extends Phaser.Scene {
         this.load.font('PressStart2P', "assets/fonts/PressStart2P-Regular.ttf", 'truetype'); // Current Default game font
         this.load.spritesheet("mask_tileset", "assets/tilemap/mask_tileset.png", { frameWidth: 50, frameHeight: 50 });
         this.load.tilemapTiledJSON("map", "assets/tilemap/map_1.json");
+        this.load.tilemapTiledJSON("map2", "assets/tilemap/map_2.json");
+        this.load.tilemapTiledJSON("map3", "assets/tilemap/map_3.json");
+        this.load.tilemapTiledJSON("map4", "assets/tilemap/map_4.json");
 
         this.anims.create({
             key: 'walk',
