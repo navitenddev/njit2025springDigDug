@@ -7,98 +7,107 @@ export default class player extends Phaser.Physics.Arcade.Sprite {
 
         this.displayWidth = 50;
         this.displayHeight = 50;
+        this.direction = null;
         this.depth = 1;
 
-        this.direction = null;      // current direction
-        this.moveQueue = null;          // next input direction
-        this.targetPosition = null;     // tile to move toward
-
-        this.baseSpeed = 2;
-        this.boostedSpeed = 4;
-        this.speedBoost = false;
         this.lastTile = this.scene.map.getTileAtWorldXY(x, y);
     }
 
-    getSpeed() {
-        return this.speedBoost ? this.boostedSpeed : this.baseSpeed;
-    }
-
     handleInput(cursors, wasdKeys) {
+        //  LEFT-ARROW key or A key
         if (cursors.left.isDown || wasdKeys.left.isDown) {
-            this.moveQueue = 'left';
-        } else if (cursors.right.isDown || wasdKeys.right.isDown) {
-            this.moveQueue = 'right';
-        } else if (cursors.up.isDown || wasdKeys.up.isDown) {
-            this.moveQueue = 'up';
-        } else if (cursors.down.isDown || wasdKeys.down.isDown) {
-            this.moveQueue = 'down';
+            if (this.getTopLeft().y % 50 == 0) {
+                this.move('left', false)
+            }
+            else {
+                this.move(this.direction, true);
+            }
+        }
+        //  RIGHT-ARROW key or D key
+        else if (cursors.right.isDown || wasdKeys.right.isDown) {
+            if (this.getTopLeft().y % 50 == 0) {
+                this.move('right', false)
+            }
+            else {
+                this.move(this.direction, true);
+            }
+        }
+        //  UP-ARROW key or W key
+        else if (cursors.up.isDown || wasdKeys.up.isDown) {
+            if (this.getTopLeft().x % 50 == 0) {
+                this.move('up', false)
+            }
+            else {
+                this.move(this.direction, true);
+            }
+        }
+        //  DOWN-ARROW key or S KEY
+        else if (cursors.down.isDown || wasdKeys.down.isDown) {
+            if (this.getTopLeft().x % 50 == 0) {
+                this.move('down', false)
+            }
+            else {
+                this.move(this.direction, true);
+            }
         }
     }
 
-    preUpdate(time, delta) {
-        super.preUpdate(time, delta);
-        this.updateMovement();
-    }
+    move(dir, isSliding) {
+        if (!isSliding) {
+            this.direction = dir;
+        }
 
-    updateMovement() {
-        if (!this.targetPosition) {
-            if (this.moveQueue && this.canMove(this.moveQueue)) {
-                this.direction = this.moveQueue;
-                this.moveQueue = null;
+        if (!this.canMove(dir)) { return; }
 
-                const offset = {
-                    left: { x: -50, y: 0 },
-                    right: { x: 50, y: 0 },
-                    up: { x: 0, y: -50 },
-                    down: { x: 0, y: 50 }
-                }[this.direction];
-
-                this.targetPosition = {
-                    x: this.x + offset.x,
-                    y: this.y + offset.y
-                };
-
+        switch (dir) {
+            case 'left':
+                this.flipX = false;
+                this.setPosition(this.x - 2, this.y);
                 this.anims.play('move', true);
-                this.flipX = this.direction === 'right';
-            }
-        }
-
-        const speed = this.getSpeed();
-
-        if (this.targetPosition) {
-            const dx = this.targetPosition.x - this.x;
-            const dy = this.targetPosition.y - this.y;
-
-            const stepX = Phaser.Math.Clamp(dx, -speed, speed);
-            const stepY = Phaser.Math.Clamp(dy, -speed, speed);
-
-            this.setPosition(this.x + stepX, this.y + stepY);
-
-            if (Phaser.Math.Fuzzy.Equal(this.x, this.targetPosition.x, 1) &&
-                Phaser.Math.Fuzzy.Equal(this.y, this.targetPosition.y, 1)) {
-                this.setPosition(this.targetPosition.x, this.targetPosition.y);
-                this.targetPosition = null;
-            }
+                break;
+            case 'right':
+                this.flipX = true;
+                this.setPosition(this.x + 2, this.y);
+                this.anims.play('move', true);
+                break;
+            case 'up':
+                this.setPosition(this.x, this.y - 2);
+                this.anims.play('move', true);
+                break;
+            case 'down':
+                this.setPosition(this.x, this.y + 2);
+                this.anims.play('move', true);
+                break;
+            default:
+                break;
         }
     }
 
-    canMove(direction) {
-        const offset = {
-            left: { x: -50, y: 0 },
-            right: { x: 50, y: 0 },
-            up: { x: 0, y: -50 },
-            down: { x: 0, y: 50 }
-        }[direction];
-
-        const targetX = this.x + offset.x;
-        const targetY = this.y + offset.y;
-
-        return !this.hasRock(this.scene.map, targetX, targetY);
+    canMove(dir) {
+        switch (dir) {
+            case 'left':
+                if (this.x - 2 < 0 || this.hasRock(this.scene.map, this.x - 2, this.y)) { return false; }
+                break;
+            case 'right':
+                if (this.x + 2 > 550 || this.hasRock(this.scene.map, this.x + 50, this.y)) { return false; }
+                break;
+            case 'up':
+                if (this.y - 2 < 150 || this.hasRock(this.scene.map, this.x, this.y - 2)) { return false; }
+                break;
+            case 'down':
+                if (this.y + 2 > 750 || this.hasRock(this.scene.map, this.x, this.y + 50)) { return false; }
+                break;
+            default:
+                break;
+        }
+        return true;
     }
 
     hasRock(map, x, y) {
-        return this.scene.rockGroup.getChildren().some(rock => {
-            return map.getTileAtWorldXY(rock.x, rock.y) === map.getTileAtWorldXY(x, y) && !rock.isMoving;
+        let rockFound = false;
+        this.scene.rockGroup.getChildren().forEach(rock => {
+            if (map.getTileAtWorldXY(rock.x, rock.y) == map.getTileAtWorldXY(x, y) && !rock.isMoving) { rockFound = true; }
         });
+        return rockFound;
     }
 }
