@@ -60,7 +60,7 @@ export default class enemy extends Phaser.Physics.Arcade.Sprite {
                 const stepY = Phaser.Math.Clamp(dy, -speed, speed);
 
                 this.setPosition(this.x + stepX, this.y + stepY);
-                this.play("cd_move", true);
+                //this.play("cd_move", true);
 
                 //  Snaps Enemy to new tile if it is close enough to it
                 if (Phaser.Math.Fuzzy.Equal(this.x, this.targetPosition.x, 1) &&
@@ -73,6 +73,14 @@ export default class enemy extends Phaser.Physics.Arcade.Sprite {
             else {
                 this.ghostAlignMode = false;
                 this.direction = this.getNextDirectionInPath(goal);
+
+                //  Flip sprite horizontally to face the correct direction
+                if (this.direction == 'left') {
+                    this.flipX = false;
+                }
+                else if (this.direction == 'right') {
+                    this.flipX = true;
+                }
 
                 const offset = {
                     left: { x: -50, y: 0 },
@@ -604,7 +612,7 @@ export default class enemy extends Phaser.Physics.Arcade.Sprite {
         const stepY = Phaser.Math.Clamp(dy, -speed, speed);
 
         this.setPosition(this.x + stepX, this.y + stepY);
-        this.play("cd_move", true);
+        // this.play("cd_move", true);
 
         if (this.x < -49) {
             this.destroy();
