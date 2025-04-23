@@ -34,6 +34,9 @@ export default class PreloadScene extends Phaser.Scene {
             frameHeight: 64,
         })
 
+        //  Techno Worm enemy sprite
+        this.load.image("worm_enemy", "assets/TechnoWorm2.png")
+
         //  Escape Goal sprite
         this.load.image("goal", "assets/escape_goal.png");
 
