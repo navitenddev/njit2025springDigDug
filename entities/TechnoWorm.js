@@ -22,6 +22,12 @@ export default class TechnoWorm extends Enemy {
         //  Don't fire if the enemy is stunned (from the player's bullet)
         if (this.isActive && this.scene.player.y == this.y) {
             this.bullets.fireBullet(this.x, this.y, this.scene.player.direction);
+
+            //  Stop the enemy's movement for 1/2 second
+            this.isActive = false;
+            this.scene.time.delayedCall(500, () => {
+                this.isActive = true;
+            }, [], this);
         }
         this.bulletTimer = null;
     }
