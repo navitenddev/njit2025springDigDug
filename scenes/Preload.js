@@ -33,6 +33,13 @@ export default class PreloadScene extends Phaser.Scene {
             frameWidth: 64,
             frameHeight: 64,
         })
+
+        //  Techno Worm enemy sprite
+        this.load.image("worm_enemy", "assets/TechnoWorm2.png")
+
+        //  Escape Goal sprite
+        this.load.image("goal", "assets/escape_goal.png");
+
         this.load.image("StartBG", "assets/StartBackground.jpeg");
         this.load.image("LevelBG", "assets/bg2.jpeg");
 
@@ -41,9 +48,9 @@ export default class PreloadScene extends Phaser.Scene {
 
         //  Bullet
         this.load.image("bullet", "assets/bullet.png");
-      
+
         // Level Select Screen Images
-        this.load.image("lvl1_locked","assets/levelselectassets/level1_locked_v2.png");
+        this.load.image("lvl1_locked", "assets/levelselectassets/level1_locked_v2.png");
         this.load.image("lvl1_unlocked", "assets/levelselectassets/level1_unlocked_v2.png");
         this.load.image("lvl2_locked", "assets/levelselectassets/level2_locked.png");
         this.load.image("lvl2_unlocked", "assets/levelselectassets/level2_unlocked.png");

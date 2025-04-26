@@ -2,13 +2,15 @@ import Player from "../entities/Player.js";
 import Enemy from "../entities/Enemy.js";
 import Rock from "../entities/Rock.js";
 import Bullets from "../entities/Bullets.js";
+import Bullet from "../entities/Bullet.js";
+import TechnoWorm from "../entities/TechnoWorm.js";
 
 export default class GameScene extends Phaser.Scene {
     constructor() {
         super("GameScene");
     }
-    init(data){
-        this.level = data.level || 1 ; //Default 1
+    init(data) {
+        this.level = data.level || 1; //Default 1
     }
 
     create() {
@@ -34,6 +36,10 @@ export default class GameScene extends Phaser.Scene {
         this.add.existing(this.player);
         this.physics.add.existing(this.player);
         this.player.body.setAllowGravity(false);
+
+        //  Create escape goal entity
+        this.goal = this.add.sprite(0, 100, "goal").setOrigin(0, 0);
+        this.goal.visible = false;
 
         // Keyboard controls
         this.cursors = this.input.keyboard.createCursorKeys();
@@ -79,19 +85,30 @@ export default class GameScene extends Phaser.Scene {
             allowGravity: false
         })
 
+        // Corrupted CD Enemy movement animation
+        this.anims.create({
+            key: 'cd_move',
+            frames: this.anims.generateFrameNumbers('cd_enemy', { start: 0, end: 1 }),
+            frameRate: 10
+        });
+
+        //  Initialize Player Bullets Group
+        this.playerBullets = new Bullets(this, 1);
+        this.physics.add.overlap(this.playerBullets, this.enemyGroup, this.handleBulletHitEntity, null, this);
+        this.input.keyboard.on('keydown-SPACE', (event) => {
+            this.playerBullets.fireBullet(this.player.x, this.player.y, this.player.direction);
+        });
+
+        //  Initialize Enemy Bullets Group
+        this.enemyBullets = new Bullets(this, 50);
+        this.physics.add.overlap(this.enemyBullets, this.player, this.handleBulletHitEntity, null, this);
+
         //  Spawn enemies and rocks
-        this.spawnEntities(this.map, this.enemyGroup, this.rockGroup);
+        this.spawnEntities(this.map, this.enemyGroup, this.rockGroup, this.enemyBullets);
 
         //  Activate enemy movement
         this.enemyGroup.isActive = true;
 
-        //  Initialize Bullets Group
-        this.bullets = new Bullets(this);
-        this.physics.add.overlap(this.bullets, this.enemyGroup, this.handleBulletEnemyCollision, null, this);
-        this.input.keyboard.on('keydown-SPACE', (event) => {
-            this.bullets.fireBullet(this.player.x, this.player.y, this.player.direction);
-        });
-      
         /*
         * Overlap check when a player comes into contact with an enemy
         * This overlap check must be put after the player and enemy has been created
@@ -107,7 +124,7 @@ export default class GameScene extends Phaser.Scene {
         this.powerups = this.physics.add.group();
 
         // Create a test powerup somewhere in the map
-        this.slowdownPowerups = this.physics.add.group({allowGravity: false});
+        this.slowdownPowerups = this.physics.add.group({ allowGravity: false });
 
         const powerup = this.slowdownPowerups.create(200, 500, "powerup_slowdown");
         powerup.setOrigin(0, 0);
@@ -121,7 +138,13 @@ export default class GameScene extends Phaser.Scene {
 
         this.enemyGroup.getChildren().forEach(enemy => {
             if (enemy.isActive) {
-                enemy.update(this.player);
+                if (this.enemyGroup.getLength() == 1) {
+                    enemy.isEscaping = true;
+                    enemy.update(this.goal);
+                }
+                else {
+                    enemy.update(this.player);
+                }
             }
         });
 
@@ -131,28 +154,38 @@ export default class GameScene extends Phaser.Scene {
     }
 
     /**
-     * handleBulletEnemyCollision - handle enemy damage if hit by a bullet
-     * @param {*} bullet 
-     * @param {*} enemy 
+     * handleBulletEntityCollision - handle enemy/player damage if hit by a bullet
+     * @param {*} obj1 - bullet entity
+     * @param {*} obj2 - enemy/player entity
      */
-    handleBulletEnemyCollision(bullet, enemy) {
+    handleBulletHitEntity(obj1, obj2) {
+        //  Fixes an issue that mixes up the bullets with the entities.
+        //  Not sure why it happens, but this works.
+        const bullet = obj1 instanceof Bullet ? obj1 : obj2;
+        const entity = obj2 instanceof Bullet ? obj1 : obj2;
+
         if (!bullet.active) return; // Safety check
         bullet.setActive(false);
         bullet.setVisible(false);
 
-        enemy.takeDamage();
-        this.tweens.addCounter({
-            from: 0,
-            to: 1,
-            duration: 500,
-            ease: 'Linear',
-            onStart: () => {
-                enemy.isActive = false;
-            },
-            onComplete: () => {
-                enemy.isActive = true;
-            }
-        });
+        if (entity == this.player) {
+            this.handlePlayerHit(this.player);
+        }
+        else {
+            entity.takeDamage();
+            this.tweens.addCounter({
+                from: 0,
+                to: 1,
+                duration: 500,
+                ease: 'Linear',
+                onStart: () => {
+                    entity.isActive = false;
+                },
+                onComplete: () => {
+                    entity.isActive = true;
+                }
+            });
+        }
     }
 
     /**
@@ -185,8 +218,9 @@ export default class GameScene extends Phaser.Scene {
      * @param {Phaser.Tilemaps.Tilemap} map
      * @param {Phaser.Physics.group} enemyGroup - The enemies container
      * @param {Phaser.Physics.group} rockGroup - The rocks container
+     * @param {Phaser.Physics.group} bulletsGroup - The enemy bullets container
      */
-    spawnEntities(map, enemyGroup, rockGroup) {
+    spawnEntities(map, enemyGroup, rockGroup, bulletsGroup) {
         let coordX;
         let coordY;
         map.forEachTile(tile => {
@@ -201,9 +235,15 @@ export default class GameScene extends Phaser.Scene {
                 rockGroup.add(rock);
             }
 
-            //  Create an enemy entity
-            if (tile.properties['entity_name'].length !== 0 && tile.properties['entity_name'] !== "rock") {
+            //  Create a basic enemy entity
+            if (tile.properties['entity_name'] == "cd_enemy") {
                 let enemy = new Enemy(this, coordX, coordY, tile.properties['entity_name'], enemyGroup).setOrigin(0, 0);
+                enemyGroup.add(enemy);
+            }
+
+            //  Create a Techno Worm enemy entity
+            if (tile.properties['entity_name'] == "worm_enemy") {
+                let enemy = new TechnoWorm(this, coordX, coordY, enemyGroup, bulletsGroup).setOrigin(0, 0);
                 enemyGroup.add(enemy);
             }
         }, this, 0, 0, 12, 16, null, "Entities");
@@ -249,17 +289,17 @@ export default class GameScene extends Phaser.Scene {
 
     activateSlowdown(player, powerup) {
         powerup.destroy(); // remove from game
-    
+
         // Slow all enemies
         this.enemyGroup.getChildren().forEach(enemy => {
             enemy.isSlowed = true;
         });
-    
+
         // Optional: add tint or UI effect
         this.enemyGroup.children.iterate(enemy => {
             enemy.setTint(0x9999ff); // light blue tint while slowed
         });
-    
+
         // Reset slowdown after 5 seconds
         this.time.delayedCall(5000, () => {
             this.enemyGroup.getChildren().forEach(enemy => {
@@ -268,7 +308,7 @@ export default class GameScene extends Phaser.Scene {
             });
         });
     }
-    
+
     handleRockHitEntity(entity, rock) {
         if (entity == this.player) { this.handlePlayerHit(entity); }
         else {
