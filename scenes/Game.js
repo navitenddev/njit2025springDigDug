@@ -163,6 +163,7 @@ export default class GameScene extends Phaser.Scene {
         if (next > max && next <= 5) {
           localStorage.setItem('maxUnlockedLevel', next);
         }
+        this.scene.stop('GameUI');
         this.scene.start('LevelCompleteScene', { level: this.level });
       }
       
