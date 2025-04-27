@@ -158,15 +158,11 @@ export default class GameScene extends Phaser.Scene {
 
     onAllEnemiesKilled() {
         console.log(`Level ${this.level} cleared!`);
-        // e.g. unlock next level:
         const next = this.level + 1;
         const max = parseInt(localStorage.getItem('maxUnlockedLevel'),10) || 1;
         if (next > max && next <= 5) {
           localStorage.setItem('maxUnlockedLevel', next);
         }
-      
-        // Then decide: show a “Level Complete” popup, reveal the goal, or
-        // transition to the next scene right away…
         this.scene.start('LevelCompleteScene', { level: this.level });
       }
       
