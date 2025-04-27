@@ -79,6 +79,7 @@ export default class GameScene extends Phaser.Scene {
             allowGravity: false
         });
         this.enemyGroup.isActive = false;
+        this.remainingEnemies = 0
 
         //  Create rocks group
         this.rockGroup = this.physics.add.group({
@@ -151,8 +152,24 @@ export default class GameScene extends Phaser.Scene {
         this.rockGroup.getChildren().forEach(rock => {
             rock.update(this.player);
         })
+
+
     }
 
+    onAllEnemiesKilled() {
+        console.log(`Level ${this.level} cleared!`);
+        // e.g. unlock next level:
+        const next = this.level + 1;
+        const max = parseInt(localStorage.getItem('maxUnlockedLevel'),10) || 1;
+        if (next > max && next <= 5) {
+          localStorage.setItem('maxUnlockedLevel', next);
+        }
+      
+        // Then decide: show a “Level Complete” popup, reveal the goal, or
+        // transition to the next scene right away…
+        this.scene.start('LevelCompleteScene', { level: this.level });
+      }
+      
     /**
      * handleBulletEntityCollision - handle enemy/player damage if hit by a bullet
      * @param {*} obj1 - bullet entity
@@ -236,16 +253,36 @@ export default class GameScene extends Phaser.Scene {
             }
 
             //  Create a basic enemy entity
-            if (tile.properties['entity_name'] == "cd_enemy") {
-                let enemy = new Enemy(this, coordX, coordY, tile.properties['entity_name'], enemyGroup).setOrigin(0, 0);
+            if (tile.properties['entity_name'] === "cd_enemy") {
+                let enemy = new Enemy(this, coordX, coordY, 'cd_enemy', enemyGroup)
+                               .setOrigin(0, 0);
                 enemyGroup.add(enemy);
-            }
+        
+                // 3) Increment counter and listen for its destroy
+                this.remainingEnemies++;
+                enemy.on('destroy', () => {
+                  this.remainingEnemies--;
+                  console.log(`Enemies remaining: ${this.remainingEnemies}`);
+                  if (this.remainingEnemies == 0) {
+                    this.onAllEnemiesKilled();
+                  }
+                });
+              }
 
             //  Create a Techno Worm enemy entity
             if (tile.properties['entity_name'] == "worm_enemy") {
                 let enemy = new TechnoWorm(this, coordX, coordY, enemyGroup, bulletsGroup).setOrigin(0, 0);
                 enemyGroup.add(enemy);
+                this.remainingEnemies++;
+                enemy.on('destroy', () => {
+                  this.remainingEnemies--;
+                  console.log(`Enemies remaining: ${this.remainingEnemies}`);
+                  if (this.remainingEnemies == 0) {
+                    this.onAllEnemiesKilled();
+                  }
+                });
             }
+
         }, this, 0, 0, 12, 16, null, "Entities");
     }
 
