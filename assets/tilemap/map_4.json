@@ -5,20 +5,20 @@
         {
          "data":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
             0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-            13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13,
-            1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-            1, 1, 1, 1, 1, 5, 6, 6, 7, 1, 2, 1,
-            1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 3, 1,
-            1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 3, 1,
-            1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 4, 1,
-            1, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-            1, 3, 1, 1, 1, 1, 1, 5, 6, 7, 1, 1,
-            1, 3, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-            1, 4, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-            1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-            1, 5, 6, 6, 6, 6, 7, 1, 1, 1, 1, 1,
-            1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-            1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
+            6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6,
+            6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6,
+            6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6,
+            6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6,
+            6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6,
+            6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6,
+            6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6,
+            6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6,
+            6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6,
+            6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6,
+            6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6,
+            6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6],
          "height":16,
          "id":1,
          "name":"Ground",
@@ -32,18 +32,45 @@
         {
          "data":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
             0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19,
+            0, 0, 0, 0, 0, 0, 16, 0, 0, 0, 0, 0,
+            0, 0, 0, 18, 19, 20, 16, 0, 0, 0, 15, 0,
+            0, 0, 0, 0, 0, 0, 16, 0, 0, 0, 16, 0,
+            0, 0, 0, 0, 0, 0, 16, 0, 0, 0, 16, 0,
+            0, 0, 0, 0, 0, 0, 16, 0, 0, 0, 17, 0,
+            0, 15, 0, 0, 0, 18, 21, 20, 0, 0, 0, 0,
+            0, 16, 0, 0, 0, 0, 0, 18, 19, 20, 0, 0,
+            0, 16, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 17, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 18, 19, 19, 19, 19, 20, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+         "height":16,
+         "id":4,
+         "name":"Tunnels",
+         "opacity":1,
+         "type":"tilelayer",
+         "visible":true,
+         "width":12,
+         "x":0,
+         "y":0
+        }, 
+        {
+         "data":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
             0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
             0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-            0, 0, 0, 0, 0, 0, 0, 15, 0, 0, 0, 0,
-            0, 0, 18, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-            0, 0, 0, 0, 0, 0, 0, 0, 18, 0, 16, 0,
-            0, 0, 0, 0, 18, 0, 0, 0, 0, 0, 0, 0,
             0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-            0, 15, 0, 0, 0, 0, 0, 15, 0, 0, 0, 0,
+            0, 0, 0, 22, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 25, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 25, 0, 23, 0,
             0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-            0, 0, 18, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-            0, 0, 0, 0, 0, 0, 0, 0, 0, 18, 0, 0,
-            0, 0, 0, 16, 15, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 22, 0, 0, 0, 0, 0, 22, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 25, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 25, 0, 0,
+            0, 0, 0, 23, 22, 0, 0, 0, 0, 0, 0, 0,
             0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
             0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
          "height":16,
@@ -56,7 +83,7 @@
          "x":0,
          "y":0
         }],
- "nextlayerid":4,
+ "nextlayerid":5,
  "nextobjectid":1,
  "orientation":"orthogonal",
  "renderorder":"right-down",
@@ -64,405 +91,16 @@
  "tileheight":50,
  "tilesets":[
         {
-         "columns":7,
          "firstgid":1,
-         "image":"ground_tileset.png",
-         "imageheight":100,
-         "imagewidth":350,
-         "margin":0,
-         "name":"ground_tiles",
-         "spacing":0,
-         "tilecount":14,
-         "tileheight":50,
-         "tiles":[
-                {
-                 "id":0,
-                 "properties":[
-                        {
-                         "name":"down",
-                         "type":"int",
-                         "value":0
-                        }, 
-                        {
-                         "name":"left",
-                         "type":"int",
-                         "value":0
-                        }, 
-                        {
-                         "name":"right",
-                         "type":"int",
-                         "value":0
-                        }, 
-                        {
-                         "name":"up",
-                         "type":"int",
-                         "value":0
-                        }]
-                }, 
-                {
-                 "id":1,
-                 "properties":[
-                        {
-                         "name":"down",
-                         "type":"int",
-                         "value":0
-                        }, 
-                        {
-                         "name":"left",
-                         "type":"int",
-                         "value":0
-                        }, 
-                        {
-                         "name":"right",
-                         "type":"int",
-                         "value":0
-                        }, 
-                        {
-                         "name":"up",
-                         "type":"int",
-                         "value":6
-                        }]
-                }, 
-                {
-                 "id":2,
-                 "properties":[
-                        {
-                         "name":"down",
-                         "type":"int",
-                         "value":6
-                        }, 
-                        {
-                         "name":"left",
-                         "type":"int",
-                         "value":0
-                        }, 
-                        {
-                         "name":"right",
-                         "type":"int",
-                         "value":0
-                        }, 
-                        {
-                         "name":"up",
-                         "type":"int",
-                         "value":6
-                        }]
-                }, 
-                {
-                 "id":3,
-                 "properties":[
-                        {
-                         "name":"down",
-                         "type":"int",
-                         "value":6
-                        }, 
-                        {
-                         "name":"left",
-                         "type":"int",
-                         "value":0
-                        }, 
-                        {
-                         "name":"right",
-                         "type":"int",
-                         "value":0
-                        }, 
-                        {
-                         "name":"up",
-                         "type":"int",
-                         "value":0
-                        }]
-                }, 
-                {
-                 "id":4,
-                 "properties":[
-                        {
-                         "name":"down",
-                         "type":"int",
-                         "value":0
-                        }, 
-                        {
-                         "name":"left",
-                         "type":"int",
-                         "value":6
-                        }, 
-                        {
-                         "name":"right",
-                         "type":"int",
-                         "value":0
-                        }, 
-                        {
-                         "name":"up",
-                         "type":"int",
-                         "value":0
-                        }]
-                }, 
-                {
-                 "id":5,
-                 "properties":[
-                        {
-                         "name":"down",
-                         "type":"int",
-                         "value":0
-                        }, 
-                        {
-                         "name":"left",
-                         "type":"int",
-                         "value":6
-                        }, 
-                        {
-                         "name":"right",
-                         "type":"int",
-                         "value":6
-                        }, 
-                        {
-                         "name":"up",
-                         "type":"int",
-                         "value":0
-                        }]
-                }, 
-                {
-                 "id":6,
-                 "properties":[
-                        {
-                         "name":"down",
-                         "type":"int",
-                         "value":0
-                        }, 
-                        {
-                         "name":"left",
-                         "type":"int",
-                         "value":0
-                        }, 
-                        {
-                         "name":"right",
-                         "type":"int",
-                         "value":6
-                        }, 
-                        {
-                         "name":"up",
-                         "type":"int",
-                         "value":0
-                        }]
-                }, 
-                {
-                 "id":7,
-                 "properties":[
-                        {
-                         "name":"down",
-                         "type":"int",
-                         "value":0
-                        }, 
-                        {
-                         "name":"left",
-                         "type":"int",
-                         "value":0
-                        }, 
-                        {
-                         "name":"right",
-                         "type":"int",
-                         "value":0
-                        }, 
-                        {
-                         "name":"up",
-                         "type":"int",
-                         "value":0
-                        }]
-                }, 
-                {
-                 "id":8,
-                 "properties":[
-                        {
-                         "name":"down",
-                         "type":"int",
-                         "value":0
-                        }, 
-                        {
-                         "name":"left",
-                         "type":"int",
-                         "value":0
-                        }, 
-                        {
-                         "name":"right",
-                         "type":"int",
-                         "value":0
-                        }, 
-                        {
-                         "name":"up",
-                         "type":"int",
-                         "value":6
-                        }]
-                }, 
-                {
-                 "id":9,
-                 "properties":[
-                        {
-                         "name":"down",
-                         "type":"int",
-                         "value":6
-                        }, 
-                        {
-                         "name":"left",
-                         "type":"int",
-                         "value":0
-                        }, 
-                        {
-                         "name":"right",
-                         "type":"int",
-                         "value":0
-                        }, 
-                        {
-                         "name":"up",
-                         "type":"int",
-                         "value":6
-                        }]
-                }, 
-                {
-                 "id":10,
-                 "properties":[
-                        {
-                         "name":"down",
-                         "type":"int",
-                         "value":6
-                        }, 
-                        {
-                         "name":"left",
-                         "type":"int",
-                         "value":0
-                        }, 
-                        {
-                         "name":"right",
-                         "type":"int",
-                         "value":0
-                        }, 
-                        {
-                         "name":"up",
-                         "type":"int",
-                         "value":0
-                        }]
-                }, 
-                {
-                 "id":11,
-                 "properties":[
-                        {
-                         "name":"down",
-                         "type":"int",
-                         "value":0
-                        }, 
-                        {
-                         "name":"left",
-                         "type":"int",
-                         "value":6
-                        }, 
-                        {
-                         "name":"right",
-                         "type":"int",
-                         "value":0
-                        }, 
-                        {
-                         "name":"up",
-                         "type":"int",
-                         "value":0
-                        }]
-                },
-            
-                {
-                 "id":12,
-                 "properties":[
-                        {
-                         "name":"down",
-                         "type":"int",
-                         "value":0
-                        }, 
-                        {
-                         "name":"left",
-                         "type":"int",
-                         "value":6
-                        }, 
-                        {
-                         "name":"right",
-                         "type":"int",
-                         "value":6
-                        }, 
-                        {
-                         "name":"up",
-                         "type":"int",
-                         "value":0
-                        }]
-                }, 
-                {
-                 "id":13,
-                 "properties":[
-                        {
-                         "name":"down",
-                         "type":"int",
-                         "value":0
-                        }, 
-                        {
-                         "name":"left",
-                         "type":"int",
-                         "value":0
-                        }, 
-                        {
-                         "name":"right",
-                         "type":"int",
-                         "value":6
-                        }, 
-                        {
-                         "name":"up",
-                         "type":"int",
-                         "value":0
-                        }]
-                }],
-         "tilewidth":50
+         "source":"ground_tileset.tsx"
         }, 
         {
-         "columns":4,
          "firstgid":15,
-         "image":"entities_tileset.png",
-         "imageheight":50,
-         "imagewidth":200,
-         "margin":0,
-         "name":"entities_tileset",
-         "spacing":0,
-         "tilecount":4,
-         "tileheight":50,
-         "tiles":[
-                {
-                 "id":0,
-                 "properties":[
-                        {
-                         "name":"entity_name",
-                         "type":"string",
-                         "value":"cd_enemy"
-                        }]
-                }, 
-                {
-                 "id":1,
-                 "properties":[
-                        {
-                         "name":"entity_name",
-                         "type":"string",
-                         "value":"worm_enemy"
-                        }]
-                }, 
-                {
-                 "id":2,
-                 "properties":[
-                        {
-                         "name":"entity_name",
-                         "type":"string",
-                         "value":""
-                        }]
-                }, 
-                {
-                 "id":3,
-                 "properties":[
-                        {
-                         "name":"entity_name",
-                         "type":"string",
-                         "value":"rock"
-                        }]
-                }],
-         "tilewidth":50
+         "source":"tunnels_tileset.tsx"
+        }, 
+        {
+         "firstgid":22,
+         "source":"entities_tileset.tsx"
         }],
  "tilewidth":50,
  "type":"map",
