@@ -6,7 +6,7 @@ export default class rock extends Phaser.Physics.Arcade.Sprite {
         this.belowTile = this.scene.map.getTileAtWorldXY(x, y + 50);    //  Track the tile below the rock
         this.isActive = false;      //  Used to initiate rock falling movement
         this.isMoving = false;      //  Used to fix issue with player collision
-        this.playerCollision = true;    //  Used for the rock's self-destroying process
+        this.entityCollision = true;    //  Used for the rock's self-destroying process
         this.depth = 1;
     }
 
@@ -48,7 +48,7 @@ export default class rock extends Phaser.Physics.Arcade.Sprite {
                 }
             }
 
-            if (stopRock && this.playerCollision) {
+            if (stopRock && this.entityCollision) {
                 this.setVelocityY(0);
                 this.scene.tweens.addCounter({
                     from: 0,
@@ -57,7 +57,7 @@ export default class rock extends Phaser.Physics.Arcade.Sprite {
                     ease: 'Linear',
                     onStart: () => {
                         this.scene.physics.world.remove(this.body);
-                        this.playerCollision = false;
+                        this.entityCollision = false;
                     },
                     onComplete: () => {
                         this.destroy();
