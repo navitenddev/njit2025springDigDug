@@ -445,7 +445,7 @@ export default class enemy extends Phaser.Physics.Arcade.Sprite {
      * Sets this enemy to be in ghost mode.
      */
     startGhostMovement() {
-        if (!this.hasFoundPlayer) {
+        if (!this.scene && !this.hasFoundPlayer) {
             this.targetPosition = null;
             this.ghostMode = true;
             this.lastTile = this.scene.map.getTileAtWorldXY(this.x, this.y);
