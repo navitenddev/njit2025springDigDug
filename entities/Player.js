@@ -1,14 +1,16 @@
 export default class player extends Phaser.Physics.Arcade.Sprite {
     constructor(scene, x, y) {
         super(scene, x, y, "player");
-        // scene.add.existing(this);
-        // scene.physics.add.existing(this);
-
+        scene.add.existing(this);
+        scene.physics.add.existing(this);
+        this.body.setSize(10, 10, true);           // Set body size (width, height)
 
         this.displayWidth = 50;
         this.displayHeight = 50;
         this.direction = null;
         this.depth = 1;
+
+        this.lastTile = this.scene.map.getTileAtWorldXY(x, y);
     }
 
     handleInput(cursors, wasdKeys) {
@@ -90,7 +92,7 @@ export default class player extends Phaser.Physics.Arcade.Sprite {
                 if (this.x + 2 > 550 || this.hasRock(this.scene.map, this.x + 50, this.y)) { return false; }
                 break;
             case 'up':
-                if (this.y - 2 < 150 || this.hasRock(this.scene.map, this.x, this.y - 2)) { return false; }
+                if (this.y - 2 < 100 || this.hasRock(this.scene.map, this.x, this.y - 2)) { return false; }
                 break;
             case 'down':
                 if (this.y + 2 > 750 || this.hasRock(this.scene.map, this.x, this.y + 50)) { return false; }
