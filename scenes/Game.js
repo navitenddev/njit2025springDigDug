@@ -344,12 +344,15 @@ export default class GameScene extends Phaser.Scene {
     }
 
     handleRockHitEntity(entity, rock) {
-        if (entity == this.player) { this.handlePlayerHit(entity); }
-        else {
-            entity.isActive = false;
-            entity.destroy();
+        if (rock.isMoving && rock.entityCollision) {
+            if (entity == this.player) {
+                this.handlePlayerHit(entity);
+            }
+            else {
+                entity.destroy();
+            }
+            rock.destroy();
         }
-        rock.destroy();
     }
 
     /*
