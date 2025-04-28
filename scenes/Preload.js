@@ -14,10 +14,12 @@ export default class PreloadScene extends Phaser.Scene {
         this.load.image("tiles", "assets/tilemap/ground_tileset.png");
         this.load.font('PressStart2P', "assets/fonts/PressStart2P-Regular.ttf", 'truetype'); // Current Default game font
         this.load.spritesheet("mask_tileset", "assets/tilemap/mask_tileset.png", { frameWidth: 50, frameHeight: 50 });
-        this.load.tilemapTiledJSON("map", "assets/tilemap/map_1.json");
+        this.load.tilemapTiledJSON("map1", "assets/tilemap/map_1.json");
         this.load.tilemapTiledJSON("map2", "assets/tilemap/map_2.json");
         this.load.tilemapTiledJSON("map3", "assets/tilemap/map_3.json");
         this.load.tilemapTiledJSON("map4", "assets/tilemap/map_4.json");
+        this.load.tilemapTiledJSON("map5", "assets/tilemap/map_5.json");
+
 
         this.anims.create({
             key: 'walk',
@@ -33,6 +35,13 @@ export default class PreloadScene extends Phaser.Scene {
             frameWidth: 64,
             frameHeight: 64,
         })
+
+        //  Techno Worm enemy sprite
+        this.load.image("worm_enemy", "assets/TechnoWorm2.png")
+
+        //  Escape Goal sprite
+        this.load.image("goal", "assets/escape_goal.png");
+
         this.load.image("StartBG", "assets/StartBackground.jpeg");
         this.load.image("LevelBG", "assets/bg2.jpeg");
 
@@ -41,9 +50,9 @@ export default class PreloadScene extends Phaser.Scene {
 
         //  Bullet
         this.load.image("bullet", "assets/bullet.png");
-      
+
         // Level Select Screen Images
-        this.load.image("lvl1_locked","assets/levelselectassets/level1_locked_v2.png");
+        this.load.image("lvl1_locked", "assets/levelselectassets/level1_locked_v2.png");
         this.load.image("lvl1_unlocked", "assets/levelselectassets/level1_unlocked_v2.png");
         this.load.image("lvl2_locked", "assets/levelselectassets/level2_locked.png");
         this.load.image("lvl2_unlocked", "assets/levelselectassets/level2_unlocked.png");
@@ -53,6 +62,9 @@ export default class PreloadScene extends Phaser.Scene {
         this.load.image("lvl4_unlocked", "assets/levelselectassets/level4_unlocked.png");
         this.load.image("lvl5_locked", "assets/levelselectassets/level5_locked.png");
         this.load.image("lvl5_unlocked", "assets/levelselectassets/level5_unlocked.png");
+
+
+        this.load.image("powerup_slowdown", "assets/powerUps/slowdown.png");
     }
 
     create() {

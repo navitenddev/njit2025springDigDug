@@ -1,11 +1,11 @@
 import Bullet from "../entities/Bullet.js";
 
 export default class Bullets extends Phaser.Physics.Arcade.Group {
-    constructor(scene) {
+    constructor(scene, amount) {
         super(scene.physics.world, scene);
 
         this.createMultiple({
-            frameQuantity: 1,
+            frameQuantity: amount,
             key: 'bullet',
             active: false,
             visible: false,
