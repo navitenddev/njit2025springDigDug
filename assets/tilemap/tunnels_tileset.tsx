@@ -35,9 +35,9 @@
  </tile>
  <tile id="6">
   <properties>
+   <property name="down" value="6"/>
    <property name="left" type="int" value="6"/>
    <property name="right" type="int" value="6"/>
-   <property name="up" type="int" value="6"/>
   </properties>
  </tile>
 </tileset>
