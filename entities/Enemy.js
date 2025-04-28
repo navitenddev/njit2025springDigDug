@@ -445,12 +445,18 @@ export default class enemy extends Phaser.Physics.Arcade.Sprite {
      * Sets this enemy to be in ghost mode.
      */
     startGhostMovement() {
-        if (!this.scene && !this.hasFoundPlayer) {
-            this.targetPosition = null;
-            this.ghostMode = true;
-            this.lastTile = this.scene.map.getTileAtWorldXY(this.x, this.y);
-            //  End ghost movement (USED FOR TESTING)
-            //this.ghostTimer = this.scene.time.delayedCall(5000, this.endGhostMovement, [], this);
+        try
+        {
+            if (!this.hasFoundPlayer) {
+                this.targetPosition = null;
+                this.ghostMode = true;
+                this.lastTile = this.scene.map.getTileAtWorldXY(this.x, this.y);
+                //  End ghost movement (USED FOR TESTING)
+                //this.ghostTimer = this.scene.time.delayedCall(5000, this.endGhostMovement, [], this);
+            }
+        } catch (error)
+        {
+            console.warn("Enemy.js generic error (ignore)")
         }
     }
 
