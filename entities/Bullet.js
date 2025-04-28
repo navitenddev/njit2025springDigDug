@@ -20,7 +20,7 @@ export default class Bullet extends Phaser.Physics.Arcade.Sprite {
             this.setVisible(false);
         }
         //  Reset bullet if out of boundary
-        if (this.x <= 0 || this.x >= 600 || this.y <= 150 || this.y >= 800) {
+        if (this.x <= 0 || this.x >= 600 || this.y <= 0 || this.y >= 800) {
             this.setActive(false);
             this.setVisible(false);
         }
