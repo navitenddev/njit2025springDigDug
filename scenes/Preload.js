@@ -68,6 +68,12 @@ export default class PreloadScene extends Phaser.Scene {
     }
 
     create() {
+        if (!localStorage.getItem('maxUnlockedLevel')) {
+            localStorage.setItem('maxUnlockedLevel', '1');
+            console.log('Initialized maxUnlockedLevel to 1');
+          } else {
+            console.log('maxUnlockedLevel already in storage:', localStorage.getItem('maxUnlockedLevel'));
+          }
         this.scene.start("StartMenu"); // Start the main game scene
     }
 }
