@@ -21,6 +21,7 @@ export default class GameScene extends Phaser.Scene {
         * this.highScore needed to save the score to localstorage if currentscore surpasses highscore
         */
         this.scene.launch('GameUI')
+        this.isShuttingDown = false;
         this.score = 0;
         this.visitedTiles = new Set();
         this.highScore = parseInt(localStorage.getItem("highScore")) || 0;
@@ -79,6 +80,7 @@ export default class GameScene extends Phaser.Scene {
             allowGravity: false
         });
         this.enemyGroup.isActive = false;
+        this.remainingEnemies = 0
 
         //  Create rocks group
         this.rockGroup = this.physics.add.group({
@@ -134,23 +136,36 @@ export default class GameScene extends Phaser.Scene {
     }
 
     update() {
-        this.player.handleInput(this.cursors, this.wasdKeys);
+        if (!this.isShuttingDown) {
+            this.player.handleInput(this.cursors, this.wasdKeys);
 
-        this.enemyGroup.getChildren().forEach(enemy => {
-            if (enemy.isActive) {
-                if (this.enemyGroup.getLength() == 1) {
-                    enemy.isEscaping = true;
-                    enemy.update(this.goal);
+            this.enemyGroup.getChildren().forEach(enemy => {
+                if (enemy.isActive) {
+                    if (this.enemyGroup.getLength() == 1) {
+                        enemy.isEscaping = true;
+                        enemy.update(this.goal);
+                    }
+                    else {
+                        enemy.update(this.player);
+                    }
                 }
-                else {
-                    enemy.update(this.player);
-                }
-            }
-        });
+            });
 
-        this.rockGroup.getChildren().forEach(rock => {
-            rock.update(this.player);
-        })
+            this.rockGroup.getChildren().forEach(rock => {
+                rock.update(this.player);
+            })
+        }
+    }
+
+    onAllEnemiesKilled() {
+        console.log(`Level ${this.level} cleared!`);
+        const next = this.level + 1;
+        const max = parseInt(localStorage.getItem('maxUnlockedLevel'), 10) || 1;
+        if (next > max && next <= 5) {
+            localStorage.setItem('maxUnlockedLevel', next);
+        }
+        this.scene.stop('GameUI');
+        this.scene.start('LevelCompleteScene', { level: this.level });
     }
 
     /**
@@ -236,16 +251,40 @@ export default class GameScene extends Phaser.Scene {
             }
 
             //  Create a basic enemy entity
-            if (tile.properties['entity_name'] == "cd_enemy") {
-                let enemy = new Enemy(this, coordX, coordY, tile.properties['entity_name'], enemyGroup).setOrigin(0, 0);
+            if (tile.properties['entity_name'] === "cd_enemy") {
+                let enemy = new Enemy(this, coordX, coordY, 'cd_enemy', enemyGroup)
+                    .setOrigin(0, 0);
                 enemyGroup.add(enemy);
+
+                // 3) Increment counter and listen for its destroy
+                this.remainingEnemies++;
+                enemy.on('destroy', () => {
+                    if (!this.isShuttingDown) {
+                        this.remainingEnemies--;
+                        console.log(`Enemies remaining: ${this.remainingEnemies}`);
+                        if (this.remainingEnemies == 0) {
+                            this.onAllEnemiesKilled();
+                        }
+                    }
+                });
             }
 
             //  Create a Techno Worm enemy entity
             if (tile.properties['entity_name'] == "worm_enemy") {
                 let enemy = new TechnoWorm(this, coordX, coordY, enemyGroup, bulletsGroup).setOrigin(0, 0);
                 enemyGroup.add(enemy);
+                this.remainingEnemies++;
+                enemy.on('destroy', () => {
+                    if (!this.isShuttingDown) {
+                        this.remainingEnemies--;
+                        console.log(`Enemies remaining: ${this.remainingEnemies}`);
+                        if (this.remainingEnemies == 0) {
+                            this.onAllEnemiesKilled();
+                        }
+                    }
+                });
             }
+
         }, this, 0, 0, 12, 16, null, "Entities");
     }
 
@@ -275,14 +314,15 @@ export default class GameScene extends Phaser.Scene {
             });
 
             if (this.lives <= 0) {
-
+                this.player.destroy(true);
+                this.isShuttingDown = true;
                 // Save high score to localStorage
                 const prevHighScore = parseInt(localStorage.getItem("highScore")) || 0;
                 if (this.score > prevHighScore) {
                     localStorage.setItem("highScore", this.score);
                 }
                 this.scene.stop('GameUI');
-                this.scene.restart();
+                this.scene.launch('YouDiedScene');
             }
         }
     }
