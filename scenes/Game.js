@@ -27,8 +27,8 @@ export default class GameScene extends Phaser.Scene {
 
         // Create tilemap
         this.map = this.make.tilemap({ key: `map${this.level}` });
-        const tileset = this.map.addTilesetImage("ground_tiles", "tiles");
-        const groundLayer = this.map.createLayer("Ground", tileset, 0, 0);
+        const groundTileset = this.map.addTilesetImage("ground_tileset", "tiles");
+        const groundLayer = this.map.createLayer("Ground", groundTileset, 0, 0);
 
         // Create player object & added amount of lives to player
         this.lives = 3;
@@ -74,7 +74,7 @@ export default class GameScene extends Phaser.Scene {
         groundLayer.setMask(this.mask);
 
         //  Create enemy tunnels and enemies group
-        this.digEnemyTunnels(this.map, groundLayer);
+        this.digTunnels(this.map);
         this.enemyGroup = this.physics.add.group({
             allowGravity: false
         });
@@ -189,28 +189,47 @@ export default class GameScene extends Phaser.Scene {
     }
 
     /**
-     * digEnemyTunnels - digs out the preset tunnels which the enemies first spawn in
+     * digTunnels - digs out the preset tunnels based on the current map's Tunnels layer
      * @param {Phaser.Tilemaps.Tilemap} map - The current map
      */
-    digEnemyTunnels(map, layer) {
+    digTunnels(map) {
         let coordX;
         let coordY;
+
+        //  Iterate through each tile in the Tunnels layer
         map.forEachTile(tile => {
+            if (!tile) return;
+
             coordX = tile.x * map.tileWidth;
             coordY = tile.y * map.tileHeight;
-            if (tile.properties['left'] > 0) {
-                this.rt.drawFrame("mask_tileset", 11, coordX, coordY);
-            }
-            if (tile.properties['right'] > 0) {
-                this.rt.drawFrame("mask_tileset", 5, coordX, coordY);
-            }
-            if (tile.properties['up'] > 0) {
-                this.rt.drawFrame("mask_tileset", 17, coordX, coordY);
-            }
-            if (tile.properties['down'] > 0) {
-                this.rt.drawFrame("mask_tileset", 23, coordX, coordY);
-            }
-        }, this, 0, 0, 12, 16, null, layer);
+
+            // Check and copy each directional property if it exists
+            ['left', 'right', 'up', 'down'].forEach(direction => {
+                if (tile.properties[direction]) {
+                    //  Set the correct directional property in the ground layer tile
+                    const groundTile = this.map.getTileAtWorldXY(coordX, coordY, false, this.cameras.main, "Ground");
+                    groundTile.properties[direction] = tile.properties[direction];
+
+                    //  Visually dig out the tunnels
+                    switch (direction) {
+                        case 'left':
+                            this.rt.drawFrame("mask_tileset", 11, coordX, coordY);
+                            break;
+                        case 'right':
+                            this.rt.drawFrame("mask_tileset", 5, coordX, coordY);
+                            break;
+                        case 'up':
+                            this.rt.drawFrame("mask_tileset", 17, coordX, coordY);
+                            break;
+                        case 'down':
+                            this.rt.drawFrame("mask_tileset", 23, coordX, coordY);
+                            break;
+                        default:
+                            break;
+                    }
+                }
+            });
+        }, this, 0, 0, 12, 16, null, "Tunnels");
     }
 
     /**
