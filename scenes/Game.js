@@ -134,6 +134,13 @@ export default class GameScene extends Phaser.Scene {
         powerup.body.setSize(40, 40, true);
 
         this.physics.add.overlap(this.player, this.slowdownPowerups, this.activateSlowdown, null, this);
+
+        this.teleportPowerups = this.physics.add.group({ allowGravity: false });
+        const teleportPower = this.teleportPowerups.create(200, 550, "powerup_teleport"); 
+        teleportPower.setOrigin(0, 0);
+        teleportPower.body.setSize(40, 40, true);
+
+        this.physics.add.overlap(this.player, this.teleportPowerups, this.activateTeleport, null, this);
     }
 
     update() {
@@ -437,6 +444,39 @@ export default class GameScene extends Phaser.Scene {
                 enemy.clearTint();
             });
         });
+    }
+
+    activateTeleport(player, powerup) {
+        // Remove the powerup from the map
+        powerup.destroy();
+    
+        if (this.visitedTiles.size === 0) {
+            console.warn("No visited tiles to teleport to!");
+            return;
+        }
+    
+        // Pick a random tile from the visitedTiles set
+        const tilesArray = Array.from(this.visitedTiles);
+        const randomKey = Phaser.Utils.Array.GetRandom(tilesArray);
+        const [x, y] = randomKey.split(',').map(Number);
+        
+        // ✅ Now x and y are integers
+        const tile = this.map.getTileAt(x, y, true, "Ground");
+        
+        if (!tile || tile.index === -1) {
+            console.warn("Could not find a valid tile at", x, y);
+            return;
+        }
+        
+        const worldX = tile.pixelX;
+        const worldY = tile.pixelY;
+
+        
+        player.setPosition(Math.round(worldX), Math.round(worldY));
+        
+        player.targetPosition = null;
+        player.moveQueue = null;
+        player.direction = null;         
     }
 
     handleRockHitEntity(entity, rock) {
