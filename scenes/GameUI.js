@@ -2,6 +2,10 @@ export default class GameUI extends Phaser.Scene {
     constructor() {
         super({ key: "GameUI" });
     }
+
+    init(data) {
+        this.currentLevel = data.level || 1;
+    }
     
     create() {
         
@@ -110,7 +114,7 @@ export default class GameUI extends Phaser.Scene {
             strokeThickness: outlineThickness
         });
 
-        const levelText = this.add.text(scaleX, scaleY + 700, "Level: ", {
+        const levelText = this.add.text(scaleX, scaleY + 700, `Level:${this.currentLevel}`, {
             fontSize: "25px",
             fill: "#ffffff",
             fontFamily: 'PressStart2P',

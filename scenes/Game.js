@@ -20,7 +20,7 @@ export default class GameScene extends Phaser.Scene {
         * this.score & visitedTiles is needed in order to record the score
         * this.highScore needed to save the score to localstorage if currentscore surpasses highscore
         */
-        this.scene.launch('GameUI')
+        this.scene.launch('GameUI', { level: this.level });
         this.isShuttingDown = false;
         this.score = 0;
         this.visitedTiles = new Set();
