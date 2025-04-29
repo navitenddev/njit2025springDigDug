@@ -98,7 +98,7 @@ export default class GameScene extends Phaser.Scene {
         this.playerBullets = new Bullets(this, 1);
         this.physics.add.overlap(this.playerBullets, this.enemyGroup, this.handleBulletHitEntity, null, this);
         this.input.keyboard.on('keydown-SPACE', (event) => {
-            this.playerBullets.fireBullet(this.player.x, this.player.y, this.player.direction);
+            this.playerBullets.fireBullet(this.player.x, this.player.y, this.player.direction, this.player);
         });
 
         //  Initialize Enemy Bullets Group
