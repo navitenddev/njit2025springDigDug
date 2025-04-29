@@ -386,6 +386,9 @@ export default class GameScene extends Phaser.Scene {
                 this.handlePlayerHit(entity);
             }
             else {
+                this.score += 1000;
+                this.updateScoreText();
+                this.showPointsPopup(1000, entity.x - 15, entity.y + 15)
                 entity.destroy();
             }
             rock.destroy();
