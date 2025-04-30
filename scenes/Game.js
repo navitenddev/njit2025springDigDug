@@ -407,7 +407,7 @@ export default class GameScene extends Phaser.Scene {
 
             const tileKey = `${currentTile.x},${currentTile.y}`;
 
-            if (!this.visitedTiles.has(tileKey)) {
+            if (currentTile.y > 2 && !this.visitedTiles.has(tileKey)) {
                 this.visitedTiles.add(tileKey);
                 this.score += 10;
                 this.updateScoreText();
