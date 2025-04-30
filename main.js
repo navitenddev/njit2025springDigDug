@@ -5,7 +5,7 @@ import GameUI from "./scenes/GameUI.js";
 import StartMenu from "./scenes/StartMenu.js";
 import LevelCompleteScene from "./scenes/LevelCompleteScene.js";
 import EndCredits from "./scenes/EndCredits.js";
-import YouDied from "./scenes/YouDied.js";
+import GameOver from "./scenes/GameOver.js";
 
 const config = {
     type: Phaser.AUTO,
@@ -23,7 +23,7 @@ const config = {
         target: 60,
         forceSetTimeOut: true
     },
-    scene: [PreloadScene, StartMenu, LevelSelect, GameScene, YouDied, LevelCompleteScene, GameUI, EndCredits ] // Load Scenes
+    scene: [PreloadScene, StartMenu, LevelSelect, GameScene, GameOver, LevelCompleteScene, GameUI, EndCredits] // Load Scenes
 };
 
 new Phaser.Game(config);
