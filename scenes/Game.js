@@ -28,12 +28,12 @@ export default class GameScene extends Phaser.Scene {
 
         // Create tilemap
         this.map = this.make.tilemap({ key: `map${this.level}` });
-        const tileset = this.map.addTilesetImage("ground_tiles", "tiles");
-        const groundLayer = this.map.createLayer("Ground", tileset, 0, 0);
+        const groundTileset = this.map.addTilesetImage("ground_tileset", "tiles");
+        const groundLayer = this.map.createLayer("Ground", groundTileset, 0, 0);
 
         // Create player object & added amount of lives to player
         this.lives = 3;
-        this.player = new Player(this, 100, 450).setOrigin(0, 0);
+        this.player = this.level == 1 ? new Player(this, 550, 100).setOrigin(0, 0) : new Player(this, 300, 400).setOrigin(0, 0);
         this.add.existing(this.player);
         this.physics.add.existing(this.player);
         this.player.body.setAllowGravity(false);
@@ -75,7 +75,7 @@ export default class GameScene extends Phaser.Scene {
         groundLayer.setMask(this.mask);
 
         //  Create enemy tunnels and enemies group
-        this.digEnemyTunnels(this.map, groundLayer);
+        this.digTunnels(this.map);
         this.enemyGroup = this.physics.add.group({
             allowGravity: false
         });
@@ -106,10 +106,8 @@ export default class GameScene extends Phaser.Scene {
         this.physics.add.overlap(this.enemyBullets, this.player, this.handleBulletHitEntity, null, this);
 
         //  Spawn enemies and rocks
+        this.rockKills = 0;
         this.spawnEntities(this.map, this.enemyGroup, this.rockGroup, this.enemyBullets);
-
-        //  Activate enemy movement
-        this.enemyGroup.isActive = true;
 
         /*
         * Overlap check when a player comes into contact with an enemy
@@ -133,6 +131,51 @@ export default class GameScene extends Phaser.Scene {
         powerup.body.setSize(40, 40, true);
 
         this.physics.add.overlap(this.player, this.slowdownPowerups, this.activateSlowdown, null, this);
+
+        //  Start Shermie's auto move path (only for the first level)
+        this.player.controlsDisabled = true;
+        if (this.level == 1) {
+            this.tweens.addCounter({
+                from: 0,
+                to: 1,
+                duration: 2200,
+                ease: 'Linear',
+                onUpdate: () => {
+                    if (this.player.x !== 300) {
+                        this.player.move('left', false);
+                    }
+                },
+                onComplete: () => {
+                    this.tweens.addCounter({
+                        from: 0,
+                        to: 1,
+                        duration: 3500,
+                        ease: 'Linear',
+                        onUpdate: () => {
+                            if (this.player.y !== 400) {
+                                this.player.move('down', false);
+                            }
+                        },
+                        onComplete: () => {
+                            //  Activate user controls
+                            this.player.controlsDisabled = false;
+
+                            //  Activate enemy movement
+                            this.enemyGroup.isActive = true;
+                        }
+                    });
+                }
+            });
+        }
+        else {
+            this.time.delayedCall(2500, () => {
+                //  Activate user controls
+                this.player.controlsDisabled = false;
+
+                //  Activate enemy movement
+                this.enemyGroup.isActive = true;
+            });
+        }
     }
 
     update() {
@@ -169,6 +212,50 @@ export default class GameScene extends Phaser.Scene {
     }
 
     /**
+     * Emits score update event.
+     * 
+     * Also emits high score event if applicable.
+     */
+    updateScoreText() {
+        this.game.events.emit("updateScore", this.score);
+
+        // Check if new high score
+        if (this.score > this.highScore) {
+            this.highScore = this.score;
+
+            // Save new high score to localStorage
+            localStorage.setItem("highScore", this.highScore);
+
+            // Emit update to GameUI
+            this.game.events.emit("updateHighScore", this.highScore);
+        }
+    }
+
+    /**
+     * Display the points earned by the player for 1 second
+     * 
+     * @param {number} points - Number to be displayed
+     * @param {number} coordX - Position in X-axis
+     * @param {number} coordY - Position in Y-axis
+     */
+    showPointsPopup(points, coordX, coordY) {
+        const pointsText = this.add.text(coordX, coordY, points.toString(), {
+            fontSize: "20px",
+            fill: "#ffffff",
+            fontFamily: 'PressStart2P'
+        });
+        this.tweens.addCounter({
+            from: 0,
+            to: 1,
+            duration: 1000,
+            ease: 'Linear',
+            onComplete: () => {
+                pointsText.destroy();
+            }
+        });
+    }
+
+    /**
      * handleBulletEntityCollision - handle enemy/player damage if hit by a bullet
      * @param {*} obj1 - bullet entity
      * @param {*} obj2 - enemy/player entity
@@ -186,8 +273,34 @@ export default class GameScene extends Phaser.Scene {
         if (entity == this.player) {
             this.handlePlayerHit(this.player);
         }
+        else if (entity.takeDamage()) {
+            let points = 0;
+            let coordX = entity.x;
+            let coordY = entity.y + 15;
+
+            //  Update score depending on where the entity has died (Y-coord)
+            if (entity.y >= 600) {
+                points = 400;
+            }
+            else if (entity.y >= 450) {
+                points = 300;
+            }
+            else if (entity.y >= 300) {
+                points = 200;
+            }
+            else if (entity.y >= 100) {
+                points = 100;
+            }
+            this.score += points;
+            this.updateScoreText();
+
+            //  Kill the entity
+            entity.destroy();
+
+            //  Show the points gained
+            this.showPointsPopup(points, coordX, coordY);
+        }
         else {
-            entity.takeDamage();
             this.tweens.addCounter({
                 from: 0,
                 to: 1,
@@ -204,28 +317,47 @@ export default class GameScene extends Phaser.Scene {
     }
 
     /**
-     * digEnemyTunnels - digs out the preset tunnels which the enemies first spawn in
+     * digTunnels - digs out the preset tunnels based on the current map's Tunnels layer
      * @param {Phaser.Tilemaps.Tilemap} map - The current map
      */
-    digEnemyTunnels(map, layer) {
+    digTunnels(map) {
         let coordX;
         let coordY;
+
+        //  Iterate through each tile in the Tunnels layer
         map.forEachTile(tile => {
+            if (!tile) return;
+
             coordX = tile.x * map.tileWidth;
             coordY = tile.y * map.tileHeight;
-            if (tile.properties['left'] > 0) {
-                this.rt.drawFrame("mask_tileset", 11, coordX, coordY);
-            }
-            if (tile.properties['right'] > 0) {
-                this.rt.drawFrame("mask_tileset", 5, coordX, coordY);
-            }
-            if (tile.properties['up'] > 0) {
-                this.rt.drawFrame("mask_tileset", 17, coordX, coordY);
-            }
-            if (tile.properties['down'] > 0) {
-                this.rt.drawFrame("mask_tileset", 23, coordX, coordY);
-            }
-        }, this, 0, 0, 12, 16, null, layer);
+
+            // Check and copy each directional property if it exists
+            ['left', 'right', 'up', 'down'].forEach(direction => {
+                if (tile.properties[direction]) {
+                    //  Set the correct directional property in the ground layer tile
+                    const groundTile = this.map.getTileAtWorldXY(coordX, coordY, false, this.cameras.main, "Ground");
+                    groundTile.properties[direction] = tile.properties[direction];
+
+                    //  Visually dig out the tunnels
+                    switch (direction) {
+                        case 'left':
+                            this.rt.drawFrame("mask_tileset", 11, coordX, coordY);
+                            break;
+                        case 'right':
+                            this.rt.drawFrame("mask_tileset", 5, coordX, coordY);
+                            break;
+                        case 'up':
+                            this.rt.drawFrame("mask_tileset", 17, coordX, coordY);
+                            break;
+                        case 'down':
+                            this.rt.drawFrame("mask_tileset", 23, coordX, coordY);
+                            break;
+                        default:
+                            break;
+                    }
+                }
+            });
+        }, this, 0, 0, 12, 16, null, "Tunnels");
     }
 
     /**
@@ -355,6 +487,9 @@ export default class GameScene extends Phaser.Scene {
                 this.handlePlayerHit(entity);
             }
             else {
+                this.score += 1000;
+                this.updateScoreText();
+                this.showPointsPopup(1000, entity.x - 15, entity.y + 15)
                 entity.destroy();
             }
             rock.destroy();
@@ -373,22 +508,10 @@ export default class GameScene extends Phaser.Scene {
 
             const tileKey = `${currentTile.x},${currentTile.y}`;
 
-            if (!this.visitedTiles.has(tileKey)) {
+            if (currentTile.y > 2 && !this.visitedTiles.has(tileKey)) {
                 this.visitedTiles.add(tileKey);
                 this.score += 10;
-
-                this.game.events.emit("updateScore", this.score);
-
-                // Check if new high score
-                if (this.score > this.highScore) {
-                    this.highScore = this.score;
-
-                    // Save new high score to localStorage
-                    localStorage.setItem("highScore", this.highScore);
-
-                    // Emit update to GameUI
-                    this.game.events.emit("updateHighScore", this.highScore);
-                }
+                this.updateScoreText();
             }
             this.changeTileTexture(map, currentTile, this.player.direction);
             this.player.lastTile = currentTile;
