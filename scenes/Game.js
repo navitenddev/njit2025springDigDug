@@ -108,9 +108,6 @@ export default class GameScene extends Phaser.Scene {
         //  Spawn enemies and rocks
         this.spawnEntities(this.map, this.enemyGroup, this.rockGroup, this.enemyBullets);
 
-        //  Activate enemy movement
-        this.enemyGroup.isActive = true;
-
         /*
         * Overlap check when a player comes into contact with an enemy
         * This overlap check must be put after the player and enemy has been created
@@ -135,15 +132,14 @@ export default class GameScene extends Phaser.Scene {
         this.physics.add.overlap(this.player, this.slowdownPowerups, this.activateSlowdown, null, this);
 
         //  Start Shermie's auto move path (using tween)
-        //  Enables keyboard controls upon completion
         this.player.controlsDisabled = true;
         this.tweens.addCounter({
             from: 0,
             to: 1,
-            duration: 2500,
+            duration: 2200,
             ease: 'Linear',
             onUpdate: () => {
-                if (this.player.x !== 250) {
+                if (this.player.x !== 300) {
                     this.player.move('left', false);
                 }
             },
@@ -151,15 +147,19 @@ export default class GameScene extends Phaser.Scene {
                 this.tweens.addCounter({
                     from: 0,
                     to: 1,
-                    duration: 2200,
+                    duration: 3500,
                     ease: 'Linear',
                     onUpdate: () => {
-                        if (this.player.y !== 350) {
+                        if (this.player.y !== 400) {
                             this.player.move('down', false);
                         }
                     },
                     onComplete: () => {
+                        //  Activate user controls
                         this.player.controlsDisabled = false;
+
+                        //  Activate enemy movement
+                        this.enemyGroup.isActive = true;
                     }
                 });
             }
