@@ -1,22 +1,46 @@
 import Player from "../entities/Player.js";
+import Enemy from "../entities/Enemy.js";
+import Rock from "../entities/Rock.js";
+import Bullets from "../entities/Bullets.js";
+import Bullet from "../entities/Bullet.js";
+import TechnoWorm from "../entities/TechnoWorm.js";
 
 export default class GameScene extends Phaser.Scene {
     constructor() {
         super("GameScene");
     }
+    init(data) {
+        this.level = data.level || 1; //Default 1
+    }
 
     create() {
+
+        /*
+        * Launching the scene so the ingameUI can be scene while the game is being played
+        * this.score & visitedTiles is needed in order to record the score
+        * this.highScore needed to save the score to localstorage if currentscore surpasses highscore
+        */
+        this.scene.launch('GameUI')
+        this.isShuttingDown = false;
+        this.score = 0;
+        this.visitedTiles = new Set();
+        this.highScore = parseInt(localStorage.getItem("highScore")) || 0;
+
         // Create tilemap
-        const map = this.make.tilemap({ key: "map" });
-        const tileset = map.addTilesetImage("ground_tiles", "tiles");
-        const groundLayer = map.createLayer("Ground", tileset, 0, 0);
+        this.map = this.make.tilemap({ key: `map${this.level}` });
+        const tileset = this.map.addTilesetImage("ground_tiles", "tiles");
+        const groundLayer = this.map.createLayer("Ground", tileset, 0, 0);
 
-        // Create player object
-
+        // Create player object & added amount of lives to player
+        this.lives = 3;
         this.player = new Player(this, 550, 100).setOrigin(0, 0);
         this.add.existing(this.player);
         this.physics.add.existing(this.player);
         this.player.body.setAllowGravity(false);
+
+        //  Create escape goal entity
+        this.goal = this.add.sprite(0, 100, "goal").setOrigin(0, 0);
+        this.goal.visible = false;
 
         // Keyboard controls
         this.cursors = this.input.keyboard.createCursorKeys();
@@ -29,7 +53,7 @@ export default class GameScene extends Phaser.Scene {
 
         // Collision with ground layer
         this.physics.add.overlap(this.player, groundLayer, () => {
-            this.updateTile(map, groundLayer);
+            this.updateTile(this.map, groundLayer);
         });
 
 
@@ -42,13 +66,73 @@ export default class GameScene extends Phaser.Scene {
 
         this.rt = this.make.renderTexture({
             x: 300, y: 400,
-            width: map.widthInPixels,
-            height: map.heightInPixels,
+            width: this.map.widthInPixels,
+            height: this.map.heightInPixels,
             add: false
         });
         this.mask = new Phaser.Display.Masks.BitmapMask(this, this.rt);
         this.mask.invertAlpha = true;
         groundLayer.setMask(this.mask);
+
+        //  Create enemy tunnels and enemies group
+        this.digEnemyTunnels(this.map, groundLayer);
+        this.enemyGroup = this.physics.add.group({
+            allowGravity: false
+        });
+        this.enemyGroup.isActive = false;
+        this.remainingEnemies = 0
+
+        //  Create rocks group
+        this.rockGroup = this.physics.add.group({
+            allowGravity: false
+        })
+
+        // Corrupted CD Enemy movement animation
+        this.anims.create({
+            key: 'cd_move',
+            frames: this.anims.generateFrameNumbers('cd_enemy', { start: 0, end: 1 }),
+            frameRate: 10
+        });
+
+        //  Initialize Player Bullets Group
+        this.playerBullets = new Bullets(this, 1);
+        this.physics.add.overlap(this.playerBullets, this.enemyGroup, this.handleBulletHitEntity, null, this);
+        this.input.keyboard.on('keydown-SPACE', (event) => {
+            this.playerBullets.fireBullet(this.player.x, this.player.y, this.player.direction);
+        });
+
+        //  Initialize Enemy Bullets Group
+        this.enemyBullets = new Bullets(this, 50);
+        this.physics.add.overlap(this.enemyBullets, this.player, this.handleBulletHitEntity, null, this);
+
+        //  Spawn enemies and rocks
+        this.spawnEntities(this.map, this.enemyGroup, this.rockGroup, this.enemyBullets);
+
+        //  Activate enemy movement
+        this.enemyGroup.isActive = true;
+
+        /*
+        * Overlap check when a player comes into contact with an enemy
+        * This overlap check must be put after the player and enemy has been created
+        */
+        this.physics.add.overlap(this.player, this.enemyGroup, this.handlePlayerHit, null, this);
+
+        //  Player hit collision with rock
+        this.physics.add.overlap(this.player, this.rockGroup, this.handleRockHitEntity, null, this);
+
+        //  Enemy hit collision with rock
+        this.physics.add.overlap(this.enemyGroup, this.rockGroup, this.handleRockHitEntity, null, this);
+
+        this.powerups = this.physics.add.group();
+
+        // Create a test powerup somewhere in the map
+        this.slowdownPowerups = this.physics.add.group({ allowGravity: false });
+
+        const powerup = this.slowdownPowerups.create(200, 500, "powerup_slowdown");
+        powerup.setOrigin(0, 0);
+        powerup.body.setSize(40, 40, true);
+
+        this.physics.add.overlap(this.player, this.slowdownPowerups, this.activateSlowdown, null, this);
 
         //  Start Shermie's auto move path (using tween)
         //  Enables keyboard controls upon completion
@@ -83,13 +167,262 @@ export default class GameScene extends Phaser.Scene {
     }
 
     update() {
-        this.player.handleInput(this.cursors, this.wasdKeys);
+        if (!this.isShuttingDown) {
+            this.player.handleInput(this.cursors, this.wasdKeys);
+
+            this.enemyGroup.getChildren().forEach(enemy => {
+                if (enemy.isActive) {
+                    if (this.enemyGroup.getLength() == 1) {
+                        enemy.isEscaping = true;
+                        enemy.update(this.goal);
+                    }
+                    else {
+                        enemy.update(this.player);
+                    }
+                }
+            });
+
+            this.rockGroup.getChildren().forEach(rock => {
+                rock.update(this.player);
+            })
+        }
     }
 
+    onAllEnemiesKilled() {
+        console.log(`Level ${this.level} cleared!`);
+        const next = this.level + 1;
+        const max = parseInt(localStorage.getItem('maxUnlockedLevel'), 10) || 1;
+        if (next > max && next <= 5) {
+            localStorage.setItem('maxUnlockedLevel', next);
+        }
+        this.scene.stop('GameUI');
+        this.scene.start('LevelCompleteScene', { level: this.level });
+    }
+
+    /**
+     * handleBulletEntityCollision - handle enemy/player damage if hit by a bullet
+     * @param {*} obj1 - bullet entity
+     * @param {*} obj2 - enemy/player entity
+     */
+    handleBulletHitEntity(obj1, obj2) {
+        //  Fixes an issue that mixes up the bullets with the entities.
+        //  Not sure why it happens, but this works.
+        const bullet = obj1 instanceof Bullet ? obj1 : obj2;
+        const entity = obj2 instanceof Bullet ? obj1 : obj2;
+
+        if (!bullet.active) return; // Safety check
+        bullet.setActive(false);
+        bullet.setVisible(false);
+
+        if (entity == this.player) {
+            this.handlePlayerHit(this.player);
+        }
+        else {
+            entity.takeDamage();
+            this.tweens.addCounter({
+                from: 0,
+                to: 1,
+                duration: 500,
+                ease: 'Linear',
+                onStart: () => {
+                    entity.isActive = false;
+                },
+                onComplete: () => {
+                    entity.isActive = true;
+                }
+            });
+        }
+    }
+
+    /**
+     * digEnemyTunnels - digs out the preset tunnels which the enemies first spawn in
+     * @param {Phaser.Tilemaps.Tilemap} map - The current map
+     */
+    digEnemyTunnels(map, layer) {
+        let coordX;
+        let coordY;
+        map.forEachTile(tile => {
+            coordX = tile.x * map.tileWidth;
+            coordY = tile.y * map.tileHeight;
+            if (tile.properties['left'] > 0) {
+                this.rt.drawFrame("mask_tileset", 11, coordX, coordY);
+            }
+            if (tile.properties['right'] > 0) {
+                this.rt.drawFrame("mask_tileset", 5, coordX, coordY);
+            }
+            if (tile.properties['up'] > 0) {
+                this.rt.drawFrame("mask_tileset", 17, coordX, coordY);
+            }
+            if (tile.properties['down'] > 0) {
+                this.rt.drawFrame("mask_tileset", 23, coordX, coordY);
+            }
+        }, this, 0, 0, 12, 16, null, layer);
+    }
+
+    /**
+     * spawnEntities - creates and places new enemies and rocks in their preset locations on the tilemap
+     * @param {Phaser.Tilemaps.Tilemap} map
+     * @param {Phaser.Physics.group} enemyGroup - The enemies container
+     * @param {Phaser.Physics.group} rockGroup - The rocks container
+     * @param {Phaser.Physics.group} bulletsGroup - The enemy bullets container
+     */
+    spawnEntities(map, enemyGroup, rockGroup, bulletsGroup) {
+        let coordX;
+        let coordY;
+        map.forEachTile(tile => {
+            if (tile.index === -1) return;
+
+            coordX = tile.x * map.tileWidth;
+            coordY = tile.y * map.tileHeight;
+
+            //  Create a rock entity
+            if (tile.properties['entity_name'] == "rock") {
+                let rock = new Rock(this, coordX, coordY, tile.properties['entity_name'], rockGroup).setOrigin(0.5, 0.5);
+                rockGroup.add(rock);
+            }
+
+            //  Create a basic enemy entity
+            if (tile.properties['entity_name'] === "cd_enemy") {
+                let enemy = new Enemy(this, coordX, coordY, 'cd_enemy', enemyGroup)
+                    .setOrigin(0, 0);
+                enemyGroup.add(enemy);
+
+                // 3) Increment counter and listen for its destroy
+                this.remainingEnemies++;
+                enemy.on('destroy', () => {
+                    if (!this.isShuttingDown) {
+                        this.remainingEnemies--;
+                        console.log(`Enemies remaining: ${this.remainingEnemies}`);
+                        if (this.remainingEnemies == 0) {
+                            this.onAllEnemiesKilled();
+                        }
+                    }
+                });
+            }
+
+            //  Create a Techno Worm enemy entity
+            if (tile.properties['entity_name'] == "worm_enemy") {
+                let enemy = new TechnoWorm(this, coordX, coordY, enemyGroup, bulletsGroup).setOrigin(0, 0);
+                enemyGroup.add(enemy);
+                this.remainingEnemies++;
+                enemy.on('destroy', () => {
+                    if (!this.isShuttingDown) {
+                        this.remainingEnemies--;
+                        console.log(`Enemies remaining: ${this.remainingEnemies}`);
+                        if (this.remainingEnemies == 0) {
+                            this.onAllEnemiesKilled();
+                        }
+                    }
+                });
+            }
+
+        }, this, 0, 0, 12, 16, null, "Entities");
+    }
+
+    /*
+    * If a player is hit by the enemy, it gives them invulnerability for a short time
+    * Duration of the invulnerability can be changed
+    * SUBJECT TO CHANGE: upon player having no lives the scene restarts.
+    */
+    handlePlayerHit(player) {
+        if (!player.invulnerable) {
+            this.lives--;
+            this.game.events.emit("updateLives", this.lives);
+
+            // Temporary invulnerability
+
+            player.invulnerable = true;
+            this.tweens.add({
+                targets: player,
+                alpha: 0.3,
+                duration: 100,
+                yoyo: true,
+                repeat: 5,
+                onComplete: () => {
+                    player.setAlpha(1);
+                    player.invulnerable = false;
+                }
+            });
+
+            if (this.lives <= 0) {
+                this.player.destroy(true);
+                this.isShuttingDown = true;
+                // Save high score to localStorage
+                const prevHighScore = parseInt(localStorage.getItem("highScore")) || 0;
+                if (this.score > prevHighScore) {
+                    localStorage.setItem("highScore", this.score);
+                }
+                this.scene.stop('GameUI');
+                this.scene.launch('YouDiedScene');
+            }
+        }
+    }
+
+    activateSlowdown(player, powerup) {
+        powerup.destroy(); // remove from game
+
+        // Slow all enemies
+        this.enemyGroup.getChildren().forEach(enemy => {
+            enemy.isSlowed = true;
+        });
+
+        // Optional: add tint or UI effect
+        this.enemyGroup.children.iterate(enemy => {
+            enemy.setTint(0x9999ff); // light blue tint while slowed
+        });
+
+        // Reset slowdown after 5 seconds
+        this.time.delayedCall(5000, () => {
+            this.enemyGroup.getChildren().forEach(enemy => {
+                enemy.isSlowed = false;
+                enemy.clearTint();
+            });
+        });
+    }
+
+    handleRockHitEntity(entity, rock) {
+        if (rock.isMoving && rock.entityCollision) {
+            if (entity == this.player) {
+                this.handlePlayerHit(entity);
+            }
+            else {
+                entity.destroy();
+            }
+            rock.destroy();
+        }
+    }
+
+    /*
+    * Changes tile texture (applies bitmask) when player walks over an undiscovered tile
+    * If this tile hasn't been discovered yet, add to set and give 10 points
+    * Emit score update to UI
+    */
     updateTile(map) {
         let currentTile = this.getPlayerTile(map, this.player.direction);
+
         if (currentTile) {
+
+            const tileKey = `${currentTile.x},${currentTile.y}`;
+
+            if (!this.visitedTiles.has(tileKey)) {
+                this.visitedTiles.add(tileKey);
+                this.score += 10;
+
+                this.game.events.emit("updateScore", this.score);
+
+                // Check if new high score
+                if (this.score > this.highScore) {
+                    this.highScore = this.score;
+
+                    // Save new high score to localStorage
+                    localStorage.setItem("highScore", this.highScore);
+
+                    // Emit update to GameUI
+                    this.game.events.emit("updateHighScore", this.highScore);
+                }
+            }
             this.changeTileTexture(map, currentTile, this.player.direction);
+            this.player.lastTile = currentTile;
         }
     }
 
@@ -180,6 +513,22 @@ export default class GameScene extends Phaser.Scene {
             this.rt.drawFrame("shermie_mask", shermieMaskFrame, this.player.x, this.player.y)
             this.rt.drawFrame("mask_tileset", newTexture + offsetTexture - 1, tileWorldXY.x, tileWorldXY.y);
             tile.properties[direction] += 1;
+        }
+
+        //  Update the tile the player has just exited
+        if (this.player.lastTile && tile !== this.player.lastTile) {
+            if (this.player.direction == 'left') {
+                this.player.lastTile.properties['right'] = this.player.lastTile.properties['left'] == 6 || this.player.lastTile.properties['up'] == 6 || this.player.lastTile.properties['down'] == 6 ? 6 : this.player.lastTile.properties['right'];
+            }
+            else if (this.player.direction == 'right') {
+                this.player.lastTile.properties['left'] = this.player.lastTile.properties['right'] == 6 || this.player.lastTile.properties['up'] == 6 || this.player.lastTile.properties['down'] == 6 ? 6 : this.player.lastTile.properties['left'];
+            }
+            else if (this.player.direction == 'up') {
+                this.player.lastTile.properties['down'] = this.player.lastTile.properties['up'] == 6 || this.player.lastTile.properties['left'] == 6 || this.player.lastTile.properties['right'] == 6 ? 6 : this.player.lastTile.properties['down'];
+            }
+            else if (this.player.direction == 'down') {
+                this.player.lastTile.properties['up'] = this.player.lastTile.properties['down'] == 6 || this.player.lastTile.properties['left'] == 6 || this.player.lastTile.properties['right'] == 6 ? 6 : this.player.lastTile.properties['up'];
+            }
         }
     }
 }
