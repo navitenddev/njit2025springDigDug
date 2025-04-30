@@ -622,8 +622,8 @@ export default class enemy extends Phaser.Physics.Arcade.Sprite {
         this.setPosition(this.x + stepX, this.y + stepY);
         // this.play("cd_move", true);
 
-        if (this.x < -49) {
-            this.destroy();
+        if (this.x == -49) {
+            this.scene.enemyWin();
         }
     }
 }

@@ -200,6 +200,12 @@ export default class GameScene extends Phaser.Scene {
         }
     }
 
+    enemyWin() {
+        this.isShuttingDown = true;
+        this.scene.launch('GameOverScene', { message: "Enemy Escaped" });
+        this.scene.bringToTop('GameOverScene');
+    }
+
     onAllEnemiesKilled() {
         console.log(`Level ${this.level} cleared!`);
         const next = this.level + 1;
@@ -453,8 +459,8 @@ export default class GameScene extends Phaser.Scene {
                 if (this.score > prevHighScore) {
                     localStorage.setItem("highScore", this.score);
                 }
-                this.scene.stop('GameUI');
-                this.scene.launch('YouDiedScene');
+                this.scene.launch('GameOverScene', { message: "You Died" });
+                this.scene.bringToTop('GameOverScene');
             }
         }
     }
