@@ -202,7 +202,7 @@ export default class GameScene extends Phaser.Scene {
 
     enemyWin() {
         this.isShuttingDown = true;
-        this.scene.launch('GameOverScene', { message: "Enemy Escaped" });
+        this.scene.launch('GameOverScene', { level: this.level, message: "Enemy Escaped" });
         this.scene.bringToTop('GameOverScene');
     }
 
@@ -459,7 +459,7 @@ export default class GameScene extends Phaser.Scene {
                 if (this.score > prevHighScore) {
                     localStorage.setItem("highScore", this.score);
                 }
-                this.scene.launch('GameOverScene', { message: "You Died" });
+                this.scene.launch('GameOverScene', { level: this.level, message: "You Died" });
                 this.scene.bringToTop('GameOverScene');
             }
         }
