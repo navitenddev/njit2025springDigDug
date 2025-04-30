@@ -33,7 +33,7 @@ export default class GameScene extends Phaser.Scene {
 
         // Create player object & added amount of lives to player
         this.lives = 3;
-        this.player = new Player(this, 550, 100).setOrigin(0, 0);
+        this.player = this.level == 1 ? new Player(this, 550, 100).setOrigin(0, 0) : new Player(this, 300, 400).setOrigin(0, 0);
         this.add.existing(this.player);
         this.physics.add.existing(this.player);
         this.player.body.setAllowGravity(false);
@@ -131,39 +131,50 @@ export default class GameScene extends Phaser.Scene {
 
         this.physics.add.overlap(this.player, this.slowdownPowerups, this.activateSlowdown, null, this);
 
-        //  Start Shermie's auto move path (using tween)
+        //  Start Shermie's auto move path (only for the first level)
         this.player.controlsDisabled = true;
-        this.tweens.addCounter({
-            from: 0,
-            to: 1,
-            duration: 2200,
-            ease: 'Linear',
-            onUpdate: () => {
-                if (this.player.x !== 300) {
-                    this.player.move('left', false);
-                }
-            },
-            onComplete: () => {
-                this.tweens.addCounter({
-                    from: 0,
-                    to: 1,
-                    duration: 3500,
-                    ease: 'Linear',
-                    onUpdate: () => {
-                        if (this.player.y !== 400) {
-                            this.player.move('down', false);
-                        }
-                    },
-                    onComplete: () => {
-                        //  Activate user controls
-                        this.player.controlsDisabled = false;
-
-                        //  Activate enemy movement
-                        this.enemyGroup.isActive = true;
+        if (this.level == 1) {
+            this.tweens.addCounter({
+                from: 0,
+                to: 1,
+                duration: 2200,
+                ease: 'Linear',
+                onUpdate: () => {
+                    if (this.player.x !== 300) {
+                        this.player.move('left', false);
                     }
-                });
-            }
-        });
+                },
+                onComplete: () => {
+                    this.tweens.addCounter({
+                        from: 0,
+                        to: 1,
+                        duration: 3500,
+                        ease: 'Linear',
+                        onUpdate: () => {
+                            if (this.player.y !== 400) {
+                                this.player.move('down', false);
+                            }
+                        },
+                        onComplete: () => {
+                            //  Activate user controls
+                            this.player.controlsDisabled = false;
+
+                            //  Activate enemy movement
+                            this.enemyGroup.isActive = true;
+                        }
+                    });
+                }
+            });
+        }
+        else {
+            this.time.delayedCall(2500, () => {
+                //  Activate user controls
+                this.player.controlsDisabled = false;
+
+                //  Activate enemy movement
+                this.enemyGroup.isActive = true;
+            });
+        }
     }
 
     update() {
