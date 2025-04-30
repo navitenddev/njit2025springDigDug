@@ -336,13 +336,17 @@ export default class enemy extends Phaser.Physics.Arcade.Sprite {
         return this.getNextDirection(goal, this.currentTile);
     }
 
+    /**
+     * Damages the hit enemy
+     * 
+     * @returns {boolean} True if the enemy's health reaches 0 (died), otherwise false.
+     */
     takeDamage() {
         if (this.health > 1) {
             this.health -= 1;
+            return false;
         }
-        else {
-            this.destroy();
-        }
+        return true;
     }
 
     /**
@@ -445,8 +449,7 @@ export default class enemy extends Phaser.Physics.Arcade.Sprite {
      * Sets this enemy to be in ghost mode.
      */
     startGhostMovement() {
-        try
-        {
+        try {
             if (!this.hasFoundPlayer) {
                 this.targetPosition = null;
                 this.ghostMode = true;
@@ -454,8 +457,7 @@ export default class enemy extends Phaser.Physics.Arcade.Sprite {
                 //  End ghost movement (USED FOR TESTING)
                 //this.ghostTimer = this.scene.time.delayedCall(5000, this.endGhostMovement, [], this);
             }
-        } catch (error)
-        {
+        } catch (error) {
             console.warn("Enemy.js generic error (ignore)")
         }
     }

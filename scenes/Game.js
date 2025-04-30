@@ -106,6 +106,7 @@ export default class GameScene extends Phaser.Scene {
         this.physics.add.overlap(this.enemyBullets, this.player, this.handleBulletHitEntity, null, this);
 
         //  Spawn enemies and rocks
+        this.rockKills = 0;
         this.spawnEntities(this.map, this.enemyGroup, this.rockGroup, this.enemyBullets);
 
         //  Activate enemy movement
@@ -169,6 +170,50 @@ export default class GameScene extends Phaser.Scene {
     }
 
     /**
+     * Emits score update event.
+     * 
+     * Also emits high score event if applicable.
+     */
+    updateScoreText() {
+        this.game.events.emit("updateScore", this.score);
+
+        // Check if new high score
+        if (this.score > this.highScore) {
+            this.highScore = this.score;
+
+            // Save new high score to localStorage
+            localStorage.setItem("highScore", this.highScore);
+
+            // Emit update to GameUI
+            this.game.events.emit("updateHighScore", this.highScore);
+        }
+    }
+
+    /**
+     * Display the points earned by the player for 1 second
+     * 
+     * @param {number} points - Number to be displayed
+     * @param {number} coordX - Position in X-axis
+     * @param {number} coordY - Position in Y-axis
+     */
+    showPointsPopup(points, coordX, coordY) {
+        const pointsText = this.add.text(coordX, coordY, points.toString(), {
+            fontSize: "20px",
+            fill: "#ffffff",
+            fontFamily: 'PressStart2P'
+        });
+        this.tweens.addCounter({
+            from: 0,
+            to: 1,
+            duration: 1000,
+            ease: 'Linear',
+            onComplete: () => {
+                pointsText.destroy();
+            }
+        });
+    }
+
+    /**
      * handleBulletEntityCollision - handle enemy/player damage if hit by a bullet
      * @param {*} obj1 - bullet entity
      * @param {*} obj2 - enemy/player entity
@@ -186,8 +231,34 @@ export default class GameScene extends Phaser.Scene {
         if (entity == this.player) {
             this.handlePlayerHit(this.player);
         }
+        else if (entity.takeDamage()) {
+            let points = 0;
+            let coordX = entity.x;
+            let coordY = entity.y + 15;
+
+            //  Update score depending on where the entity has died (Y-coord)
+            if (entity.y >= 600) {
+                points = 400;
+            }
+            else if (entity.y >= 450) {
+                points = 300;
+            }
+            else if (entity.y >= 300) {
+                points = 200;
+            }
+            else if (entity.y >= 100) {
+                points = 100;
+            }
+            this.score += points;
+            this.updateScoreText();
+
+            //  Kill the entity
+            entity.destroy();
+
+            //  Show the points gained
+            this.showPointsPopup(points, coordX, coordY);
+        }
         else {
-            entity.takeDamage();
             this.tweens.addCounter({
                 from: 0,
                 to: 1,
@@ -374,6 +445,9 @@ export default class GameScene extends Phaser.Scene {
                 this.handlePlayerHit(entity);
             }
             else {
+                this.score += 1000;
+                this.updateScoreText();
+                this.showPointsPopup(1000, entity.x - 15, entity.y + 15)
                 entity.destroy();
             }
             rock.destroy();
@@ -392,22 +466,10 @@ export default class GameScene extends Phaser.Scene {
 
             const tileKey = `${currentTile.x},${currentTile.y}`;
 
-            if (!this.visitedTiles.has(tileKey)) {
+            if (currentTile.y > 2 && !this.visitedTiles.has(tileKey)) {
                 this.visitedTiles.add(tileKey);
                 this.score += 10;
-
-                this.game.events.emit("updateScore", this.score);
-
-                // Check if new high score
-                if (this.score > this.highScore) {
-                    this.highScore = this.score;
-
-                    // Save new high score to localStorage
-                    localStorage.setItem("highScore", this.highScore);
-
-                    // Emit update to GameUI
-                    this.game.events.emit("updateHighScore", this.highScore);
-                }
+                this.updateScoreText();
             }
             this.changeTileTexture(map, currentTile, this.player.direction);
             this.player.lastTile = currentTile;
