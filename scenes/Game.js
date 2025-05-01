@@ -131,7 +131,7 @@ export default class GameScene extends Phaser.Scene {
         this.time.addEvent({
             delay: Phaser.Math.Between(4000, 8000),
             callback: () => {
-                const types = ['powerup_slowdown', 'powerup_teleport'];
+                const types = ['powerup_slowdown', 'powerup_teleport', 'powerup_rapidfire'];
         
                 let filtered = types.filter(type => {
                     // Allow it only if not repeated twice
@@ -155,7 +155,6 @@ export default class GameScene extends Phaser.Scene {
             },
             loop: true
         });
-        
     }
 
     update() {
@@ -510,6 +509,30 @@ export default class GameScene extends Phaser.Scene {
         player.direction = null;         
     }
 
+    activateRapidFire(player, powerup){
+        this.playerBullets = new Bullets(this, 3);
+
+        this.game.events.emit("powerupActivated", "Rapidfire");
+        powerup.destroy();
+    
+        // If there's already a slowdown tween running, kill it
+        if (this.rapidfireTween) {
+            this.rapidfireTween.remove(); // Cancels the tween immediately
+        }
+    
+        // Start a new tween as a timer
+        this.rapidfireTween = this.tweens.addCounter({
+            from: 0,
+            to: 1,
+            duration: 5000,
+            onComplete: () => {
+                this.game.events.emit("clearPowerupLabel", "Rapidfire");
+                this.playerBullets = new Bullets(this, 1);
+                this.rapidfireTween = null; // Clean up reference
+            }
+        });
+    }
+
     handleRockHitEntity(entity, rock) {
         if (rock.isMoving && rock.entityCollision) {
             if (entity == this.player) {
@@ -573,6 +596,7 @@ export default class GameScene extends Phaser.Scene {
         this.physics.add.overlap(this.player, group, (player, powerup) => {
             if (type === 'powerup_slowdown') this.activateSlowdown(player, powerup);
             if (type === 'powerup_teleport') this.activateTeleport(player, powerup);
+            if (type === 'powerup_rapidfire') this.activateRapidFire(player,powerup);
         });
     }
     
