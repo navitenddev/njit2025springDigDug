@@ -33,7 +33,7 @@ export default class GameScene extends Phaser.Scene {
 
         // Create player object & added amount of lives to player
         this.lives = 3;
-        this.player = new Player(this, 100, 450).setOrigin(0, 0);
+        this.player = this.level == 1 ? new Player(this, 550, 100).setOrigin(0, 0) : new Player(this, 300, 400).setOrigin(0, 0);
         this.add.existing(this.player);
         this.physics.add.existing(this.player);
         this.player.body.setAllowGravity(false);
@@ -98,7 +98,7 @@ export default class GameScene extends Phaser.Scene {
         this.playerBullets = new Bullets(this, 1);
         this.physics.add.overlap(this.playerBullets, this.enemyGroup, this.handleBulletHitEntity, null, this);
         this.input.keyboard.on('keydown-SPACE', (event) => {
-            this.playerBullets.fireBullet(this.player.x, this.player.y, this.player.direction);
+            this.playerBullets.fireBullet(this.player.x, this.player.y, this.player.direction, this.player);
         });
 
         //  Initialize Enemy Bullets Group
@@ -108,9 +108,6 @@ export default class GameScene extends Phaser.Scene {
         //  Spawn enemies and rocks
         this.rockKills = 0;
         this.spawnEntities(this.map, this.enemyGroup, this.rockGroup, this.enemyBullets);
-
-        //  Activate enemy movement
-        this.enemyGroup.isActive = true;
 
         /*
         * Overlap check when a player comes into contact with an enemy
@@ -132,29 +129,74 @@ export default class GameScene extends Phaser.Scene {
             delay: Phaser.Math.Between(4000, 8000),
             callback: () => {
                 const types = ['powerup_slowdown', 'powerup_teleport', 'powerup_rapidfire'];
-        
+
                 let filtered = types.filter(type => {
                     // Allow it only if not repeated twice
                     return !(this.lastTwoPowerups[0] === type && this.lastTwoPowerups[1] === type);
                 });
-        
+
                 // Fallback in case all are filtered out (shouldn't happen with only 2 powerups)
                 if (filtered.length === 0) {
                     filtered = types;
                 }
-        
+
                 const chosen = Phaser.Utils.Array.GetRandom(filtered);
-        
+
                 // Update history
                 this.lastTwoPowerups.push(chosen);
                 if (this.lastTwoPowerups.length > 2) {
                     this.lastTwoPowerups.shift();
                 }
-        
+
                 this.spawnPowerup(chosen);
             },
             loop: true
         });
+
+        //  Start Shermie's auto move path (only for the first level)
+        this.player.controlsDisabled = true;
+        if (this.level == 1) {
+            this.tweens.addCounter({
+                from: 0,
+                to: 1,
+                duration: 2200,
+                ease: 'Linear',
+                onUpdate: () => {
+                    if (this.player.x !== 300) {
+                        this.player.move('left', false);
+                    }
+                },
+                onComplete: () => {
+                    this.tweens.addCounter({
+                        from: 0,
+                        to: 1,
+                        duration: 3500,
+                        ease: 'Linear',
+                        onUpdate: () => {
+                            if (this.player.y !== 400) {
+                                this.player.move('down', false);
+                            }
+                        },
+                        onComplete: () => {
+                            //  Activate user controls
+                            this.player.controlsDisabled = false;
+
+                            //  Activate enemy movement
+                            this.enemyGroup.isActive = true;
+                        }
+                    });
+                }
+            });
+        }
+        else {
+            this.time.delayedCall(2500, () => {
+                //  Activate user controls
+                this.player.controlsDisabled = false;
+
+                //  Activate enemy movement
+                this.enemyGroup.isActive = true;
+            });
+        }
     }
 
     update() {
@@ -441,18 +483,18 @@ export default class GameScene extends Phaser.Scene {
     activateSlowdown(player, powerup) {
         this.game.events.emit("powerupActivated", "Slowdown");
         powerup.destroy();
-    
+
         // Slow all enemies
         this.enemyGroup.getChildren().forEach(enemy => {
             enemy.isSlowed = true;
             enemy.setTint(0x9999ff);
         });
-    
+
         // If there's already a slowdown tween running, kill it
         if (this.slowdownTween) {
             this.slowdownTween.remove(); // Cancels the tween immediately
         }
-    
+
         // Start a new tween as a timer
         this.slowdownTween = this.tweens.addCounter({
             from: 0,
@@ -463,13 +505,13 @@ export default class GameScene extends Phaser.Scene {
                     enemy.isSlowed = false;
                     enemy.clearTint();
                 });
-    
+
                 this.game.events.emit("clearPowerupLabel", "Slowdown");
                 this.slowdownTween = null; // Clean up reference
             }
         });
     }
-    
+
 
     activateTeleport(player, powerup) {
         this.game.events.emit("powerupActivated", "Teleport");
@@ -479,47 +521,47 @@ export default class GameScene extends Phaser.Scene {
 
         // Remove the powerup from the map
         powerup.destroy();
-    
+
         if (this.visitedTiles.size === 0) {
             console.warn("No visited tiles to teleport to!");
             return;
         }
-    
+
         // Pick a random tile from the visitedTiles set
         const tilesArray = Array.from(this.visitedTiles);
         const randomKey = Phaser.Utils.Array.GetRandom(tilesArray);
         const [x, y] = randomKey.split(',').map(Number);
-        
+
         // ✅ Now x and y are integers
         const tile = this.map.getTileAt(x, y, true, "Ground");
-        
+
         if (!tile || tile.index === -1) {
             console.warn("Could not find a valid tile at", x, y);
             return;
         }
-        
+
         const worldX = tile.pixelX;
         const worldY = tile.pixelY;
 
-        
+
         player.setPosition(Math.round(worldX), Math.round(worldY));
-        
+
         player.targetPosition = null;
         player.moveQueue = null;
-        player.direction = null;         
+        player.direction = null;
     }
 
-    activateRapidFire(player, powerup){
+    activateRapidFire(player, powerup) {
         this.playerBullets = new Bullets(this, 3);
 
         this.game.events.emit("powerupActivated", "Rapidfire");
         powerup.destroy();
-    
+
         // If there's already a slowdown tween running, kill it
         if (this.rapidfireTween) {
             this.rapidfireTween.remove(); // Cancels the tween immediately
         }
-    
+
         // Start a new tween as a timer
         this.rapidfireTween = this.tweens.addCounter({
             from: 0,
@@ -539,6 +581,9 @@ export default class GameScene extends Phaser.Scene {
                 this.handlePlayerHit(entity);
             }
             else {
+                this.score += 1000;
+                this.updateScoreText();
+                this.showPointsPopup(1000, entity.x - 15, entity.y + 15)
                 entity.destroy();
             }
             rock.destroy();
@@ -556,7 +601,8 @@ export default class GameScene extends Phaser.Scene {
         if (currentTile) {
 
             const tileKey = `${currentTile.x},${currentTile.y}`;
-            if (!this.visitedTiles.has(tileKey)) {
+
+            if (currentTile.y > 2 && !this.visitedTiles.has(tileKey)) {
                 this.visitedTiles.add(tileKey);
                 this.score += 10;
                 this.updateScoreText();
@@ -568,39 +614,39 @@ export default class GameScene extends Phaser.Scene {
 
     spawnPowerup(type) {
         const validTiles = [];
-    
+
         this.map.forEachTile(tile => {
             const isGroundLayer = tile.layer.name === "Ground";
             const isOnGrid = tile.pixelX % 50 === 0 && tile.pixelY % 50 === 0;
             const isNotSurface = tile.pixelY >= 150;
             const notOnPlayer = Math.floor(this.player.x / 50) !== tile.x || Math.floor(this.player.y / 50) !== tile.y;
-    
+
             // Replace `tile.index > 0` with any specific dirt tile condition if needed
             const isDirt = tile.index > 0; // or tile.properties.isDirt === true
-    
+
             if (isGroundLayer && isOnGrid && notOnPlayer && isDirt && isNotSurface) {
                 validTiles.push(tile);
             }
         }, this, 0, 0, this.map.width, this.map.height);
-    
+
         if (validTiles.length === 0) return;
-    
+
         const tile = Phaser.Utils.Array.GetRandom(validTiles);
         const x = tile.pixelX + tile.width / 2;
         const y = tile.pixelY + tile.height / 2;
-    
+
         const group = this.physics.add.staticGroup();
         const sprite = group.create(x, y, type).setScale(0.5).setOrigin(0.5);
-    
+
         // Overlap trigger
         this.physics.add.overlap(this.player, group, (player, powerup) => {
             if (type === 'powerup_slowdown') this.activateSlowdown(player, powerup);
             if (type === 'powerup_teleport') this.activateTeleport(player, powerup);
-            if (type === 'powerup_rapidfire') this.activateRapidFire(player,powerup);
+            if (type === 'powerup_rapidfire') this.activateRapidFire(player, powerup);
         });
     }
-    
-    
+
+
 
     //  Returns the tile the player is currently moving INTO.
     getPlayerTile(map, direction) {
