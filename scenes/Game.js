@@ -425,6 +425,18 @@ export default class GameScene extends Phaser.Scene {
     }
 
     activateSlowdown(player, powerup) {
+        this.game.events.emit("powerupActivated", "Slowdown");
+
+        this.time.delayedCall(3000, () => {
+            this.enemyGroup.getChildren().forEach(enemy => {
+                enemy.isSlowed = false;
+                enemy.clearTint();
+            });
+        
+            // Fade out power-up label after effect ends
+            this.game.events.emit("clearPowerupLabel");
+        });
+
         powerup.destroy(); // remove from game
 
         // Slow all enemies
@@ -447,6 +459,18 @@ export default class GameScene extends Phaser.Scene {
     }
 
     activateTeleport(player, powerup) {
+        this.game.events.emit("powerupActivated", "Teleport");
+
+        this.time.delayedCall(3000, () => {
+            this.enemyGroup.getChildren().forEach(enemy => {
+                enemy.isSlowed = false;
+                enemy.clearTint();
+            });
+        
+            // Fade out power-up label after effect ends
+            this.game.events.emit("clearPowerupLabel");
+        });
+
         // Remove the powerup from the map
         powerup.destroy();
     

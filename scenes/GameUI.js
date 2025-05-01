@@ -114,6 +114,32 @@ export default class GameUI extends Phaser.Scene {
             strokeThickness: outlineThickness
         });
 
+        
+        this.activePowerupText = this.add.text(scaleX, scaleY + 500, "", {
+            fontSize: "25px",
+            fill: "#ffffff",
+            fontFamily: "PressStart2P",
+            stroke: outlineColor, 
+            strokeThickness: outlineThickness
+        });
+
+        this.game.events.on("powerupActivated", (label) => {
+            this.activePowerupText.setText(label);
+            this.activePowerupText.setAlpha(1);
+            this.tweens.killTweensOf(this.activePowerupText);
+        });
+        
+        this.game.events.on("clearPowerupLabel", () => {
+            this.tweens.add({
+                targets: this.activePowerupText,
+                alpha: 0,
+                duration: 1000,
+                ease: 'Power1'
+            });
+        });
+        
+        
+
         const levelText = this.add.text(scaleX, scaleY + 700, `Level:${this.currentLevel}`, {
             fontSize: "25px",
             fill: "#ffffff",
