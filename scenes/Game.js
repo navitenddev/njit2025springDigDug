@@ -200,8 +200,30 @@ export default class GameScene extends Phaser.Scene {
         }
     }
 
-    enemyWin() {
+    /**
+     * Begin game scene shutdown
+     * 
+     * Stops all entity movement
+     */
+    shutdown() {
         this.isShuttingDown = true;
+
+        try {
+            this.enemyGroup.getChildren().forEach(enemy => {
+                enemy.setVelocity(0, 0);
+            });
+
+            this.rockGroup.getChildren().forEach(rock => {
+                rock.setVelocity(0, 0);
+            })
+            this.tweens.killAll();
+        } catch (error) {
+            console.warn("Error occurred trying to shutdown GameScene")
+        }
+    }
+
+    enemyWin() {
+        this.shutdown();
         this.scene.launch('GameOverScene', { level: this.level, message: "Enemy Escaped" });
         this.scene.bringToTop('GameOverScene');
     }
@@ -215,6 +237,7 @@ export default class GameScene extends Phaser.Scene {
         }
         this.scene.stop('GameUI');
         this.scene.start('LevelCompleteScene', { level: this.level });
+        this.shutdown();
     }
 
     /**
@@ -453,7 +476,7 @@ export default class GameScene extends Phaser.Scene {
 
             if (this.lives <= 0) {
                 this.player.destroy(true);
-                this.isShuttingDown = true;
+                this.shutdown();
                 // Save high score to localStorage
                 const prevHighScore = parseInt(localStorage.getItem("highScore")) || 0;
                 if (this.score > prevHighScore) {
