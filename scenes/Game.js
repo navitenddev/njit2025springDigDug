@@ -96,7 +96,7 @@ export default class GameScene extends Phaser.Scene {
 
         //  Initialize Player Bullets Group
         this.playerBullets = new Bullets(this, 1);
-        this.physics.add.overlap(this.playerBullets, this.enemyGroup, this.handleBulletHitEntity, null, this);
+        this.playerBulletsCollider = this.physics.add.overlap(this.playerBullets, this.enemyGroup, this.handleBulletHitEntity, null, this);
         this.input.keyboard.on('keydown-SPACE', (event) => {
             this.playerBullets.fireBullet(this.player.x, this.player.y, this.player.direction, this.player);
         });
@@ -335,6 +335,21 @@ export default class GameScene extends Phaser.Scene {
                 }
             });
         }
+
+        try {
+            if (bullet.firedBy && bullet.firedBy.rapidFire) {
+                bullet.firedBy.canFire = true;
+            }
+            else {
+                this.time.delayedCall(300, () => {
+                    if (bullet.firedBy) {
+                        bullet.firedBy.canFire = true;
+                    }
+                }, [], this);
+            }
+        } catch (error) {
+            console.log("Error handled: resetting canFire of entity who fired bullet");
+        }
     }
 
     /**
@@ -467,7 +482,7 @@ export default class GameScene extends Phaser.Scene {
             });
 
             if (this.lives <= 0) {
-                this.player.destroy(true);
+                this.player.visible = false;
                 this.isShuttingDown = true;
                 // Save high score to localStorage
                 const prevHighScore = parseInt(localStorage.getItem("highScore")) || 0;
@@ -557,7 +572,7 @@ export default class GameScene extends Phaser.Scene {
         this.game.events.emit("powerupActivated", "Rapidfire");
         powerup.destroy();
 
-        // If there's already a slowdown tween running, kill it
+        // If there's already a rapid fire tween running, kill it
         if (this.rapidfireTween) {
             this.rapidfireTween.remove(); // Cancels the tween immediately
         }
@@ -567,9 +582,18 @@ export default class GameScene extends Phaser.Scene {
             from: 0,
             to: 1,
             duration: 5000,
+            onStart: () => {
+                this.player.rapidFire = true;
+                this.playerBullets = new Bullets(this, 4);
+                this.playerBulletsCollider.destroy();
+                this.playerBulletsCollider = this.physics.add.overlap(this.playerBullets, this.enemyGroup, this.handleBulletHitEntity, null, this);
+            },
             onComplete: () => {
                 this.game.events.emit("clearPowerupLabel", "Rapidfire");
+                this.player.rapidFire = false;
                 this.playerBullets = new Bullets(this, 1);
+                this.playerBulletsCollider.destroy();
+                this.playerBulletsCollider = this.physics.add.overlap(this.playerBullets, this.enemyGroup, this.handleBulletHitEntity, null, this);
                 this.rapidfireTween = null; // Clean up reference
             }
         });

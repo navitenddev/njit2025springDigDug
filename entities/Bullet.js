@@ -2,6 +2,7 @@ export default class Bullet extends Phaser.Physics.Arcade.Sprite {
     constructor(scene, x, y) {
         super(scene, x, y, 'bullet');
         this.direction = null;
+        this.firedBy = null;
     }
 
     preUpdate(time, delta) {
@@ -13,16 +14,19 @@ export default class Bullet extends Phaser.Physics.Arcade.Sprite {
         if ((this.direction == 'left' || this.direction == 'right') && Math.abs(this.startingPoint - this.x) >= 150) {
             this.setActive(false);
             this.setVisible(false);
+            this.delayFire()
         }
         //  Reset bullet after 3 blocks traveled vertically
         else if ((this.direction == 'up' || this.direction == 'down') && Math.abs(this.startingPoint - this.y) >= 150) {
             this.setActive(false);
             this.setVisible(false);
+            this.delayFire()
         }
         //  Reset bullet if out of boundary
         if (this.x <= 0 || this.x >= 600 || this.y <= 0 || this.y >= 800) {
             this.setActive(false);
             this.setVisible(false);
+            this.delayFire()
         }
     }
 
@@ -89,7 +93,25 @@ export default class Bullet extends Phaser.Physics.Arcade.Sprite {
             if (color.a == 0) {
                 this.setActive(false);
                 this.setVisible(false);
+                this.delayFire();
             }
         });
+    }
+
+    delayFire() {
+        try {
+            if (this.firedBy && this.firedBy.rapidFire) {
+                this.firedBy.canFire = true;
+            }
+            else {
+                this.scene.time.delayedCall(300, () => {
+                    if (this.firedBy) {
+                        this.firedBy.canFire = true;
+                    }
+                }, [], this);
+            }
+        } catch (error) {
+            console.log("Error handled: resetting canFire of entity who fired bullet");
+        }
     }
 }

@@ -21,17 +21,22 @@ export default class Bullets extends Phaser.Physics.Arcade.Group {
      */
     fireBullet(x, y, direction, entity) {
         try {
-            if (entity.isActive && !entity.controlsDisabled) {
+            if (entity && !entity.controlsDisabled && entity.canFire) {
                 const bullet = this.getFirstDead(false);
 
                 if (bullet) {
                     bullet.fire(x, y, direction);
+                    bullet.firedBy = entity;
+
+                    if (!entity.rapidFire) { entity.canFire = false; }
                 }
 
                 //  Stop the entity's movement for 1/2 second
                 entity.isActive = false;
                 this.scene.time.delayedCall(300, () => {
-                    entity.isActive = true;
+                    if (entity) {
+                        entity.isActive = true;
+                    }
                 }, [], this);
             }
         } catch (error) {

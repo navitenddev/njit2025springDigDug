@@ -11,6 +11,8 @@ export default class player extends Phaser.Physics.Arcade.Sprite {
         this.depth = 1;
         this.isActive = true;
         this.controlsDisabled = false;
+        this.canFire = true;
+        this.rapidFire = false;
 
         this.lastTile = this.scene.map.getTileAtWorldXY(x, y);
     }
@@ -18,7 +20,7 @@ export default class player extends Phaser.Physics.Arcade.Sprite {
     handleInput(cursors, wasdKeys) {
         // Prevent movement when the player shoots
         if (!this.isActive) return;
-      
+
         //  Prevent movement for the initial shermie movement path
         if (this.controlsDisabled) {
             return;
