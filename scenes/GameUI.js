@@ -106,6 +106,8 @@ export default class GameUI extends Phaser.Scene {
         /*
         * Functionality for showPowerUps and showing the Level your on is incomplete
         */
+        this.activePowerups = [];
+
         const showPowerUps = this.add.text(scaleX, scaleY + 400, "Active\nPowers:", {
             fontSize: "25px",
             fill: "#ffffff",
@@ -114,8 +116,23 @@ export default class GameUI extends Phaser.Scene {
             strokeThickness: outlineThickness
         });
 
-        
-        this.activePowerupText = this.add.text(scaleX, scaleY + 500, "", {
+        this.activePowerupTextOne = this.add.text(scaleX, scaleY + 500, "", {
+            fontSize: "25px",
+            fill: "#ffffff",
+            fontFamily: "PressStart2P",
+            stroke: outlineColor, 
+            strokeThickness: outlineThickness
+        });
+
+        this.activePowerupTextTwo = this.add.text(scaleX, scaleY + 550, "", {
+            fontSize: "25px",
+            fill: "#ffffff",
+            fontFamily: "PressStart2P",
+            stroke: outlineColor, 
+            strokeThickness: outlineThickness
+        });
+
+        this.activePowerupTextThree = this.add.text(scaleX, scaleY + 600, "", {
             fontSize: "25px",
             fill: "#ffffff",
             fontFamily: "PressStart2P",
@@ -124,20 +141,49 @@ export default class GameUI extends Phaser.Scene {
         });
 
         this.game.events.on("powerupActivated", (label) => {
-            this.activePowerupText.setText(label);
-            this.activePowerupText.setAlpha(1);
-            this.tweens.killTweensOf(this.activePowerupText);
-        });
+            if (!this.activePowerups.includes(label)) {
+                this.activePowerups.push(label);
+            }
         
-        this.game.events.on("clearPowerupLabel", () => {
-            this.tweens.add({
-                targets: this.activePowerupText,
-                alpha: 0,
-                duration: 1000,
-                ease: 'Power1'
+            // Show each powerup in the available text slots
+            const slots = [
+                this.activePowerupTextOne,
+                this.activePowerupTextTwo,
+                this.activePowerupTextThree
+            ];
+        
+            this.activePowerups.forEach((label, index) => {
+                if (slots[index]) {
+                    slots[index].setText(label);
+                    slots[index].setAlpha(1);
+                    this.tweens.killTweensOf(slots[index]);
+                }
             });
         });
         
+        
+        this.game.events.on("clearPowerupLabel", (label) => {
+            const index = this.activePowerups.indexOf(label);
+            if (index !== -1) {
+                const slots = [
+                    this.activePowerupTextOne,
+                    this.activePowerupTextTwo,
+                    this.activePowerupTextThree
+                ];
+                const slot = slots[index];
+                this.tweens.add({
+                    targets: slot,
+                    alpha: 0,
+                    duration: 1000,
+                    ease: 'Power1',
+                    onComplete: () => {
+                        slot.setText("");
+                    }
+                });
+        
+                this.activePowerups.splice(index, 1);
+            }
+        });
         
 
         const levelText = this.add.text(scaleX, scaleY + 700, `Level:${this.currentLevel}`, {

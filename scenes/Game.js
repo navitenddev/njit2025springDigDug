@@ -126,21 +126,36 @@ export default class GameScene extends Phaser.Scene {
 
         this.powerups = this.physics.add.group();
 
-        // Create a test powerup somewhere in the map
-        this.slowdownPowerups = this.physics.add.group({ allowGravity: false });
+        this.lastTwoPowerups = []; // keep track of last two
 
-        const powerup = this.slowdownPowerups.create(200, 500, "powerup_slowdown");
-        powerup.setOrigin(0, 0);
-        powerup.body.setSize(40, 40, true);
-
-        this.physics.add.overlap(this.player, this.slowdownPowerups, this.activateSlowdown, null, this);
-
-        this.teleportPowerups = this.physics.add.group({ allowGravity: false });
-        const teleportPower = this.teleportPowerups.create(200, 550, "powerup_teleport"); 
-        teleportPower.setOrigin(0, 0);
-        teleportPower.body.setSize(40, 40, true);
-
-        this.physics.add.overlap(this.player, this.teleportPowerups, this.activateTeleport, null, this);
+        this.time.addEvent({
+            delay: Phaser.Math.Between(4000, 8000),
+            callback: () => {
+                const types = ['powerup_slowdown', 'powerup_teleport'];
+        
+                let filtered = types.filter(type => {
+                    // Allow it only if not repeated twice
+                    return !(this.lastTwoPowerups[0] === type && this.lastTwoPowerups[1] === type);
+                });
+        
+                // Fallback in case all are filtered out (shouldn't happen with only 2 powerups)
+                if (filtered.length === 0) {
+                    filtered = types;
+                }
+        
+                const chosen = Phaser.Utils.Array.GetRandom(filtered);
+        
+                // Update history
+                this.lastTwoPowerups.push(chosen);
+                if (this.lastTwoPowerups.length > 2) {
+                    this.lastTwoPowerups.shift();
+                }
+        
+                this.spawnPowerup(chosen);
+            },
+            loop: true
+        });
+        
     }
 
     update() {
@@ -426,50 +441,42 @@ export default class GameScene extends Phaser.Scene {
 
     activateSlowdown(player, powerup) {
         this.game.events.emit("powerupActivated", "Slowdown");
-
-        this.time.delayedCall(3000, () => {
-            this.enemyGroup.getChildren().forEach(enemy => {
-                enemy.isSlowed = false;
-                enemy.clearTint();
-            });
-        
-            // Fade out power-up label after effect ends
-            this.game.events.emit("clearPowerupLabel");
-        });
-
-        powerup.destroy(); // remove from game
-
+        powerup.destroy();
+    
         // Slow all enemies
         this.enemyGroup.getChildren().forEach(enemy => {
             enemy.isSlowed = true;
+            enemy.setTint(0x9999ff);
         });
-
-        // Optional: add tint or UI effect
-        this.enemyGroup.children.iterate(enemy => {
-            enemy.setTint(0x9999ff); // light blue tint while slowed
-        });
-
-        // Reset slowdown after 5 seconds
-        this.time.delayedCall(5000, () => {
-            this.enemyGroup.getChildren().forEach(enemy => {
-                enemy.isSlowed = false;
-                enemy.clearTint();
-            });
+    
+        // If there's already a slowdown tween running, kill it
+        if (this.slowdownTween) {
+            this.slowdownTween.remove(); // Cancels the tween immediately
+        }
+    
+        // Start a new tween as a timer
+        this.slowdownTween = this.tweens.addCounter({
+            from: 0,
+            to: 1,
+            duration: 3000,
+            onComplete: () => {
+                this.enemyGroup.getChildren().forEach(enemy => {
+                    enemy.isSlowed = false;
+                    enemy.clearTint();
+                });
+    
+                this.game.events.emit("clearPowerupLabel", "Slowdown");
+                this.slowdownTween = null; // Clean up reference
+            }
         });
     }
+    
 
     activateTeleport(player, powerup) {
         this.game.events.emit("powerupActivated", "Teleport");
 
-        this.time.delayedCall(3000, () => {
-            this.enemyGroup.getChildren().forEach(enemy => {
-                enemy.isSlowed = false;
-                enemy.clearTint();
-            });
-        
-            // Fade out power-up label after effect ends
-            this.game.events.emit("clearPowerupLabel");
-        });
+        // Fade out power-up label after effect ends
+        this.game.events.emit("clearPowerupLabel", "Teleport");
 
         // Remove the powerup from the map
         powerup.destroy();
@@ -526,7 +533,6 @@ export default class GameScene extends Phaser.Scene {
         if (currentTile) {
 
             const tileKey = `${currentTile.x},${currentTile.y}`;
-
             if (!this.visitedTiles.has(tileKey)) {
                 this.visitedTiles.add(tileKey);
                 this.score += 10;
@@ -536,6 +542,41 @@ export default class GameScene extends Phaser.Scene {
             this.player.lastTile = currentTile;
         }
     }
+
+    spawnPowerup(type) {
+        const validTiles = [];
+    
+        this.map.forEachTile(tile => {
+            const isGroundLayer = tile.layer.name === "Ground";
+            const isOnGrid = tile.pixelX % 50 === 0 && tile.pixelY % 50 === 0;
+            const isNotSurface = tile.pixelY >= 150;
+            const notOnPlayer = Math.floor(this.player.x / 50) !== tile.x || Math.floor(this.player.y / 50) !== tile.y;
+    
+            // Replace `tile.index > 0` with any specific dirt tile condition if needed
+            const isDirt = tile.index > 0; // or tile.properties.isDirt === true
+    
+            if (isGroundLayer && isOnGrid && notOnPlayer && isDirt && isNotSurface) {
+                validTiles.push(tile);
+            }
+        }, this, 0, 0, this.map.width, this.map.height);
+    
+        if (validTiles.length === 0) return;
+    
+        const tile = Phaser.Utils.Array.GetRandom(validTiles);
+        const x = tile.pixelX + tile.width / 2;
+        const y = tile.pixelY + tile.height / 2;
+    
+        const group = this.physics.add.staticGroup();
+        const sprite = group.create(x, y, type).setScale(0.5).setOrigin(0.5);
+    
+        // Overlap trigger
+        this.physics.add.overlap(this.player, group, (player, powerup) => {
+            if (type === 'powerup_slowdown') this.activateSlowdown(player, powerup);
+            if (type === 'powerup_teleport') this.activateTeleport(player, powerup);
+        });
+    }
+    
+    
 
     //  Returns the tile the player is currently moving INTO.
     getPlayerTile(map, direction) {
