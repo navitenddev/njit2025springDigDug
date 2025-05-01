@@ -176,6 +176,12 @@ export default class GameScene extends Phaser.Scene {
                 this.enemyGroup.isActive = true;
             });
         }
+
+        // Play background music in a loop
+        this.sound.play('background_music', {
+            loop: true,        // Keep the music looping
+            volume: 0.01        // Adjust volume (optional)
+        });
     }
 
     update() {

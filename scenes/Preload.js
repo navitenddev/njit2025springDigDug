@@ -65,6 +65,9 @@ export default class PreloadScene extends Phaser.Scene {
 
 
         this.load.image("powerup_slowdown", "assets/powerUps/slowdown.png");
+
+        //  Audio Files
+        this.load.audio("background_music", "assets/audio/retro-arcade1.mp3");
     }
 
     create() {
