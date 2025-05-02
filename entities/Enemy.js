@@ -25,20 +25,23 @@ export default class enemy extends Phaser.Physics.Arcade.Sprite {
     }
 
     update(goal) {
-        if (this.ghostMode) {
-            this.ghostMove(goal);
-        }
-        else if (this.ghostAlignMode) {
-            this.ghostAlignMove(goal);
-        }
-        else if (this.alignMode) {
-            this.alignMove(this.direction);
-        }
-        else if (this.escapeMode) {
-            this.escapeMove();
-        }
-        else {
-            this.move(goal);
+        //  Check if enemy is able to move
+        if (this.enemyGroup.isActive && this.isActive) {
+            if (this.ghostMode) {
+                this.ghostMove(goal);
+            }
+            else if (this.ghostAlignMode) {
+                this.ghostAlignMove(goal);
+            }
+            else if (this.alignMode) {
+                this.alignMove(this.direction);
+            }
+            else if (this.escapeMode) {
+                this.escapeMove();
+            }
+            else {
+                this.move(goal);
+            }
         }
     }
 
@@ -47,105 +50,102 @@ export default class enemy extends Phaser.Physics.Arcade.Sprite {
      * @param {Player} goal 
      */
     move(goal) {
-        //  Check if enemy is able to move
-        if (this.enemyGroup.isActive && this.isActive) {
-            //  Enemy is moving to the next tile
-            if (this.targetPosition) {
-                const speed = this.isSlowed ? 1 : this.baseSpeed;
+        //  Enemy is moving to the next tile
+        if (this.targetPosition) {
+            const speed = this.isSlowed ? 1 : this.baseSpeed;
 
-                const dx = this.targetPosition.x - this.x;
-                const dy = this.targetPosition.y - this.y;
+            const dx = this.targetPosition.x - this.x;
+            const dy = this.targetPosition.y - this.y;
 
-                const stepX = Phaser.Math.Clamp(dx, -speed, speed);
-                const stepY = Phaser.Math.Clamp(dy, -speed, speed);
+            const stepX = Phaser.Math.Clamp(dx, -speed, speed);
+            const stepY = Phaser.Math.Clamp(dy, -speed, speed);
 
-                this.setPosition(this.x + stepX, this.y + stepY);
-                //this.play("cd_move", true);
+            this.setPosition(this.x + stepX, this.y + stepY);
+            //this.play("cd_move", true);
 
-                //  Snaps Enemy to new tile if it is close enough to it
-                if (Phaser.Math.Fuzzy.Equal(this.x, this.targetPosition.x, 1) &&
-                    Phaser.Math.Fuzzy.Equal(this.y, this.targetPosition.y, 1)) {
-                    this.setPosition(this.targetPosition.x, this.targetPosition.y);
-                    this.targetPosition = null;
-                }
+            //  Snaps Enemy to new tile if it is close enough to it
+            if (Phaser.Math.Fuzzy.Equal(this.x, this.targetPosition.x, 1) &&
+                Phaser.Math.Fuzzy.Equal(this.y, this.targetPosition.y, 1)) {
+                this.setPosition(this.targetPosition.x, this.targetPosition.y);
+                this.targetPosition = null;
             }
-            //  Enemy needs a new tile to move to
+        }
+        //  Enemy needs a new tile to move to
+        else {
+            this.ghostAlignMode = false;
+            this.direction = this.getNextDirectionInPath(goal);
+
+            //  Flip sprite horizontally to face the correct direction
+            if (this.direction == 'left') {
+                this.flipX = false;
+            }
+            else if (this.direction == 'right') {
+                this.flipX = true;
+            }
+
+            const offset = {
+                left: { x: -50, y: 0 },
+                right: { x: 50, y: 0 },
+                up: { x: 0, y: -50 },
+                down: { x: 0, y: 50 }
+            }[this.direction];
+
+            const thresholds = [8, 16, 24, 32, 40];
+
+            if (this.x % 50 == 0 && this.y % 50 == 0) {
+                if (this.escapeMode) {
+                    return;
+                }
+
+                let trueOffsetX = 0;
+                let trueOffsetY = 0;
+                switch (this.direction) {
+                    case 'left':
+                        var newTile = this.scene.map.getTileAtWorldXY(this.x - 50, this.y);
+                        let valLeft = newTile.properties['left'];
+                        if (valLeft > 0 && valLeft < 6) {
+                            trueOffsetX = 50 - thresholds[valLeft - 1];
+                        }
+                        break;
+                    case 'right':
+                        var newTile = this.scene.map.getTileAtWorldXY(this.x + 50, this.y);
+                        let valRight = newTile.properties['right'];
+                        if (valRight > 0 && valRight < 6) {
+                            trueOffsetX = (50 - thresholds[valRight - 1]) * -1;
+                        }
+                        break;
+                    case 'down':
+                        var newTile = this.scene.map.getTileAtWorldXY(this.x, this.y + 50);
+                        let valDown = newTile.properties['down'];
+                        if (valDown > 0 && valDown < 6) {
+                            trueOffsetY = (50 - thresholds[valDown - 1]) * -1;
+                        }
+                        break;
+                    case 'up':
+                        var newTile = this.scene.map.getTileAtWorldXY(this.x, this.y - 50);
+                        let valUp = newTile.properties['up'];
+                        if (valUp > 0 && valUp < 6) {
+                            trueOffsetY = 50 - thresholds[valUp - 1];
+                        }
+                        break;
+                    default:
+                        break;
+                }
+
+                this.targetPosition = {
+                    x: this.x + offset.x + trueOffsetX,
+                    y: this.y + offset.y + trueOffsetY
+                };
+            }
             else {
-                this.ghostAlignMode = false;
-                this.direction = this.getNextDirectionInPath(goal);
+                this.alignMode = true;
+            }
 
-                //  Flip sprite horizontally to face the correct direction
-                if (this.direction == 'left') {
-                    this.flipX = false;
-                }
-                else if (this.direction == 'right') {
-                    this.flipX = true;
-                }
-
-                const offset = {
-                    left: { x: -50, y: 0 },
-                    right: { x: 50, y: 0 },
-                    up: { x: 0, y: -50 },
-                    down: { x: 0, y: 50 }
-                }[this.direction];
-
-                const thresholds = [8, 16, 24, 32, 40];
-
-                if (this.x % 50 == 0 && this.y % 50 == 0) {
-                    if (this.escapeMode) {
-                        return;
-                    }
-
-                    let trueOffsetX = 0;
-                    let trueOffsetY = 0;
-                    switch (this.direction) {
-                        case 'left':
-                            var newTile = this.scene.map.getTileAtWorldXY(this.x - 50, this.y);
-                            let valLeft = newTile.properties['left'];
-                            if (valLeft > 0 && valLeft < 6) {
-                                trueOffsetX = 50 - thresholds[valLeft - 1];
-                            }
-                            break;
-                        case 'right':
-                            var newTile = this.scene.map.getTileAtWorldXY(this.x + 50, this.y);
-                            let valRight = newTile.properties['right'];
-                            if (valRight > 0 && valRight < 6) {
-                                trueOffsetX = (50 - thresholds[valRight - 1]) * -1;
-                            }
-                            break;
-                        case 'down':
-                            var newTile = this.scene.map.getTileAtWorldXY(this.x, this.y + 50);
-                            let valDown = newTile.properties['down'];
-                            if (valDown > 0 && valDown < 6) {
-                                trueOffsetY = (50 - thresholds[valDown - 1]) * -1;
-                            }
-                            break;
-                        case 'up':
-                            var newTile = this.scene.map.getTileAtWorldXY(this.x, this.y - 50);
-                            let valUp = newTile.properties['up'];
-                            if (valUp > 0 && valUp < 6) {
-                                trueOffsetY = 50 - thresholds[valUp - 1];
-                            }
-                            break;
-                        default:
-                            break;
-                    }
-
-                    this.targetPosition = {
-                        x: this.x + offset.x + trueOffsetX,
-                        y: this.y + offset.y + trueOffsetY
-                    };
-                }
-                else {
-                    this.alignMode = true;
-                }
-
-                //  If no path exists, start ghost movement after a delay.
-                if (!this.currentPath) {
-                    if (!this.ghostTimer || this.ghostTimer.getElapsed() == this.elapsedTime) {
-                        this.elapsedTime = Math.random() * (10000 - 5000) + 5000;
-                        this.ghostTimer = this.scene.time.delayedCall(this.elapsedTime, this.startGhostMovement, [], this);
-                    }
+            //  If no path exists, start ghost movement after a delay.
+            if (!this.currentPath) {
+                if (!this.ghostTimer || this.ghostTimer.getElapsed() == this.elapsedTime) {
+                    this.elapsedTime = Math.random() * (10000 - 5000) + 5000;
+                    this.ghostTimer = this.scene.time.delayedCall(this.elapsedTime, this.startGhostMovement, [], this);
                 }
             }
         }
@@ -263,7 +263,7 @@ export default class enemy extends Phaser.Physics.Arcade.Sprite {
                     tileCoords = this.scene.map.worldToTileXY(goal.getCenter().x, goal.getCenter().y);
                     break;
             }
-            var goalTile = this.scene.map.getTileAt(tileCoords.x, tileCoords.y, false, this.scene.map.groundLayer);
+            var goalTile = this.scene.map.getTileAtWorldXY(tileCoords.x * 50, tileCoords.y * 50);
         }
         else {
             var goalTile = this.scene.map.getTileAtWorldXY(goal.x, goal.y);
@@ -336,13 +336,17 @@ export default class enemy extends Phaser.Physics.Arcade.Sprite {
         return this.getNextDirection(goal, this.currentTile);
     }
 
+    /**
+     * Damages the hit enemy
+     * 
+     * @returns {boolean} True if the enemy's health reaches 0 (died), otherwise false.
+     */
     takeDamage() {
         if (this.health > 1) {
             this.health -= 1;
+            return false;
         }
-        else {
-            this.destroy();
-        }
+        return true;
     }
 
     /**
@@ -445,8 +449,7 @@ export default class enemy extends Phaser.Physics.Arcade.Sprite {
      * Sets this enemy to be in ghost mode.
      */
     startGhostMovement() {
-        try
-        {
+        try {
             if (!this.hasFoundPlayer) {
                 this.targetPosition = null;
                 this.ghostMode = true;
@@ -454,8 +457,7 @@ export default class enemy extends Phaser.Physics.Arcade.Sprite {
                 //  End ghost movement (USED FOR TESTING)
                 //this.ghostTimer = this.scene.time.delayedCall(5000, this.endGhostMovement, [], this);
             }
-        } catch (error)
-        {
+        } catch (error) {
             console.warn("Enemy.js generic error (ignore)")
         }
     }
@@ -620,8 +622,8 @@ export default class enemy extends Phaser.Physics.Arcade.Sprite {
         this.setPosition(this.x + stepX, this.y + stepY);
         // this.play("cd_move", true);
 
-        if (this.x < -49) {
-            this.destroy();
+        if (this.x == -49) {
+            this.scene.enemyWin();
         }
     }
 }
