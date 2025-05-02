@@ -133,7 +133,7 @@ export default class GameScene extends Phaser.Scene {
         this.lastTwoPowerups = []; // keep track of last two
 
         this.time.addEvent({
-            delay: Phaser.Math.Between(100, 200),
+            delay: Phaser.Math.Between(4000, 6000),
             callback: () => {
                 const types = ['powerup_slowdown', 'powerup_teleport', 'powerup_rapidfire'];
 
