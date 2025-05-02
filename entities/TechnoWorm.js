@@ -25,7 +25,7 @@ export default class TechnoWorm extends Enemy {
 
     fireBullet() {
         try {
-            if (this.isActive && this.scene.player.y == this.y) {
+            if (this.isActive && this.scene.player.y == this.y && !this.scene.isShuttingDown) {
                 let direction = this.x >= this.scene.player.x ? 'left' : 'right';
                 this.bullets.fireBullet(this.x, this.y, direction, this);
             }

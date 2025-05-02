@@ -7,6 +7,15 @@ export default class Bullet extends Phaser.Physics.Arcade.Sprite {
     preUpdate(time, delta) {
         super.preUpdate(time, delta);
 
+        //  Stop the bullet if the GameScene is shutting down
+        try {
+            if (this.scene.isShuttingDown) {
+                this.setVelocity(0, 0);
+            }
+        } catch (error) {
+            console.warn("Bullet error occurred on GameScene shutdown");
+        }
+
         this.checkTunnelCollision(this.direction);
 
         //  Reset bullet after 3 blocks traveled horizontally
