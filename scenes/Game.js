@@ -121,12 +121,19 @@ export default class GameScene extends Phaser.Scene {
         //  Enemy hit collision with rock
         this.physics.add.overlap(this.enemyGroup, this.rockGroup, this.handleRockHitEntity, null, this);
 
-        this.powerups = this.physics.add.group();
+        this.powerups = this.physics.add.group({
+            allowGravity: false
+        });
+        this.physics.add.overlap(this.player, this.powerups, (player, powerup) => {
+            if (powerup.type === 'powerup_slowdown') this.activateSlowdown(player, powerup);
+            if (powerup.type === 'powerup_teleport') this.activateTeleport(player, powerup);
+            if (powerup.type === 'powerup_rapidfire') this.activateRapidFire(player, powerup);
+        });
 
         this.lastTwoPowerups = []; // keep track of last two
 
         this.time.addEvent({
-            delay: Phaser.Math.Between(4000, 8000),
+            delay: Phaser.Math.Between(100, 200),
             callback: () => {
                 const types = ['powerup_slowdown', 'powerup_teleport', 'powerup_rapidfire'];
 
@@ -148,7 +155,9 @@ export default class GameScene extends Phaser.Scene {
                     this.lastTwoPowerups.shift();
                 }
 
-                this.spawnPowerup(chosen);
+                if (this.powerups.getChildren().length < 3) {
+                    this.spawnPowerup(chosen);
+                }
             },
             loop: true
         });
@@ -210,7 +219,11 @@ export default class GameScene extends Phaser.Scene {
                         enemy.update(this.goal);
                     }
                     else {
-                        enemy.update(this.player);
+                        try {
+                            enemy.update(this.player);
+                        } catch (error) {
+                            console.log("ERROR UPDATING ENEMY, ", this.player);
+                        }
                     }
                 }
             });
@@ -497,8 +510,9 @@ export default class GameScene extends Phaser.Scene {
 
     activateSlowdown(player, powerup) {
         this.game.events.emit("powerupActivated", "Slowdown");
-        powerup.destroy();
-
+        if (this.powerups.contains(powerup)) {
+            powerup.destroy();
+        }
         // Slow all enemies
         this.enemyGroup.getChildren().forEach(enemy => {
             enemy.isSlowed = true;
@@ -535,7 +549,9 @@ export default class GameScene extends Phaser.Scene {
         this.game.events.emit("clearPowerupLabel", "Teleport");
 
         // Remove the powerup from the map
-        powerup.destroy();
+        if (this.powerups.contains(powerup)) {
+            powerup.destroy();
+        }
 
         if (this.visitedTiles.size === 0) {
             console.warn("No visited tiles to teleport to!");
@@ -570,7 +586,11 @@ export default class GameScene extends Phaser.Scene {
         this.playerBullets = new Bullets(this, 3);
 
         this.game.events.emit("powerupActivated", "Rapidfire");
-        powerup.destroy();
+        if (this.powerups.contains(powerup)) {
+            powerup.destroy();
+        }
+
+        console.log("GOT HERE")
 
         // If there's already a rapid fire tween running, kill it
         if (this.rapidfireTween) {
@@ -659,15 +679,12 @@ export default class GameScene extends Phaser.Scene {
         const x = tile.pixelX + tile.width / 2;
         const y = tile.pixelY + tile.height / 2;
 
-        const group = this.physics.add.staticGroup();
-        const sprite = group.create(x, y, type).setScale(0.5).setOrigin(0.5);
-
-        // Overlap trigger
-        this.physics.add.overlap(this.player, group, (player, powerup) => {
-            if (type === 'powerup_slowdown') this.activateSlowdown(player, powerup);
-            if (type === 'powerup_teleport') this.activateTeleport(player, powerup);
-            if (type === 'powerup_rapidfire') this.activateRapidFire(player, powerup);
-        });
+        const powerup = this.add.sprite(x, y, type).setScale(0.5).setOrigin(0.5);
+        this.physics.world.enable(powerup);
+        powerup.body.setAllowGravity(false);
+        this.powerups.add(powerup);
+        powerup.type = type;
+        this.powerups.add(powerup);
     }
 
 
