@@ -65,6 +65,8 @@ export default class PreloadScene extends Phaser.Scene {
 
 
         this.load.image("powerup_slowdown", "assets/powerUps/slowdown.png");
+        this.load.image("powerup_teleport", "assets/powerUps/teleport.png");
+        this.load.image("powerup_rapidfire", "assets/powerUps/rapidfire.png");
     }
 
     create() {

@@ -263,7 +263,7 @@ export default class enemy extends Phaser.Physics.Arcade.Sprite {
                     tileCoords = this.scene.map.worldToTileXY(goal.getCenter().x, goal.getCenter().y);
                     break;
             }
-            var goalTile = this.scene.map.getTileAt(tileCoords.x, tileCoords.y, false, this.scene.map.groundLayer);
+            var goalTile = this.scene.map.getTileAtWorldXY(tileCoords.x * 50, tileCoords.y * 50);
         }
         else {
             var goalTile = this.scene.map.getTileAtWorldXY(goal.x, goal.y);
