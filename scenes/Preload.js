@@ -68,15 +68,22 @@ export default class PreloadScene extends Phaser.Scene {
 
         //  Audio Files
         this.load.audio("background_music", "assets/audio/retro-arcade1.mp3");
+        this.load.audio("retro_music_1", "assets/audio/retro-music-1.mp3");
+        this.load.audio("retro_music_2", "assets/audio/retro-music-2.mp3");
+        this.load.audio("monster_hit", "assets/audio/monster-hit.mp3");
+        this.load.audio("bullet_shot", "assets/audio/shot-laser-sound.wav");
+        this.load.audio("rock_shake", "assets/audio/rock-activation-shaking.mp3");
+        this.load.audio("rock_fall", "assets/audio/rock-falling.mp3");
+        this.load.audio("rock_hit_ground", "assets/audio/rock-hitting-dirt.mp3");
     }
 
     create() {
         if (!localStorage.getItem('maxUnlockedLevel')) {
             localStorage.setItem('maxUnlockedLevel', '1');
             console.log('Initialized maxUnlockedLevel to 1');
-          } else {
+        } else {
             console.log('maxUnlockedLevel already in storage:', localStorage.getItem('maxUnlockedLevel'));
-          }
+        }
         this.scene.start("StartMenu"); // Start the main game scene
     }
 }
