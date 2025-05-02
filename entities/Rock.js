@@ -58,6 +58,8 @@ export default class rock extends Phaser.Physics.Arcade.Sprite {
                     onStart: () => {
                         this.scene.physics.world.remove(this.body);
                         this.entityCollision = false;
+                        this.rockFallSound.stop();
+                        this.scene.sound.play("rock_hit_ground", { volume: 0.5 });
                     },
                     onComplete: () => {
                         this.destroy();
@@ -74,10 +76,15 @@ export default class rock extends Phaser.Physics.Arcade.Sprite {
             angle: 20,
             yoyo: true,
             repeat: 5,
+            onStart: () => {
+                this.scene.sound.play("rock_shake");
+            },
             onComplete: () => {
                 this.angle = 0;
                 this.setVelocityY(200);
                 this.isMoving = true;
+                this.rockFallSound = this.scene.sound.add("rock_fall");
+                this.rockFallSound.play();
             }
         });
     }

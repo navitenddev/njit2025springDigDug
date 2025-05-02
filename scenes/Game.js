@@ -498,7 +498,10 @@ export default class GameScene extends Phaser.Scene {
                 this.showPointsPopup(1000, entity.x - 15, entity.y + 15)
                 entity.destroy();
             }
+            rock.rockFallSound.stop();
             rock.destroy();
+
+            this.sound.play("monster_hit", { volume: 0.3 });
         }
     }
 
