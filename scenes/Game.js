@@ -155,7 +155,7 @@ export default class GameScene extends Phaser.Scene {
                     this.lastTwoPowerups.shift();
                 }
 
-                if (this.powerups.getChildren().length < 3 && !this.player.controlsDisabled) {
+                if (this.powerups.getChildren().length < 3 && !this.player.controlsDisabled && !this.isShuttingDown) {
                     this.spawnPowerup(chosen);
                 }
             },
