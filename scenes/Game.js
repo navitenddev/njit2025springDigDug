@@ -303,6 +303,9 @@ export default class GameScene extends Phaser.Scene {
             //  Kill the entity
             entity.destroy();
 
+            //  Play entity death sound
+            this.sound.play("monster_hit", { volume: 0.3 });
+
             //  Show the points gained
             this.showPointsPopup(points, coordX, coordY);
         }
