@@ -273,7 +273,11 @@ export default class enemy extends Phaser.Physics.Arcade.Sprite {
             var goalTile = this.scene.map.getTileAtWorldXY(goal.x, goal.y);
         }
 
-        if (!this.currentTile || !goalTile) return null;
+        if (!this.currentTile || !goalTile) {
+            console.log(this.currentTile, this.x, this.y);
+            console.log(goalTile);
+            return null;
+        }
 
         // 1. Check available directions from current tile
         const directions = [];

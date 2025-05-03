@@ -789,16 +789,16 @@ export default class GameScene extends Phaser.Scene {
 
         switch (direction) {
             case 'left':
-                tileCoords = map.worldToTileXY(this.player.getCenter().x - 25, this.player.getCenter().y);
+                tileCoords = map.worldToTileXY(this.player.getCenter().x - 24, this.player.getCenter().y);
                 break;
             case 'right':
-                tileCoords = map.worldToTileXY(this.player.getCenter().x + 25, this.player.getCenter().y);
+                tileCoords = map.worldToTileXY(this.player.getCenter().x + 24, this.player.getCenter().y);
                 break;
             case 'up':
-                tileCoords = map.worldToTileXY(this.player.getCenter().x, this.player.getCenter().y - 25);
+                tileCoords = map.worldToTileXY(this.player.getCenter().x, this.player.getCenter().y - 24);
                 break;
             case 'down':
-                tileCoords = map.worldToTileXY(this.player.getCenter().x, this.player.getCenter().y + 25);
+                tileCoords = map.worldToTileXY(this.player.getCenter().x, this.player.getCenter().y + 24);
                 break;
             default:
                 return null;
