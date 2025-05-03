@@ -33,6 +33,10 @@ export default class Bullet extends Phaser.Physics.Arcade.Sprite {
      * @param {string} direction 
      */
     fire(x, y, direction) {
+        const bulletSound = this.scene.sound.add("bullet_shot", { volume: 0.1 });
+        bulletSound.detune = (Math.random() * -600) + 400;  //  Range: -200 to 400
+        bulletSound.play();
+
         this.body.reset(x + 25, y + 25);
 
         this.setActive(true);
