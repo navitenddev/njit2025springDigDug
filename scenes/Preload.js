@@ -30,7 +30,7 @@ export default class PreloadScene extends Phaser.Scene {
         })
 
         //  Techno Worm enemy sprite
-        this.load.image("worm_enemy", "assets/TechnoWorm2.png")
+        this.load.image("worm_enemy", "assets/TechnoWorm3.png")
 
         //  Escape Goal sprite
         this.load.image("goal", "assets/escape_goal.png");

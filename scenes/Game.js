@@ -89,7 +89,7 @@ export default class GameScene extends Phaser.Scene {
 
         // Corrupted CD Enemy movement animation
         this.anims.create({
-            key: 'cd_move',
+            key: 'cd_enemy',
             frames: this.anims.generateFrameNumbers('cd_enemy', { start: 0, end: 1 }),
             frameRate: 10
         });
@@ -631,8 +631,6 @@ export default class GameScene extends Phaser.Scene {
         if (this.powerups.contains(powerup)) {
             powerup.destroy();
         }
-
-        console.log("GOT HERE")
 
         // If there's already a rapid fire tween running, kill it
         if (this.rapidfireTween) {

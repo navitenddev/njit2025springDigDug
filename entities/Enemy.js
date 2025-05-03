@@ -22,6 +22,8 @@ export default class enemy extends Phaser.Physics.Arcade.Sprite {
 
         this.baseSpeed = 2;
         this.isSlowed = false;
+
+        this.animationKey = sprite;
     }
 
     update(goal) {
@@ -61,7 +63,9 @@ export default class enemy extends Phaser.Physics.Arcade.Sprite {
             const stepY = Phaser.Math.Clamp(dy, -speed, speed);
 
             this.setPosition(this.x + stepX, this.y + stepY);
-            //this.play("cd_move", true);
+            if (this.anims.animationManager.exists(this.animationKey)) {
+                this.play(this.animationKey, true);
+            }
 
             //  Snaps Enemy to new tile if it is close enough to it
             if (Phaser.Math.Fuzzy.Equal(this.x, this.targetPosition.x, 1) &&
@@ -482,6 +486,9 @@ export default class enemy extends Phaser.Physics.Arcade.Sprite {
      */
     ghostMove(goal) {
         this.scene.physics.moveToObject(this, goal, 60);
+        if (this.anims.animationManager.exists(this.animationKey)) {
+            this.play(this.animationKey, true);
+        }
 
         let newTile = this.scene.map.getTileAtWorldXY(this.x + 25, this.y + 25)
         let availableTiles = [];
@@ -551,6 +558,10 @@ export default class enemy extends Phaser.Physics.Arcade.Sprite {
                 this.direction = null;
                 this.ghostAlignMode = false;
             }
+
+            if (this.anims.animationManager.exists(this.animationKey)) {
+                this.play(this.animationKey, true);
+            }
         }
     }
 
@@ -604,6 +615,10 @@ export default class enemy extends Phaser.Physics.Arcade.Sprite {
                 this.targetPosition = null;
                 this.alignMode = false;
             }
+
+            if (this.anims.animationManager.exists(this.animationKey)) {
+                this.play(this.animationKey, true);
+            }
         }
     }
 
@@ -620,7 +635,9 @@ export default class enemy extends Phaser.Physics.Arcade.Sprite {
         const stepY = Phaser.Math.Clamp(dy, -speed, speed);
 
         this.setPosition(this.x + stepX, this.y + stepY);
-        // this.play("cd_move", true);
+        if (this.anims.animationManager.exists(this.animationKey)) {
+            this.play(this.animationKey, true);
+        }
 
         if (this.x == -49) {
             this.scene.enemyWin();
