@@ -46,33 +46,39 @@ export default class Bullet extends Phaser.Physics.Arcade.Sprite {
      * @param {string} direction 
      */
     fire(x, y, direction) {
-        this.body.reset(x + 25, y + 25);
-
-        this.setActive(true);
-        this.setVisible(true);
-
         this.body.allowGravity = false;
         this.direction = direction;
         if (direction == 'left') {
-            this.angle = -180;
+            this.body.reset(x, y);
+            this.flipX = true;
+            this.angle = 0;
             this.startingPoint = this.x;
             this.setVelocityX(-200);
         }
         else if (direction == 'right') {
+            this.body.reset(x, y);
+            this.flipX = false;
             this.angle = 0;
             this.startingPoint = this.x;
             this.setVelocityX(200);
         }
         else if (direction == 'up') {
-            this.angle = -90;
+            this.body.reset(x + 5, y);
+            this.flipX = true;
+            this.angle = 90;
             this.startingPoint = this.y;
             this.setVelocityY(-200);
         }
         else {
-            this.angle = 90;
+            this.body.reset(x - 5, y);
+            this.flipX = true;
+            this.angle = -90;
             this.startingPoint = this.y;
             this.setVelocityY(200);
         }
+
+        this.setActive(true);
+        this.setVisible(true);
     }
 
     /**

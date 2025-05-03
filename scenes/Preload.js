@@ -7,9 +7,9 @@ export default class PreloadScene extends Phaser.Scene {
         //this.load.image("player", "assets/shermie.png");
 
 
-        this.load.spritesheet("player", "assets/ShermieAnimation_v1.png", {
-            frameWidth: 64,
-            frameHeight: 64,
+        this.load.spritesheet("player", "assets/ShermieAnimation_v4.png", {
+            frameWidth: 50,
+            frameHeight: 50,
         });
         this.load.image("tiles", "assets/tilemap/ground_tileset.png");
         this.load.font('PressStart2P', "assets/fonts/PressStart2P-Regular.ttf", 'truetype'); // Current Default game font
@@ -20,14 +20,6 @@ export default class PreloadScene extends Phaser.Scene {
         this.load.tilemapTiledJSON("map4", "assets/tilemap/map_4.json");
         this.load.tilemapTiledJSON("map5", "assets/tilemap/map_5.json");
         this.load.image("beatgame", "assets/beatgame.png");
-
-
-        this.anims.create({
-            key: 'walk',
-            frames: this.anims.generateFrameNumbers('player', { start: 0, end: 1 }),
-            framerate: 10,
-            repeat: -1
-        });
 
         this.load.spritesheet("shermie_mask", "assets/tilemap/shermie_mask_tileset.png", { frameWidth: 50, frameHeight: 50 });
 
@@ -74,9 +66,9 @@ export default class PreloadScene extends Phaser.Scene {
         if (!localStorage.getItem('maxUnlockedLevel')) {
             localStorage.setItem('maxUnlockedLevel', '1');
             console.log('Initialized maxUnlockedLevel to 1');
-          } else {
+        } else {
             console.log('maxUnlockedLevel already in storage:', localStorage.getItem('maxUnlockedLevel'));
-          }
+        }
         this.scene.start("StartMenu"); // Start the main game scene
     }
 }

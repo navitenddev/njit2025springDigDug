@@ -566,12 +566,12 @@ export default class enemy extends Phaser.Physics.Arcade.Sprite {
             case 'left':
                 break;
             case 'right':
-                currentTile = this.scene.map.getTileAtWorldXY(this.x + 50, this.y);
+                currentTile = this.scene.map.getTileAtWorldXY(this.x + 49, this.y);
                 break;
             case 'up':
                 break;
             case 'down':
-                currentTile = this.scene.map.getTileAtWorldXY(this.x, this.y + 50);
+                currentTile = this.scene.map.getTileAtWorldXY(this.x, this.y + 49);
                 break;
             default:
                 break;
