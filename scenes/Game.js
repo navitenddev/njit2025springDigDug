@@ -303,10 +303,6 @@ export default class GameScene extends Phaser.Scene {
         if (next > max && next <= 5) {
             localStorage.setItem('maxUnlockedLevel', next);
         }
-        else if (next >= 6) {
-            this.shutdown();
-            this.scene.launch('BeatGame');
-        }
         this.shutdown();
 
         //  Play level complete sound before launching LevelComplete scene
