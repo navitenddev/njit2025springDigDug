@@ -11,6 +11,8 @@ export default class player extends Phaser.Physics.Arcade.Sprite {
         this.depth = 1;
         this.isActive = true;
         this.controlsDisabled = false;
+        this.canFire = true;
+        this.rapidFire = false;
 
         this.lastTile = this.scene.map.getTileAtWorldXY(x, y);
     }
