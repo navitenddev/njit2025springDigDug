@@ -35,6 +35,7 @@ export default class GameOverScene extends Phaser.Scene {
 
     tryAgain.on('pointerdown', () => {
       // Restart the current level
+      this.sound.play("ui_button_press", { volume: 0.5 });
       this.scene.stop('GameUI');
       this.scene.start('GameScene', { level: this.diedLevel });
     });
@@ -51,6 +52,7 @@ export default class GameOverScene extends Phaser.Scene {
       .setInteractive({ useHandCursor: true });
 
     quitHome.on('pointerdown', () => {
+      this.sound.play("ui_button_press", { volume: 0.5 });
       this.scene.stop('GameScene');
       this.scene.stop('GameUI');
       this.scene.start('StartMenu');
