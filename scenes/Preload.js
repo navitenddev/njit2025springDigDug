@@ -19,6 +19,7 @@ export default class PreloadScene extends Phaser.Scene {
         this.load.tilemapTiledJSON("map3", "assets/tilemap/map_3.json");
         this.load.tilemapTiledJSON("map4", "assets/tilemap/map_4.json");
         this.load.tilemapTiledJSON("map5", "assets/tilemap/map_5.json");
+        this.load.image("beatgame", "assets/beatgame.png");
 
 
         this.anims.create({
@@ -65,6 +66,8 @@ export default class PreloadScene extends Phaser.Scene {
 
 
         this.load.image("powerup_slowdown", "assets/powerUps/slowdown.png");
+        this.load.image("powerup_teleport", "assets/powerUps/teleport.png");
+        this.load.image("powerup_rapidfire", "assets/powerUps/rapidfire.png");
     }
 
     create() {

@@ -1,11 +1,12 @@
-export default class YouDiedScene extends Phaser.Scene {
+export default class GameOverScene extends Phaser.Scene {
   constructor() {
-    super({ key: 'YouDiedScene' });
+    super({ key: 'GameOverScene' });
   }
 
   // Level that player died on
   init(data) {
     this.diedLevel = data.level || 1;
+    this.message = data.message || "Game Over";
   }
 
   create() {
@@ -14,7 +15,7 @@ export default class YouDiedScene extends Phaser.Scene {
     const centerY = height / 2;
     this.cameras.main.setBackgroundColor('rgba(0, 0, 0, 0.7)');
 
-    this.add.text(centerX, centerY - 100, 'You Died', {
+    this.add.text(centerX, centerY - 100, this.message, {
       fontFamily: 'PressStart2P',
       fontSize: '48px',
       fill: '#ff0000',
