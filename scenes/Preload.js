@@ -19,6 +19,7 @@ export default class PreloadScene extends Phaser.Scene {
         this.load.tilemapTiledJSON("map3", "assets/tilemap/map_3.json");
         this.load.tilemapTiledJSON("map4", "assets/tilemap/map_4.json");
         this.load.tilemapTiledJSON("map5", "assets/tilemap/map_5.json");
+        this.load.image("beatgame", "assets/beatgame.png");
 
 
         this.anims.create({
@@ -67,15 +68,31 @@ export default class PreloadScene extends Phaser.Scene {
         this.load.image("powerup_slowdown", "assets/powerUps/slowdown.png");
         this.load.image("powerup_teleport", "assets/powerUps/teleport.png");
         this.load.image("powerup_rapidfire", "assets/powerUps/rapidfire.png");
+
+        //  Audio Files
+        this.load.audio("background_music", "assets/audio/retro-arcade1.mp3");
+        this.load.audio("retro_music_1", "assets/audio/retro-music-1.mp3");
+        this.load.audio("retro_music_2", "assets/audio/retro-music-2.mp3");
+        this.load.audio("monster_hit", "assets/audio/monster-hit.mp3");
+        this.load.audio("bullet_shot", "assets/audio/shot-laser-sound.wav");
+        this.load.audio("rock_shake", "assets/audio/rock-activation-shaking.mp3");
+        this.load.audio("rock_fall", "assets/audio/rock-falling.mp3");
+        this.load.audio("rock_hit_ground", "assets/audio/rock-hitting-dirt.mp3");
+        this.load.audio("pickup", "assets/audio/pickup-sound.wav");
+        this.load.audio("shermie_take_dmg", "assets/audio/shermie-take-damage.mp3");
+        this.load.audio("game_over", "assets/audio/game-over-sound.mp3");
+        this.load.audio("level_complete", "assets/audio/level-complete-sound.mp3");
+        this.load.audio("ui_button_press", "assets/audio/ui-button-press.mp3");
+        this.load.audio("locked_level", "assets/audio/locked-level-sound.wav");
     }
 
     create() {
         if (!localStorage.getItem('maxUnlockedLevel')) {
             localStorage.setItem('maxUnlockedLevel', '1');
             console.log('Initialized maxUnlockedLevel to 1');
-          } else {
+        } else {
             console.log('maxUnlockedLevel already in storage:', localStorage.getItem('maxUnlockedLevel'));
-          }
+        }
         this.scene.start("StartMenu"); // Start the main game scene
     }
 }

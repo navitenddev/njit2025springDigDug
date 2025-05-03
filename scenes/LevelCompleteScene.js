@@ -43,11 +43,13 @@ export default class LevelCompleteScene extends Phaser.Scene {
   
       // Advance on SPACE key or pointer click
       this.input.keyboard.once('keydown-SPACE', () => {
+        this.sound.play("ui_button_press", { volume: 0.5 });
         this.scene.stop('GameScene');
         this.scene.stop('GameUI');
         this.scene.start('LevelSelect');
       });
       this.input.once('pointerdown', () => {
+        this.sound.play("ui_button_press", { volume: 0.5 });
         this.scene.stop('GameScene');
         this.scene.stop('GameUI');
         this.scene.start('LevelSelect');
