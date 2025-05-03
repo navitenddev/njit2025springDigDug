@@ -174,6 +174,9 @@ export default class GameScene extends Phaser.Scene {
                 to: 1,
                 duration: 2200,
                 ease: 'Linear',
+                onStart: () => {
+                    this.sound.play("level_1_start", { volume: 0.5 });
+                },
                 onUpdate: () => {
                     if (this.player.getBounds().x !== 300) {
                         this.player.move('left', false);
@@ -306,10 +309,6 @@ export default class GameScene extends Phaser.Scene {
         const max = parseInt(localStorage.getItem('maxUnlockedLevel'), 10) || 1;
         if (next > max && next <= 5) {
             localStorage.setItem('maxUnlockedLevel', next);
-        }
-        else if (next >= 6) {
-            this.shutdown();
-            this.scene.launch('BeatGame');
         }
         this.shutdown();
 

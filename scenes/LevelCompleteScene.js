@@ -52,7 +52,13 @@ export default class LevelCompleteScene extends Phaser.Scene {
         this.sound.play("ui_button_press", { volume: 0.5 });
         this.scene.stop('GameScene');
         this.scene.stop('GameUI');
-        this.scene.start('LevelSelect');
+
+        if (this.completedLevel == 5){
+          this.scene.start('BeatGame');
+        }
+        else{
+          this.scene.start('LevelSelect');
+        }
       });
     }
   }
