@@ -28,9 +28,9 @@ export default class LevelSelect extends Phaser.Scene {
       const levels = ['Level 1', 'Level 2', 'Level 3', 'Level 4', 'Level 5'];
       const startY = this.cameras.main.centerY - 85;
       const spacingY = 80;
-      
-      //TIDO: After a player completes a level, this number needs to be incremented
-      let maxUnlocked = 5; //Tracks levels user unlocked
+
+      // Increment level user is on
+      const maxUnlocked = parseInt(localStorage.getItem('maxUnlockedLevel') || '1', 10);
 
 
       const spacingX = 150;
@@ -65,27 +65,7 @@ export default class LevelSelect extends Phaser.Scene {
           }
         });
       }
-
-
-      /*levels.forEach((levelName, index) => {
-        //todo: use the images instead and add logic for locked and unlocked levels
-        // need to save a state of the max level a user is at in order to display the unlocked levels correctly
-        let levelText = this.add.text(
-          this.cameras.main.centerX,
-          startY + spacingY * index,
-          levelName,
-          { fontSize: '32px', fill: '#000000', fontFamily: 'PressStart2P' , stroke: outlineColor, stroke: outlineColor, strokeThickness: outlineThickness}
-        );
-        levelText.setOrigin(0.5);
-        levelText.setInteractive({ useHandCursor: true });
-        levelText.on('pointerdown', () => {
-          // TODO: use level number passed into gamescene for the level loading
-          console.log(`Starting level ${index + 1}`);
-          this.scene.start('GameScene', { level: index + 1 });
-        });
-      });*/
   
-      // Optionally add an instruction text at the bottom.
       const instructionText = this.add.text(
         this.cameras.main.centerX,
         this.cameras.main.height - 50,
