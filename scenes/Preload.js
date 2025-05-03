@@ -80,7 +80,9 @@ export default class PreloadScene extends Phaser.Scene {
         this.load.audio("pickup", "assets/audio/pickup-sound.wav");
         this.load.audio("shermie_take_dmg", "assets/audio/shermie-take-damage.mp3");
         this.load.audio("game_over", "assets/audio/game-over-sound.mp3");
-        this.load.audio("level_complete", "assets/audio/level-complete-sound.mp3")
+        this.load.audio("level_complete", "assets/audio/level-complete-sound.mp3");
+        this.load.audio("ui_button_press", "assets/audio/ui-button-press.mp3");
+        this.load.audio("locked_level", "assets/audio/locked-level-sound.wav");
     }
 
     create() {
