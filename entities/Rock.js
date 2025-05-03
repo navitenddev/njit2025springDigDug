@@ -19,7 +19,7 @@ export default class rock extends Phaser.Physics.Arcade.Sprite {
         //  Rock is idle
         if (!this.isMoving) {
             //  Check player IN tile
-            if (player.x == this.belowTile.x * 50 && player.y == this.belowTile.y * 50 && !this.alreadyActivated) {
+            if (player.getBounds().x == this.belowTile.x * 50 && player.getBounds().y == this.belowTile.y * 50 && !this.alreadyActivated) {
                 this.isActive = true;
             }
             //  Activate rock when player leaves below tile

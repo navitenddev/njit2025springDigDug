@@ -7,9 +7,9 @@ export default class PreloadScene extends Phaser.Scene {
         //this.load.image("player", "assets/shermie.png");
 
 
-        this.load.spritesheet("player", "assets/ShermieAnimation_v1.png", {
-            frameWidth: 64,
-            frameHeight: 64,
+        this.load.spritesheet("player", "assets/ShermieAnimation_v4.png", {
+            frameWidth: 50,
+            frameHeight: 50,
         });
         this.load.image("tiles", "assets/tilemap/ground_tileset.png");
         this.load.font('PressStart2P', "assets/fonts/PressStart2P-Regular.ttf", 'truetype'); // Current Default game font
@@ -21,14 +21,6 @@ export default class PreloadScene extends Phaser.Scene {
         this.load.tilemapTiledJSON("map5", "assets/tilemap/map_5.json");
         this.load.image("beatgame", "assets/beatgame.png");
 
-
-        this.anims.create({
-            key: 'walk',
-            frames: this.anims.generateFrameNumbers('player', { start: 0, end: 1 }),
-            framerate: 10,
-            repeat: -1
-        });
-
         this.load.spritesheet("shermie_mask", "assets/tilemap/shermie_mask_tileset.png", { frameWidth: 50, frameHeight: 50 });
 
         //  Corrupted CD enemy sprite
@@ -38,7 +30,7 @@ export default class PreloadScene extends Phaser.Scene {
         })
 
         //  Techno Worm enemy sprite
-        this.load.image("worm_enemy", "assets/TechnoWorm2.png")
+        this.load.image("worm_enemy", "assets/TechnoWorm3.png")
 
         //  Escape Goal sprite
         this.load.image("goal", "assets/escape_goal.png");

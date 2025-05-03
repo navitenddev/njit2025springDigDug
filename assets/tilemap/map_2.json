@@ -5,20 +5,20 @@
         {
          "data":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
             0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-            12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12,
-            5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
-            6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6,
-            6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6,
-            6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6,
-            6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6,
-            6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6,
-            6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6,
-            6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6,
-            6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6,
-            6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6,
-            6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6,
-            6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6,
-            6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6],
+            23, 23, 23, 23, 23, 23, 23, 23, 23, 23, 23, 23,
+            36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36,
+            36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36,
+            36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36,
+            38, 38, 38, 38, 38, 38, 38, 38, 38, 38, 38, 38,
+            38, 38, 38, 38, 38, 38, 38, 38, 38, 38, 38, 38,
+            38, 38, 38, 38, 38, 38, 38, 38, 38, 38, 38, 38,
+            39, 39, 39, 39, 39, 39, 39, 39, 39, 39, 39, 39,
+            39, 39, 39, 39, 39, 39, 39, 39, 39, 39, 39, 39,
+            39, 39, 39, 39, 39, 39, 39, 39, 39, 39, 39, 39,
+            40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40,
+            40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40,
+            40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40,
+            40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40],
          "height":16,
          "id":1,
          "name":"Ground",
@@ -32,18 +32,18 @@
         {
          "data":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
             0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-            19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19,
-            0, 0, 0, 0, 0, 0, 16, 0, 0, 0, 0, 0,
-            0, 0, 0, 0, 0, 0, 16, 0, 0, 0, 0, 0,
-            0, 0, 0, 0, 0, 0, 16, 0, 0, 15, 0, 0,
-            0, 0, 0, 0, 0, 0, 16, 0, 0, 16, 0, 0,
-            0, 15, 0, 0, 0, 0, 16, 0, 0, 16, 0, 0,
-            0, 16, 0, 0, 0, 18, 21, 20, 0, 17, 0, 0,
-            0, 17, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-            0, 0, 0, 0, 0, 0, 0, 0, 15, 0, 0, 0,
-            0, 0, 0, 0, 0, 0, 0, 0, 16, 0, 0, 0,
-            0, 0, 0, 0, 0, 0, 0, 0, 16, 0, 0, 0,
-            0, 0, 18, 19, 19, 20, 0, 0, 17, 0, 0, 0,
+            5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
+            0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 2, 0, 0, 1, 0, 0,
+            0, 0, 0, 0, 0, 0, 2, 0, 0, 2, 0, 0,
+            0, 1, 0, 0, 0, 0, 2, 0, 0, 2, 0, 0,
+            0, 2, 0, 0, 0, 4, 7, 6, 0, 3, 0, 0,
+            0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0,
+            0, 0, 4, 5, 5, 6, 0, 0, 3, 0, 0, 0,
             0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
             0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
          "height":16,
@@ -62,15 +62,15 @@
             0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
             0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
             0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-            0, 0, 0, 25, 0, 0, 0, 0, 0, 0, 0, 0,
-            0, 0, 0, 0, 0, 0, 0, 0, 25, 22, 0, 0,
+            0, 0, 0, 11, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 11, 8, 0, 0,
             0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
             0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-            0, 22, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
             0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-            0, 0, 0, 0, 0, 0, 0, 0, 22, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 8, 0, 0, 0,
             0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-            0, 0, 0, 23, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 9, 0, 0, 0, 0, 0, 0, 0, 0,
             0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
             0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
          "height":16,
@@ -93,13 +93,160 @@
         {
          "columns":7,
          "firstgid":1,
-         "image":"ground_tileset.png",
-         "imageheight":100,
+         "image":"tunnels_tileset.png",
+         "imageheight":50,
          "imagewidth":350,
+         "margin":0,
+         "name":"tunnels_tileset",
+         "spacing":0,
+         "tilecount":7,
+         "tileheight":50,
+         "tiles":[
+                {
+                 "id":0,
+                 "properties":[
+                        {
+                         "name":"up",
+                         "type":"int",
+                         "value":6
+                        }]
+                }, 
+                {
+                 "id":1,
+                 "properties":[
+                        {
+                         "name":"down",
+                         "type":"int",
+                         "value":6
+                        }, 
+                        {
+                         "name":"up",
+                         "type":"int",
+                         "value":6
+                        }]
+                }, 
+                {
+                 "id":2,
+                 "properties":[
+                        {
+                         "name":"down",
+                         "type":"int",
+                         "value":6
+                        }]
+                }, 
+                {
+                 "id":3,
+                 "properties":[
+                        {
+                         "name":"left",
+                         "type":"int",
+                         "value":6
+                        }]
+                }, 
+                {
+                 "id":4,
+                 "properties":[
+                        {
+                         "name":"left",
+                         "type":"int",
+                         "value":6
+                        }, 
+                        {
+                         "name":"right",
+                         "type":"int",
+                         "value":6
+                        }]
+                }, 
+                {
+                 "id":5,
+                 "properties":[
+                        {
+                         "name":"right",
+                         "type":"int",
+                         "value":6
+                        }]
+                }, 
+                {
+                 "id":6,
+                 "properties":[
+                        {
+                         "name":"down",
+                         "type":"string",
+                         "value":"6"
+                        }, 
+                        {
+                         "name":"left",
+                         "type":"int",
+                         "value":6
+                        }, 
+                        {
+                         "name":"right",
+                         "type":"int",
+                         "value":6
+                        }]
+                }],
+         "tilewidth":50
+        }, 
+        {
+         "columns":4,
+         "firstgid":8,
+         "image":"entities_tileset.png",
+         "imageheight":50,
+         "imagewidth":200,
+         "margin":0,
+         "name":"entities_tileset",
+         "spacing":0,
+         "tilecount":4,
+         "tileheight":50,
+         "tiles":[
+                {
+                 "id":0,
+                 "properties":[
+                        {
+                         "name":"entity_name",
+                         "type":"string",
+                         "value":"cd_enemy"
+                        }]
+                }, 
+                {
+                 "id":1,
+                 "properties":[
+                        {
+                         "name":"entity_name",
+                         "type":"string",
+                         "value":"worm_enemy"
+                        }]
+                }, 
+                {
+                 "id":2,
+                 "properties":[
+                        {
+                         "name":"entity_name",
+                         "type":"string",
+                         "value":""
+                        }]
+                }, 
+                {
+                 "id":3,
+                 "properties":[
+                        {
+                         "name":"entity_name",
+                         "type":"string",
+                         "value":"rock"
+                        }]
+                }],
+         "tilewidth":50
+        }, 
+        {
+         "columns":6,
+         "firstgid":12,
+         "image":"ground_tileset.png",
+         "imageheight":300,
+         "imagewidth":300,
          "margin":0,
          "name":"ground_tileset",
          "spacing":0,
-         "tilecount":14,
+         "tilecount":36,
          "tileheight":50,
          "tiles":[
                 {
@@ -438,152 +585,462 @@
                          "type":"int",
                          "value":0
                         }]
-                }],
-         "tilewidth":50
-        }, 
-        {
-         "columns":7,
-         "firstgid":15,
-         "image":"tunnels_tileset.png",
-         "imageheight":50,
-         "imagewidth":350,
-         "margin":0,
-         "name":"tunnels_tileset",
-         "spacing":0,
-         "tilecount":7,
-         "tileheight":50,
-         "tiles":[
-                {
-                 "id":0,
-                 "properties":[
-                        {
-                         "name":"up",
-                         "type":"int",
-                         "value":6
-                        }]
                 }, 
                 {
-                 "id":1,
+                 "id":14,
                  "properties":[
                         {
                          "name":"down",
                          "type":"int",
-                         "value":6
+                         "value":0
+                        }, 
+                        {
+                         "name":"left",
+                         "type":"int",
+                         "value":0
+                        }, 
+                        {
+                         "name":"right",
+                         "type":"int",
+                         "value":0
                         }, 
                         {
                          "name":"up",
                          "type":"int",
-                         "value":6
+                         "value":0
                         }]
                 }, 
                 {
-                 "id":2,
+                 "id":15,
                  "properties":[
                         {
                          "name":"down",
                          "type":"int",
-                         "value":6
-                        }]
-                }, 
-                {
-                 "id":3,
-                 "properties":[
+                         "value":0
+                        }, 
                         {
                          "name":"left",
                          "type":"int",
-                         "value":6
-                        }]
-                }, 
-                {
-                 "id":4,
-                 "properties":[
-                        {
-                         "name":"left",
-                         "type":"int",
-                         "value":6
+                         "value":0
                         }, 
                         {
                          "name":"right",
                          "type":"int",
-                         "value":6
-                        }]
-                }, 
-                {
-                 "id":5,
-                 "properties":[
+                         "value":0
+                        }, 
                         {
-                         "name":"right",
+                         "name":"up",
                          "type":"int",
-                         "value":6
+                         "value":0
                         }]
                 }, 
                 {
-                 "id":6,
+                 "id":16,
                  "properties":[
                         {
                          "name":"down",
-                         "type":"string",
-                         "value":"6"
+                         "type":"int",
+                         "value":0
                         }, 
                         {
                          "name":"left",
                          "type":"int",
-                         "value":6
+                         "value":0
                         }, 
                         {
                          "name":"right",
                          "type":"int",
-                         "value":6
-                        }]
-                }],
-         "tilewidth":50
-        }, 
-        {
-         "columns":4,
-         "firstgid":22,
-         "image":"entities_tileset.png",
-         "imageheight":50,
-         "imagewidth":200,
-         "margin":0,
-         "name":"entities_tileset",
-         "spacing":0,
-         "tilecount":4,
-         "tileheight":50,
-         "tiles":[
-                {
-                 "id":0,
-                 "properties":[
+                         "value":0
+                        }, 
                         {
-                         "name":"entity_name",
-                         "type":"string",
-                         "value":"cd_enemy"
+                         "name":"up",
+                         "type":"int",
+                         "value":0
                         }]
                 }, 
                 {
-                 "id":1,
+                 "id":17,
                  "properties":[
                         {
-                         "name":"entity_name",
-                         "type":"string",
-                         "value":"worm_enemy"
+                         "name":"down",
+                         "type":"int",
+                         "value":0
+                        }, 
+                        {
+                         "name":"left",
+                         "type":"int",
+                         "value":0
+                        }, 
+                        {
+                         "name":"right",
+                         "type":"int",
+                         "value":0
+                        }, 
+                        {
+                         "name":"up",
+                         "type":"int",
+                         "value":0
                         }]
                 }, 
                 {
-                 "id":2,
+                 "id":18,
                  "properties":[
                         {
-                         "name":"entity_name",
-                         "type":"string",
-                         "value":""
+                         "name":"down",
+                         "type":"int",
+                         "value":0
+                        }, 
+                        {
+                         "name":"left",
+                         "type":"int",
+                         "value":0
+                        }, 
+                        {
+                         "name":"right",
+                         "type":"int",
+                         "value":0
+                        }, 
+                        {
+                         "name":"up",
+                         "type":"int",
+                         "value":0
                         }]
                 }, 
                 {
-                 "id":3,
+                 "id":19,
                  "properties":[
                         {
-                         "name":"entity_name",
-                         "type":"string",
-                         "value":"rock"
+                         "name":"down",
+                         "type":"int",
+                         "value":0
+                        }, 
+                        {
+                         "name":"left",
+                         "type":"int",
+                         "value":0
+                        }, 
+                        {
+                         "name":"right",
+                         "type":"int",
+                         "value":0
+                        }, 
+                        {
+                         "name":"up",
+                         "type":"int",
+                         "value":0
+                        }]
+                }, 
+                {
+                 "id":20,
+                 "properties":[
+                        {
+                         "name":"down",
+                         "type":"int",
+                         "value":0
+                        }, 
+                        {
+                         "name":"left",
+                         "type":"int",
+                         "value":0
+                        }, 
+                        {
+                         "name":"right",
+                         "type":"int",
+                         "value":0
+                        }, 
+                        {
+                         "name":"up",
+                         "type":"int",
+                         "value":0
+                        }]
+                }, 
+                {
+                 "id":21,
+                 "properties":[
+                        {
+                         "name":"down",
+                         "type":"int",
+                         "value":0
+                        }, 
+                        {
+                         "name":"left",
+                         "type":"int",
+                         "value":0
+                        }, 
+                        {
+                         "name":"right",
+                         "type":"int",
+                         "value":0
+                        }, 
+                        {
+                         "name":"up",
+                         "type":"int",
+                         "value":0
+                        }]
+                }, 
+                {
+                 "id":22,
+                 "properties":[
+                        {
+                         "name":"down",
+                         "type":"int",
+                         "value":0
+                        }, 
+                        {
+                         "name":"left",
+                         "type":"int",
+                         "value":0
+                        }, 
+                        {
+                         "name":"right",
+                         "type":"int",
+                         "value":0
+                        }, 
+                        {
+                         "name":"up",
+                         "type":"int",
+                         "value":0
+                        }]
+                }, 
+                {
+                 "id":24,
+                 "properties":[
+                        {
+                         "name":"down",
+                         "type":"int",
+                         "value":0
+                        }, 
+                        {
+                         "name":"left",
+                         "type":"int",
+                         "value":0
+                        }, 
+                        {
+                         "name":"right",
+                         "type":"int",
+                         "value":0
+                        }, 
+                        {
+                         "name":"up",
+                         "type":"int",
+                         "value":0
+                        }]
+                },
+            
+                {
+                 "id":25,
+                 "properties":[
+                        {
+                         "name":"down",
+                         "type":"int",
+                         "value":0
+                        }, 
+                        {
+                         "name":"left",
+                         "type":"int",
+                         "value":0
+                        }, 
+                        {
+                         "name":"right",
+                         "type":"int",
+                         "value":0
+                        }, 
+                        {
+                         "name":"up",
+                         "type":"int",
+                         "value":0
+                        }]
+                }, 
+                {
+                 "id":26,
+                 "properties":[
+                        {
+                         "name":"down",
+                         "type":"int",
+                         "value":0
+                        }, 
+                        {
+                         "name":"left",
+                         "type":"int",
+                         "value":0
+                        }, 
+                        {
+                         "name":"right",
+                         "type":"int",
+                         "value":0
+                        }, 
+                        {
+                         "name":"up",
+                         "type":"int",
+                         "value":0
+                        }]
+                }, 
+                {
+                 "id":27,
+                 "properties":[
+                        {
+                         "name":"down",
+                         "type":"int",
+                         "value":0
+                        }, 
+                        {
+                         "name":"left",
+                         "type":"int",
+                         "value":0
+                        }, 
+                        {
+                         "name":"right",
+                         "type":"int",
+                         "value":0
+                        }, 
+                        {
+                         "name":"up",
+                         "type":"int",
+                         "value":0
+                        }]
+                }, 
+                {
+                 "id":28,
+                 "properties":[
+                        {
+                         "name":"down",
+                         "type":"int",
+                         "value":0
+                        }, 
+                        {
+                         "name":"left",
+                         "type":"int",
+                         "value":0
+                        }, 
+                        {
+                         "name":"right",
+                         "type":"int",
+                         "value":0
+                        }, 
+                        {
+                         "name":"up",
+                         "type":"int",
+                         "value":0
+                        }]
+                }, 
+                {
+                 "id":30,
+                 "properties":[
+                        {
+                         "name":"down",
+                         "type":"int",
+                         "value":0
+                        }, 
+                        {
+                         "name":"left",
+                         "type":"int",
+                         "value":0
+                        }, 
+                        {
+                         "name":"right",
+                         "type":"int",
+                         "value":0
+                        }, 
+                        {
+                         "name":"up",
+                         "type":"int",
+                         "value":0
+                        }]
+                }, 
+                {
+                 "id":31,
+                 "properties":[
+                        {
+                         "name":"down",
+                         "type":"int",
+                         "value":0
+                        }, 
+                        {
+                         "name":"left",
+                         "type":"int",
+                         "value":0
+                        }, 
+                        {
+                         "name":"right",
+                         "type":"int",
+                         "value":0
+                        }, 
+                        {
+                         "name":"up",
+                         "type":"int",
+                         "value":0
+                        }]
+                }, 
+                {
+                 "id":32,
+                 "properties":[
+                        {
+                         "name":"down",
+                         "type":"int",
+                         "value":0
+                        }, 
+                        {
+                         "name":"left",
+                         "type":"int",
+                         "value":0
+                        }, 
+                        {
+                         "name":"right",
+                         "type":"int",
+                         "value":0
+                        }, 
+                        {
+                         "name":"up",
+                         "type":"int",
+                         "value":0
+                        }]
+                }, 
+                {
+                 "id":33,
+                 "properties":[
+                        {
+                         "name":"down",
+                         "type":"int",
+                         "value":0
+                        }, 
+                        {
+                         "name":"left",
+                         "type":"int",
+                         "value":0
+                        }, 
+                        {
+                         "name":"right",
+                         "type":"int",
+                         "value":0
+                        }, 
+                        {
+                         "name":"up",
+                         "type":"int",
+                         "value":0
+                        }]
+                }, 
+                {
+                 "id":34,
+                 "properties":[
+                        {
+                         "name":"down",
+                         "type":"int",
+                         "value":0
+                        }, 
+                        {
+                         "name":"left",
+                         "type":"int",
+                         "value":0
+                        }, 
+                        {
+                         "name":"right",
+                         "type":"int",
+                         "value":0
+                        }, 
+                        {
+                         "name":"up",
+                         "type":"int",
+                         "value":0
                         }]
                 }],
          "tilewidth":50
