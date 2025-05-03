@@ -19,11 +19,35 @@ export default class player extends Phaser.Physics.Arcade.Sprite {
 
     handleInput(cursors, wasdKeys) {
         // Prevent movement when the player shoots
-        if (!this.isActive) return;
+        if (!this.isActive) {
+            this.scene.shermieMusic.pause();
+            return;
+        }
 
         //  Prevent movement for the initial shermie movement path
         if (this.controlsDisabled) {
+            this.scene.shermieMusic.pause();
             return;
+        }
+
+        const moving =
+            cursors.left.isDown || cursors.right.isDown ||
+            cursors.up.isDown || cursors.down.isDown ||
+            wasdKeys.left.isDown || wasdKeys.right.isDown ||
+            wasdKeys.up.isDown || wasdKeys.down.isDown;
+
+        if (moving) {
+            if (!this.scene.shermieMusic.isPlaying) {
+                if (this.scene.shermieMusic.isPaused) {
+                    this.scene.shermieMusic.resume(); // resume from pause
+                } else {
+                    this.scene.shermieMusic.play();   // first time playing
+                }
+            }
+        } else {
+            if (this.scene.shermieMusic.isPlaying) {
+                this.scene.shermieMusic.pause();
+            }
         }
 
         //  LEFT-ARROW key or A key

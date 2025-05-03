@@ -98,7 +98,9 @@ export default class GameScene extends Phaser.Scene {
         this.playerBullets = new Bullets(this, 1);
         this.playerBulletsCollider = this.physics.add.overlap(this.playerBullets, this.enemyGroup, this.handleBulletHitEntity, null, this);
         this.input.keyboard.on('keydown-SPACE', (event) => {
-            this.playerBullets.fireBullet(this.player.getBounds().x + 25, this.player.getBounds().y + 20, this.player.direction, this.player);
+            if (!this.isShuttingDown) {
+                this.playerBullets.fireBullet(this.player.x, this.player.y, this.player.direction, this.player);
+            }
         });
 
         //  Initialize Enemy Bullets Group
@@ -128,6 +130,8 @@ export default class GameScene extends Phaser.Scene {
             if (powerup.type === 'powerup_slowdown') this.activateSlowdown(player, powerup);
             if (powerup.type === 'powerup_teleport') this.activateTeleport(player, powerup);
             if (powerup.type === 'powerup_rapidfire') this.activateRapidFire(player, powerup);
+
+            this.powerupSound.play();
         });
 
         this.lastTwoPowerups = []; // keep track of last two
@@ -155,7 +159,7 @@ export default class GameScene extends Phaser.Scene {
                     this.lastTwoPowerups.shift();
                 }
 
-                if (this.powerups.getChildren().length < 3 && !this.player.controlsDisabled) {
+                if (this.powerups.getChildren().length < 3 && !this.player.controlsDisabled && !this.isShuttingDown) {
                     this.spawnPowerup(chosen);
                 }
             },
@@ -214,6 +218,16 @@ export default class GameScene extends Phaser.Scene {
                 this.enemyGroup.isActive = true;
             });
         }
+
+        //  Initialize Shermie movement music
+        this.shermieMusic = this.sound.add("retro_music_1", { volume: 0.2 });
+        this.shermieMusic.setLoop(true);
+
+        //  Initialize Shermie take damage sound
+        this.shermieHitSound = this.sound.add("shermie_take_dmg", { volume: 0.2 });
+
+        //  Initialize Powerup pick up sound
+        this.powerupSound = this.sound.add("pickup", { volume: 0.5 });
     }
 
     update() {
@@ -262,12 +276,21 @@ export default class GameScene extends Phaser.Scene {
         } catch (error) {
             console.warn("Error occurred trying to shutdown GameScene")
         }
+
+        //  Stop all current sounds
+        this.sound.stopAll();
     }
 
     enemyWin() {
         this.shutdown();
-        this.scene.launch('GameOverScene', { level: this.level, message: "Enemy Escaped" });
-        this.scene.bringToTop('GameOverScene');
+
+        //  Play game over sound before launching GameOver scene
+        const gameOverSound = this.sound.add('game_over', { volume: 0.5 });
+        gameOverSound.once('complete', () => {
+            this.scene.launch('GameOverScene', { level: this.level, message: "Enemy Escaped" });
+            this.scene.bringToTop('GameOverScene');
+        });
+        gameOverSound.play();
     }
 
     onAllEnemiesKilled() {
@@ -282,8 +305,14 @@ export default class GameScene extends Phaser.Scene {
             this.scene.launch('BeatGame');
         }
         this.shutdown();
-        this.scene.launch('LevelCompleteScene', { level: this.level });
-        this.scene.bringToTop('LevelCompleteScene');
+
+        //  Play level complete sound before launching LevelComplete scene
+        const levelCompleteSound = this.sound.add("level_complete", { volume: 0.5 });
+        levelCompleteSound.once('complete', () => {
+            this.scene.launch('LevelCompleteScene', { level: this.level });
+            this.scene.bringToTop('LevelCompleteScene');
+        });
+        levelCompleteSound.play({ delay: 0.5 });
     }
 
     /**
@@ -371,6 +400,9 @@ export default class GameScene extends Phaser.Scene {
 
             //  Kill the entity
             entity.destroy();
+
+            //  Play entity death sound
+            this.sound.play("monster_hit", { volume: 0.3 });
 
             //  Show the points gained
             this.showPointsPopup(points, coordX, coordY);
@@ -521,8 +553,10 @@ export default class GameScene extends Phaser.Scene {
             this.game.events.emit("updateLives", this.lives);
 
             // Temporary invulnerability
-
             player.invulnerable = true;
+
+            this.shermieHitSound.play();
+
             this.tweens.add({
                 targets: player,
                 alpha: 0.3,
@@ -544,8 +578,14 @@ export default class GameScene extends Phaser.Scene {
                 if (this.score > prevHighScore) {
                     localStorage.setItem("highScore", this.score);
                 }
-                this.scene.launch('GameOverScene', { level: this.level, message: "You Died" });
-                this.scene.bringToTop('GameOverScene');
+
+                //  Play game over sound before launching GameOver scene
+                const gameOverSound = this.sound.add('game_over', { volume: 0.5 });
+                gameOverSound.once('complete', () => {
+                    this.scene.launch('GameOverScene', { level: this.level, message: "You Died" });
+                    this.scene.bringToTop('GameOverScene');
+                });
+                gameOverSound.play();
             }
         }
     }
@@ -668,8 +708,10 @@ export default class GameScene extends Phaser.Scene {
                 this.score += 1000;
                 this.updateScoreText();
                 this.showPointsPopup(1000, entity.x - 15, entity.y + 15)
+                this.sound.play("monster_hit", { volume: 0.3 });
                 entity.destroy();
             }
+            rock.rockFallSound.stop();
             rock.destroy();
         }
     }
@@ -719,9 +761,10 @@ export default class GameScene extends Phaser.Scene {
         const x = tile.pixelX + tile.width / 2;
         const y = tile.pixelY + tile.height / 2;
 
-        const powerup = this.add.sprite(x, y, type).setScale(0.5).setOrigin(0.5);
+        const powerup = this.add.sprite(x, y, type).setOrigin(0.5);
         this.physics.world.enable(powerup);
         powerup.body.setAllowGravity(false);
+        powerup.body.setSize(36, 36, true);
         this.powerups.add(powerup);
         powerup.type = type;
         this.powerups.add(powerup);
