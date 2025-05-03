@@ -185,6 +185,12 @@ export default class GameScene extends Phaser.Scene {
                             if (this.player.getBounds().y !== 400) {
                                 this.player.move('down', false);
                             }
+                            else {
+                                //  Update Shermie rotation
+                                this.player.flipX = false;
+                                this.player.angle = 0;
+                                this.player.direction = 'left';
+                            }
                         },
                         onComplete: () => {
                             //  Activate user controls
@@ -199,6 +205,8 @@ export default class GameScene extends Phaser.Scene {
         }
         else {
             this.time.delayedCall(2500, () => {
+                this.player.direction = 'left';
+
                 //  Activate user controls
                 this.player.controlsDisabled = false;
 
