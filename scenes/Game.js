@@ -33,7 +33,7 @@ export default class GameScene extends Phaser.Scene {
 
         // Create player object & added amount of lives to player
         this.lives = 3;
-        this.player = this.level == 1 ? new Player(this, 550, 100).setOrigin(0, 0) : new Player(this, 300, 400).setOrigin(0, 0);
+        this.player = this.level == 1 ? new Player(this, 575, 125).setOrigin(0.5, 0.5) : new Player(this, 325, 425).setOrigin(0.5, 0.5);
         this.add.existing(this.player);
         this.physics.add.existing(this.player);
         this.player.body.setAllowGravity(false);
@@ -89,7 +89,7 @@ export default class GameScene extends Phaser.Scene {
 
         // Corrupted CD Enemy movement animation
         this.anims.create({
-            key: 'cd_move',
+            key: 'cd_enemy',
             frames: this.anims.generateFrameNumbers('cd_enemy', { start: 0, end: 1 }),
             frameRate: 10
         });
@@ -159,7 +159,7 @@ export default class GameScene extends Phaser.Scene {
                     this.lastTwoPowerups.shift();
                 }
 
-                if (this.powerups.getChildren().length < 3 && !this.player.controlsDisabled) {
+                if (this.powerups.getChildren().length < 3 && !this.player.controlsDisabled && !this.isShuttingDown) {
                     this.spawnPowerup(chosen);
                 }
             },
@@ -175,7 +175,7 @@ export default class GameScene extends Phaser.Scene {
                 duration: 2200,
                 ease: 'Linear',
                 onUpdate: () => {
-                    if (this.player.x !== 300) {
+                    if (this.player.getBounds().x !== 300) {
                         this.player.move('left', false);
                     }
                 },
@@ -186,8 +186,14 @@ export default class GameScene extends Phaser.Scene {
                         duration: 3500,
                         ease: 'Linear',
                         onUpdate: () => {
-                            if (this.player.y !== 400) {
+                            if (this.player.getBounds().y !== 400) {
                                 this.player.move('down', false);
+                            }
+                            else {
+                                //  Update Shermie rotation
+                                this.player.flipX = false;
+                                this.player.angle = 0;
+                                this.player.direction = 'left';
                             }
                         },
                         onComplete: () => {
@@ -203,6 +209,8 @@ export default class GameScene extends Phaser.Scene {
         }
         else {
             this.time.delayedCall(2500, () => {
+                this.player.direction = 'left';
+
                 //  Activate user controls
                 this.player.controlsDisabled = false;
 
@@ -292,7 +300,7 @@ export default class GameScene extends Phaser.Scene {
         if (next > max && next <= 5) {
             localStorage.setItem('maxUnlockedLevel', next);
         }
-        else if (next >= 6){
+        else if (next >= 6) {
             this.shutdown();
             this.scene.launch('BeatGame');
         }
@@ -649,7 +657,7 @@ export default class GameScene extends Phaser.Scene {
         const worldY = tile.pixelY;
 
 
-        player.setPosition(Math.round(worldX), Math.round(worldY));
+        player.setPosition(Math.round(worldX) + 25, Math.round(worldY) + 25);
 
         player.targetPosition = null;
         player.moveQueue = null;
@@ -663,8 +671,6 @@ export default class GameScene extends Phaser.Scene {
         if (this.powerups.contains(powerup)) {
             powerup.destroy();
         }
-
-        console.log("GOT HERE")
 
         // If there's already a rapid fire tween running, kill it
         if (this.rapidfireTween) {
@@ -739,7 +745,7 @@ export default class GameScene extends Phaser.Scene {
             const isGroundLayer = tile.layer.name === "Ground";
             const isOnGrid = tile.pixelX % 50 === 0 && tile.pixelY % 50 === 0;
             const isNotSurface = tile.pixelY >= 150;
-            const notOnPlayer = Math.floor(this.player.x / 50) !== tile.x || Math.floor(this.player.y / 50) !== tile.y;
+            const notOnPlayer = Math.floor(this.player.getBounds().x / 50) !== tile.x || Math.floor(this.player.getBounds().y / 50) !== tile.y;
 
             // Replace `tile.index > 0` with any specific dirt tile condition if needed
             const isDirt = tile.index > 0; // or tile.properties.isDirt === true
@@ -755,9 +761,10 @@ export default class GameScene extends Phaser.Scene {
         const x = tile.pixelX + tile.width / 2;
         const y = tile.pixelY + tile.height / 2;
 
-        const powerup = this.add.sprite(x, y, type).setScale(0.5).setOrigin(0.5);
+        const powerup = this.add.sprite(x, y, type).setOrigin(0.5);
         this.physics.world.enable(powerup);
         powerup.body.setAllowGravity(false);
+        powerup.body.setSize(36, 36, true);
         this.powerups.add(powerup);
         powerup.type = type;
         this.powerups.add(powerup);
@@ -770,7 +777,7 @@ export default class GameScene extends Phaser.Scene {
         let tileCoords = null;
 
         //  Base Case: player isn't moving into a tile, therefore return null.
-        if (this.player.x % 50 == 0 && this.player.y % 50 == 0) {
+        if (this.player.getBounds().x % 50 == 0 && this.player.getBounds().y % 50 == 0) {
             return null;
         }
 
@@ -849,7 +856,7 @@ export default class GameScene extends Phaser.Scene {
 
         //  If-Statement prevents multiple drawFrame calls
         if (newTexture && newTexture > tile.properties[direction]) {
-            this.rt.drawFrame("shermie_mask", shermieMaskFrame, this.player.x, this.player.y)
+            this.rt.drawFrame("shermie_mask", shermieMaskFrame, this.player.getBounds().x, this.player.getBounds().y)
             this.rt.drawFrame("mask_tileset", newTexture + offsetTexture - 1, tileWorldXY.x, tileWorldXY.y);
             tile.properties[direction] += 1;
         }
