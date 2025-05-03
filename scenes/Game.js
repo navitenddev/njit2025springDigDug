@@ -98,7 +98,9 @@ export default class GameScene extends Phaser.Scene {
         this.playerBullets = new Bullets(this, 1);
         this.playerBulletsCollider = this.physics.add.overlap(this.playerBullets, this.enemyGroup, this.handleBulletHitEntity, null, this);
         this.input.keyboard.on('keydown-SPACE', (event) => {
-            this.playerBullets.fireBullet(this.player.x, this.player.y, this.player.direction, this.player);
+            if (!this.isShuttingDown) {
+                this.playerBullets.fireBullet(this.player.x, this.player.y, this.player.direction, this.player);
+            }
         });
 
         //  Initialize Enemy Bullets Group
@@ -128,6 +130,8 @@ export default class GameScene extends Phaser.Scene {
             if (powerup.type === 'powerup_slowdown') this.activateSlowdown(player, powerup);
             if (powerup.type === 'powerup_teleport') this.activateTeleport(player, powerup);
             if (powerup.type === 'powerup_rapidfire') this.activateRapidFire(player, powerup);
+
+            this.powerupSound.play();
         });
 
         this.lastTwoPowerups = []; // keep track of last two
@@ -210,6 +214,9 @@ export default class GameScene extends Phaser.Scene {
         //  Initialize Shermie movement music
         this.shermieMusic = this.sound.add("retro_music_1", { volume: 0.2 });
         this.shermieMusic.setLoop(true);
+
+        //  Initialize Powerup pick up sound
+        this.powerupSound = this.sound.add("pickup", { volume: 0.5 });
     }
 
     update() {
@@ -258,6 +265,9 @@ export default class GameScene extends Phaser.Scene {
         } catch (error) {
             console.warn("Error occurred trying to shutdown GameScene")
         }
+
+        //  Stop all currently sounds
+        this.sound.stopAll();
     }
 
     enemyWin() {
@@ -665,12 +675,11 @@ export default class GameScene extends Phaser.Scene {
                 this.score += 1000;
                 this.updateScoreText();
                 this.showPointsPopup(1000, entity.x - 15, entity.y + 15)
+                this.sound.play("monster_hit", { volume: 0.3 });
                 entity.destroy();
             }
             rock.rockFallSound.stop();
             rock.destroy();
-
-            this.sound.play("monster_hit", { volume: 0.3 });
         }
     }
 

@@ -77,6 +77,7 @@ export default class PreloadScene extends Phaser.Scene {
         this.load.audio("rock_shake", "assets/audio/rock-activation-shaking.mp3");
         this.load.audio("rock_fall", "assets/audio/rock-falling.mp3");
         this.load.audio("rock_hit_ground", "assets/audio/rock-hitting-dirt.mp3");
+        this.load.audio("pickup", "assets/audio/pickup-sound.wav");
     }
 
     create() {
