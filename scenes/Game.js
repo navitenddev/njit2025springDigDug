@@ -177,11 +177,9 @@ export default class GameScene extends Phaser.Scene {
             });
         }
 
-        // Play background music in a loop
-        this.sound.play('background_music', {
-            loop: true,        // Keep the music looping
-            volume: 0.01        // Adjust volume (optional)
-        });
+        //  Initialize Shermie movement music
+        this.shermieMusic = this.sound.add("retro_music_1", { volume: 0.2 });
+        this.shermieMusic.setLoop(true);
     }
 
     update() {
