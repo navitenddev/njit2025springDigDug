@@ -21,7 +21,8 @@ export default class BeatGame extends Phaser.Scene {
         fontFamily: 'PressStart2P',
         fontSize: '24px',
         fill: '#ffffff',
-        stroke: '#d3d3d3',
+        stroke: '#000000',
+        strokeThickness: 6,
         align: 'center',
         wordWrap: { width: width * 0.8 }
       }).setOrigin(0.5);
