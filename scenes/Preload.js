@@ -76,6 +76,7 @@ export default class PreloadScene extends Phaser.Scene {
         this.load.audio("level_complete", "assets/audio/level-complete-sound.mp3");
         this.load.audio("ui_button_press", "assets/audio/ui-button-press.mp3");
         this.load.audio("locked_level", "assets/audio/locked-level-sound.wav");
+        this.load.audio("level_1_start", "assets/audio/level-1-start-music.mp3");
     }
 
     create() {
