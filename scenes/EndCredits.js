@@ -7,12 +7,18 @@ export default class EndCreditsScene extends Phaser.Scene {
       const { width, height } = this.cameras.main;
       const centerX = width / 2;
       const centerY = height / 2;
-      this.cameras.main.setBackgroundColor('rgba(0, 0, 0, 0.8)');
+      
+      let bg = this.add.image(centerX, centerY, 'beatgame');
+      const scaleX = width / bg.width;
+      const scaleY = height / bg.height;
+      const scale = Math.max(scaleX, scaleY);
+      bg.setScale(scale).setDepth(-1);
+
       this.add.text(centerX, 100, 'Credits', {
         fontFamily: 'PressStart2P',
         fontSize: '48px',
-        fill: '#ffffff',
-        stroke: '#000000',
+        fill: '#000000',
+        stroke: '#d3d3d3',
         strokeThickness: 6
       }).setOrigin(0.5);
   
@@ -33,6 +39,8 @@ export default class EndCreditsScene extends Phaser.Scene {
         fontFamily: 'PressStart2P',
         fontSize: '20px',
         fill: '#ffffff',
+        stroke: '#000000',
+        strokeThickness: 6,
         align: 'center',
         wordWrap: { width: width * 0.8 }
       }).setOrigin(0.5);
@@ -41,7 +49,9 @@ export default class EndCreditsScene extends Phaser.Scene {
       const instruction = this.add.text(centerX, height - 60, 'Press SPACE or Click to Return', {
         fontFamily: 'PressStart2P',
         fontSize: '18px',
-        fill: '#ffffff'
+        fill: '#000000',
+        stroke: '#d3d3d3',
+        strokeThickness: 4
       }).setOrigin(0.5);
   
       // Return on SPACE or click
