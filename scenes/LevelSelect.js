@@ -42,7 +42,7 @@ export default class LevelSelect extends Phaser.Scene {
         let posY = this.cameras.main.centerY;
   
       
-        let levelImage = this.add.image(posX, posY, imageKey).setInteractive({ useHandCursor: true });
+        let levelImage = this.add.image(0, 0, imageKey);
         levelImage.setOrigin(0.5);
 
         let border = this.add.graphics();
@@ -54,15 +54,42 @@ export default class LevelSelect extends Phaser.Scene {
           levelImage.displayHeight
         );
 
+        // Put both image and border in a container
+        const levelContainer = this.add.container(posX, posY, [border, levelImage]);
+        levelContainer.setSize(levelImage.width, levelImage.height);
+        levelContainer.setInteractive({ useHandCursor: true });
+
   
         // Pointer event for level selection.
-        levelImage.on('pointerdown', () => {
+        levelContainer.on('pointerdown', () => {
           if (i <= maxUnlocked) {
             console.log(`Starting level ${i}`);
             this.scene.start('GameScene', { level: i });
           } else {
             console.log(`Level ${i} is locked.`);
           }
+        });
+
+                // Scale up on hover
+        levelContainer.on('pointerover', () => {
+          if (imageKey !== `lvl${i}_locked`) {
+            this.tweens.add({
+              targets: levelContainer,
+              scale: 1.2,
+              duration: 150,
+              ease: 'Power2'
+            });
+          }
+        });
+
+        // Reset scale when pointer leaves
+        levelContainer.on('pointerout', () => {
+          this.tweens.add({
+            targets: levelContainer,
+            scale: 1,
+            duration: 150,
+            ease: 'Power2'
+          });
         });
       }
   

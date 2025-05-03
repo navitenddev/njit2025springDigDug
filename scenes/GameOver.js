@@ -39,6 +39,24 @@ export default class GameOverScene extends Phaser.Scene {
       this.scene.start('GameScene', { level: this.diedLevel });
     });
 
+    tryAgain.on('pointerover', () => {
+      this.tweens.add({
+        targets: tryAgain,
+        scale: 1.1,
+        duration: 150,
+        ease: 'Power2'
+      });
+    });
+
+    tryAgain.on('pointerout', () => {
+      this.tweens.add({
+        targets: tryAgain,
+        scale: 1,
+        duration: 150,
+        ease: 'Power2'
+      });
+    });
+
     //Quit to Home
     const quitHome = this.add.text(centerX, centerY + 60, 'Quit to Home', {
       fontFamily: 'PressStart2P',
@@ -54,6 +72,24 @@ export default class GameOverScene extends Phaser.Scene {
       this.scene.stop('GameScene');
       this.scene.stop('GameUI');
       this.scene.start('StartMenu');
+    });
+
+    quitHome.on('pointerover', () => {
+      this.tweens.add({
+        targets: quitHome,
+        scale: 1.1,
+        duration: 150,
+        ease: 'Power2'
+      });
+    });
+
+    quitHome.on('pointerout', () => {
+      this.tweens.add({
+        targets: quitHome,
+        scale: 1,
+        duration: 150,
+        ease: 'Power2'
+      });
     });
   }
 }
