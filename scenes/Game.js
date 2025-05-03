@@ -159,7 +159,7 @@ export default class GameScene extends Phaser.Scene {
                     this.lastTwoPowerups.shift();
                 }
 
-                if (this.powerups.getChildren().length < 3 && !this.player.controlsDisabled) {
+                if (this.powerups.getChildren().length < 3 && !this.player.controlsDisabled && !this.isShuttingDown) {
                     this.spawnPowerup(chosen);
                 }
             },
@@ -755,9 +755,10 @@ export default class GameScene extends Phaser.Scene {
         const x = tile.pixelX + tile.width / 2;
         const y = tile.pixelY + tile.height / 2;
 
-        const powerup = this.add.sprite(x, y, type).setScale(0.5).setOrigin(0.5);
+        const powerup = this.add.sprite(x, y, type).setOrigin(0.5);
         this.physics.world.enable(powerup);
         powerup.body.setAllowGravity(false);
+        powerup.body.setSize(36, 36, true);
         this.powerups.add(powerup);
         powerup.type = type;
         this.powerups.add(powerup);
