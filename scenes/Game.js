@@ -279,6 +279,13 @@ export default class GameScene extends Phaser.Scene {
 
         //  Stop all current sounds
         this.sound.stopAll();
+
+        //  Stop all tweens in Game and GameUI
+        this.tweens.killAll();
+        const gameUIScene = this.scene.get('GameUI');
+        if (gameUIScene && gameUIScene.tweens) {
+            gameUIScene.tweens.killAll();
+        }
     }
 
     enemyWin() {
