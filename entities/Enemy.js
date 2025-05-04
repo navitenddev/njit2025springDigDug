@@ -105,6 +105,7 @@ export default class enemy extends Phaser.Physics.Arcade.Sprite {
                 this.flipX = true;
             }
             else if (this.direction == null) {
+                console.log("Enemy tried to crash the game!");
                 this.direction = this.getNextDirection(this.scene.player, this.scene.map.getTileAtWorldXY(this.x, this.y))
             }
 
@@ -525,7 +526,7 @@ export default class enemy extends Phaser.Physics.Arcade.Sprite {
             this.play(this.animationKey, true);
         }
 
-        let newTile = this.scene.map.getTileAtWorldXY(this.x + 25, this.y + 25)
+        let newTile = this.scene.map.getTileAtWorldXY(this.x + 24, this.y + 24)
         let availableTiles = [];
 
         //  Ensures the enemy's current tile is NOT next to the tile it first entered ghost mode from
@@ -571,15 +572,15 @@ export default class enemy extends Phaser.Physics.Arcade.Sprite {
      * Used when the enemy is getting out of ghost mode
      */
     ghostAlignMove() {
-        let tile = this.scene.map.getTileAtWorldXY(this.x + 25, this.y + 25);
+        let tile = this.scene.map.getTileAtWorldXY(this.x + 24, this.y + 24);
         if (tile) {
-            const targetX = tile.x * 50 + 25;
-            const targetY = tile.y * 50 + 25;
+            const targetX = tile.x * 50 + 24;
+            const targetY = tile.y * 50 + 24;
 
             const tolerance = 1; // acceptable drift in pixels
 
-            const diffX = targetX - (this.x + 25);
-            const diffY = targetY - (this.y + 25);
+            const diffX = targetX - (this.x + 24);
+            const diffY = targetY - (this.y + 24);
 
             // If not centered, move to center
             if (Math.abs(diffX) > tolerance || Math.abs(diffY) > tolerance) {
@@ -589,7 +590,7 @@ export default class enemy extends Phaser.Physics.Arcade.Sprite {
             }
             // If centered, stop align mode and go to normal movement
             else {
-                this.setPosition(targetX - 25, targetY - 25); // Snap exactly to center
+                this.setPosition(targetX - 24, targetY - 24); // Snap exactly to center
                 this.direction = null;
                 this.ghostAlignMode = false;
             }
@@ -624,13 +625,13 @@ export default class enemy extends Phaser.Physics.Arcade.Sprite {
         }
 
         if (currentTile) {
-            const targetX = currentTile.x * 50 + 25;
-            const targetY = currentTile.y * 50 + 25;
+            const targetX = currentTile.x * 50 + 24;
+            const targetY = currentTile.y * 50 + 24;
 
             const tolerance = 2; // acceptable drift in pixels
 
-            const diffX = targetX - (this.x + 25);
-            const diffY = targetY - (this.y + 25);
+            const diffX = targetX - (this.x + 24);
+            const diffY = targetY - (this.y + 24);
 
             const speed = this.baseSpeed; // or this.isSlowed ? slowedSpeed : this.baseSpeed
 
@@ -646,7 +647,7 @@ export default class enemy extends Phaser.Physics.Arcade.Sprite {
             }
             // If centered, stop align mode and go to normal movement
             else {
-                this.setPosition(targetX - 25, targetY - 25); // Snap exactly to center
+                this.setPosition(targetX - 24, targetY - 24); // Snap exactly to center
                 this.targetPosition = null;
                 this.alignMode = false;
             }
@@ -713,13 +714,13 @@ export default class enemy extends Phaser.Physics.Arcade.Sprite {
     }
 
     redirectMove() {
-        const targetX = this.redirectTile.x * 50 + 25;
-        const targetY = this.redirectTile.y * 50 + 25;
+        const targetX = this.redirectTile.x * 50 + 24;
+        const targetY = this.redirectTile.y * 50 + 24;
 
         const tolerance = 1; // acceptable drift in pixels
 
-        const diffX = targetX - (this.x + 25);
-        const diffY = targetY - (this.y + 25);
+        const diffX = targetX - (this.x + 24);
+        const diffY = targetY - (this.y + 24);
 
         // If not centered, move to center
         if (Math.abs(diffX) > tolerance || Math.abs(diffY) > tolerance) {
@@ -729,7 +730,7 @@ export default class enemy extends Phaser.Physics.Arcade.Sprite {
         }
         // If centered, stop redirect mode and go to normal movement
         else {
-            this.setPosition(targetX - 25, targetY - 25); // Snap exactly to center
+            this.setPosition(targetX - 24, targetY - 24); // Snap exactly to center
             this.direction = null;
             this.redirectMode = false;
         }
