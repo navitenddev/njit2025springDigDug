@@ -19,7 +19,7 @@ export default class rock extends Phaser.Physics.Arcade.Sprite {
         //  Rock is idle
         if (!this.isMoving) {
             //  Check player IN tile
-            if (player.x == this.belowTile.x * 50 && player.y == this.belowTile.y * 50 && !this.alreadyActivated) {
+            if (player.getBounds().x == this.belowTile.x * 50 && player.getBounds().y == this.belowTile.y * 50 && !this.alreadyActivated) {
                 this.isActive = true;
             }
             //  Activate rock when player leaves below tile
@@ -60,6 +60,8 @@ export default class rock extends Phaser.Physics.Arcade.Sprite {
                     onStart: () => {
                         this.scene.physics.world.remove(this.body);
                         this.entityCollision = false;
+                        this.rockFallSound.stop();
+                        this.scene.sound.play("rock_hit_ground", { volume: 0.5 });
                     },
                     onComplete: () => {
                         this.destroy();
@@ -76,10 +78,15 @@ export default class rock extends Phaser.Physics.Arcade.Sprite {
             angle: 20,
             yoyo: true,
             repeat: 5,
+            onStart: () => {
+                this.scene.sound.play("rock_shake");
+            },
             onComplete: () => {
                 this.angle = 0;
                 this.setVelocityY(200);
                 this.isMoving = true;
+                this.rockFallSound = this.scene.sound.add("rock_fall");
+                this.rockFallSound.play();
             }
         });
     }

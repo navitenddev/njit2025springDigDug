@@ -35,8 +35,27 @@ export default class GameOverScene extends Phaser.Scene {
 
     tryAgain.on('pointerdown', () => {
       // Restart the current level
+      this.sound.play("ui_button_press", { volume: 0.5 });
       this.scene.stop('GameUI');
       this.scene.start('GameScene', { level: this.diedLevel });
+    });
+
+    tryAgain.on('pointerover', () => {
+      this.tweens.add({
+        targets: tryAgain,
+        scale: 1.1,
+        duration: 150,
+        ease: 'Power2'
+      });
+    });
+
+    tryAgain.on('pointerout', () => {
+      this.tweens.add({
+        targets: tryAgain,
+        scale: 1,
+        duration: 150,
+        ease: 'Power2'
+      });
     });
 
     //Quit to Home
@@ -51,9 +70,28 @@ export default class GameOverScene extends Phaser.Scene {
       .setInteractive({ useHandCursor: true });
 
     quitHome.on('pointerdown', () => {
+      this.sound.play("ui_button_press", { volume: 0.5 });
       this.scene.stop('GameScene');
       this.scene.stop('GameUI');
       this.scene.start('StartMenu');
+    });
+
+    quitHome.on('pointerover', () => {
+      this.tweens.add({
+        targets: quitHome,
+        scale: 1.1,
+        duration: 150,
+        ease: 'Power2'
+      });
+    });
+
+    quitHome.on('pointerout', () => {
+      this.tweens.add({
+        targets: quitHome,
+        scale: 1,
+        duration: 150,
+        ease: 'Power2'
+      });
     });
   }
 }

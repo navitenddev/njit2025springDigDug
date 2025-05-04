@@ -19,16 +19,40 @@ export default class player extends Phaser.Physics.Arcade.Sprite {
 
     handleInput(cursors, wasdKeys) {
         // Prevent movement when the player shoots
-        if (!this.isActive) return;
+        if (!this.isActive) {
+            this.scene.shermieMusic.pause();
+            return;
+        }
 
         //  Prevent movement for the initial shermie movement path
         if (this.controlsDisabled) {
+            this.scene.shermieMusic.pause();
             return;
+        }
+
+        const moving =
+            cursors.left.isDown || cursors.right.isDown ||
+            cursors.up.isDown || cursors.down.isDown ||
+            wasdKeys.left.isDown || wasdKeys.right.isDown ||
+            wasdKeys.up.isDown || wasdKeys.down.isDown;
+
+        if (moving) {
+            if (!this.scene.shermieMusic.isPlaying) {
+                if (this.scene.shermieMusic.isPaused) {
+                    this.scene.shermieMusic.resume(); // resume from pause
+                } else {
+                    this.scene.shermieMusic.play();   // first time playing
+                }
+            }
+        } else {
+            if (this.scene.shermieMusic.isPlaying) {
+                this.scene.shermieMusic.pause();
+            }
         }
 
         //  LEFT-ARROW key or A key
         if (cursors.left.isDown || wasdKeys.left.isDown) {
-            if (this.getTopLeft().y % 50 == 0) {
+            if (this.getBounds().y % 50 == 0) {
                 this.move('left', false)
             }
             else {
@@ -37,7 +61,7 @@ export default class player extends Phaser.Physics.Arcade.Sprite {
         }
         //  RIGHT-ARROW key or D key
         else if (cursors.right.isDown || wasdKeys.right.isDown) {
-            if (this.getTopLeft().y % 50 == 0) {
+            if (this.getBounds().y % 50 == 0) {
                 this.move('right', false)
             }
             else {
@@ -46,7 +70,7 @@ export default class player extends Phaser.Physics.Arcade.Sprite {
         }
         //  UP-ARROW key or W key
         else if (cursors.up.isDown || wasdKeys.up.isDown) {
-            if (this.getTopLeft().x % 50 == 0) {
+            if (this.getBounds().x % 50 == 0) {
                 this.move('up', false)
             }
             else {
@@ -55,7 +79,7 @@ export default class player extends Phaser.Physics.Arcade.Sprite {
         }
         //  DOWN-ARROW key or S KEY
         else if (cursors.down.isDown || wasdKeys.down.isDown) {
-            if (this.getTopLeft().x % 50 == 0) {
+            if (this.getBounds().x % 50 == 0) {
                 this.move('down', false)
             }
             else {
@@ -74,19 +98,25 @@ export default class player extends Phaser.Physics.Arcade.Sprite {
         switch (dir) {
             case 'left':
                 this.flipX = false;
+                this.angle = 0;
                 this.setPosition(this.x - 2, this.y);
                 this.anims.play('move', true);
                 break;
             case 'right':
                 this.flipX = true;
+                this.angle = 0;
                 this.setPosition(this.x + 2, this.y);
                 this.anims.play('move', true);
                 break;
             case 'up':
+                this.flipX = false;
+                this.angle = 90;
                 this.setPosition(this.x, this.y - 2);
                 this.anims.play('move', true);
                 break;
             case 'down':
+                this.flipX = false;
+                this.angle = -90;
                 this.setPosition(this.x, this.y + 2);
                 this.anims.play('move', true);
                 break;
@@ -98,16 +128,16 @@ export default class player extends Phaser.Physics.Arcade.Sprite {
     canMove(dir) {
         switch (dir) {
             case 'left':
-                if (this.x - 2 < 0 || this.hasRock(this.scene.map, this.x - 2, this.y)) { return false; }
+                if (this.getBounds().x - 2 < 0 || this.hasRock(this.scene.map, this.getBounds().x - 2, this.getBounds().y)) { return false; }
                 break;
             case 'right':
-                if (this.x + 2 > 550 || this.hasRock(this.scene.map, this.x + 50, this.y)) { return false; }
+                if (this.getBounds().x + 2 > 550 || this.hasRock(this.scene.map, this.getBounds().x + 50, this.getBounds().y)) { return false; }
                 break;
             case 'up':
-                if (this.y - 2 < 100 || this.hasRock(this.scene.map, this.x, this.y - 2)) { return false; }
+                if (this.getBounds().y - 2 < 100 || this.hasRock(this.scene.map, this.getBounds().x, this.getBounds().y - 2)) { return false; }
                 break;
             case 'down':
-                if (this.y + 2 > 750 || this.hasRock(this.scene.map, this.x, this.y + 50)) { return false; }
+                if (this.getBounds().y + 2 > 750 || this.hasRock(this.scene.map, this.getBounds().x, this.getBounds().y + 50)) { return false; }
                 break;
             default:
                 break;

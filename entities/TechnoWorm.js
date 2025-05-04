@@ -15,7 +15,7 @@ export default class TechnoWorm extends Enemy {
 
         //  Begin timer for bullet firing if enemy and player are on the same Y level and they are relatively close
         try {
-            if (this.scene.player.y == this.y && !this.bulletTimer
+            if (this.scene.player.getBounds().y == this.y && !this.bulletTimer
                 && this.currentPath && this.currentPath.length <= 5) {
                 this.bulletTimer = this.scene.time.delayedCall(this.bulletCooldown, this.fireBullet, [], this)
             }
@@ -26,9 +26,9 @@ export default class TechnoWorm extends Enemy {
 
     fireBullet() {
         try {
-            if (this.isActive && this.scene.player.y == this.y && !this.scene.isShuttingDown) {
-                let direction = this.x >= this.scene.player.x ? 'left' : 'right';
-                this.bullets.fireBullet(this.x, this.y, direction, this);
+            if (this.isActive && this.scene.player.getBounds().y == this.y && !this.scene.isShuttingDown) {
+                let direction = this.x >= this.scene.player.getBounds().x ? 'left' : 'right';
+                this.bullets.fireBullet(this.x + 25, this.y + 25, direction, this);
             }
             this.bulletTimer = null;
 

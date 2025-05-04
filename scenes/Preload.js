@@ -7,9 +7,9 @@ export default class PreloadScene extends Phaser.Scene {
         //this.load.image("player", "assets/shermie.png");
 
 
-        this.load.spritesheet("player", "assets/ShermieAnimation_v1.png", {
-            frameWidth: 64,
-            frameHeight: 64,
+        this.load.spritesheet("player", "assets/ShermieAnimation_v4.png", {
+            frameWidth: 50,
+            frameHeight: 50,
         });
         this.load.image("tiles", "assets/tilemap/ground_tileset.png");
         this.load.font('PressStart2P', "assets/fonts/PressStart2P-Regular.ttf", 'truetype'); // Current Default game font
@@ -21,14 +21,6 @@ export default class PreloadScene extends Phaser.Scene {
         this.load.tilemapTiledJSON("map5", "assets/tilemap/map_5.json");
         this.load.image("beatgame", "assets/beatgame.png");
 
-
-        this.anims.create({
-            key: 'walk',
-            frames: this.anims.generateFrameNumbers('player', { start: 0, end: 1 }),
-            framerate: 10,
-            repeat: -1
-        });
-
         this.load.spritesheet("shermie_mask", "assets/tilemap/shermie_mask_tileset.png", { frameWidth: 50, frameHeight: 50 });
 
         //  Corrupted CD enemy sprite
@@ -38,7 +30,7 @@ export default class PreloadScene extends Phaser.Scene {
         })
 
         //  Techno Worm enemy sprite
-        this.load.image("worm_enemy", "assets/TechnoWorm2.png")
+        this.load.image("worm_enemy", "assets/TechnoWorm3.png")
 
         //  Escape Goal sprite
         this.load.image("goal", "assets/escape_goal.png");
@@ -68,15 +60,32 @@ export default class PreloadScene extends Phaser.Scene {
         this.load.image("powerup_slowdown", "assets/powerUps/slowdown.png");
         this.load.image("powerup_teleport", "assets/powerUps/teleport.png");
         this.load.image("powerup_rapidfire", "assets/powerUps/rapidfire.png");
+
+        //  Audio Files
+        this.load.audio("background_music", "assets/audio/retro-arcade1.mp3");
+        this.load.audio("retro_music_1", "assets/audio/retro-music-1.mp3");
+        this.load.audio("retro_music_2", "assets/audio/retro-music-2.mp3");
+        this.load.audio("monster_hit", "assets/audio/monster-hit.mp3");
+        this.load.audio("bullet_shot", "assets/audio/shot-laser-sound.wav");
+        this.load.audio("rock_shake", "assets/audio/rock-activation-shaking.mp3");
+        this.load.audio("rock_fall", "assets/audio/rock-falling.mp3");
+        this.load.audio("rock_hit_ground", "assets/audio/rock-hitting-dirt.mp3");
+        this.load.audio("pickup", "assets/audio/pickup-sound.wav");
+        this.load.audio("shermie_take_dmg", "assets/audio/shermie-take-damage.mp3");
+        this.load.audio("game_over", "assets/audio/game-over-sound.mp3");
+        this.load.audio("level_complete", "assets/audio/level-complete-sound.mp3");
+        this.load.audio("ui_button_press", "assets/audio/ui-button-press.mp3");
+        this.load.audio("locked_level", "assets/audio/locked-level-sound.wav");
+        this.load.audio("level_1_start", "assets/audio/level-1-start-music.mp3");
     }
 
     create() {
         if (!localStorage.getItem('maxUnlockedLevel')) {
             localStorage.setItem('maxUnlockedLevel', '1');
             console.log('Initialized maxUnlockedLevel to 1');
-          } else {
+        } else {
             console.log('maxUnlockedLevel already in storage:', localStorage.getItem('maxUnlockedLevel'));
-          }
+        }
         this.scene.start("StartMenu"); // Start the main game scene
     }
 }
