@@ -14,7 +14,9 @@ export default class GameScene extends Phaser.Scene {
     }
 
     create() {
-
+        this.background = this.add.image(0, 0, `background${this.level}`)
+            .setOrigin(0, 0)
+            .setDepth(-10);
         /*
         * Launching the scene so the ingameUI can be scene while the game is being played
         * this.score & visitedTiles is needed in order to record the score
@@ -231,6 +233,15 @@ export default class GameScene extends Phaser.Scene {
 
         //  Initialize Powerup pick up sound
         this.powerupSound = this.sound.add("pickup", { volume: 0.5 });
+
+        //  Show Pause Menu
+        this.input.keyboard.on('keydown-ESC', (event) => {
+            this.sound.pauseAll();
+            this.scene.pause('GameUI');
+            this.scene.pause();
+            this.scene.launch('PauseMenuScene');
+            this.scene.bringToTop('PauseMenuScene');
+        });
     }
 
     update() {

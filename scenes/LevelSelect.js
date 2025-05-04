@@ -5,6 +5,10 @@ export default class LevelSelect extends Phaser.Scene {
 
 
   create() {
+    const { width, height } = this.cameras.main;
+    const centerX = width / 2;
+    const centerY = height / 2;
+
     // Background image.
     let bg = this.add.image(this.cameras.main.centerX, this.cameras.main.centerY, "LevelBG");
     let scaleX = this.cameras.main.width / bg.width;
@@ -34,71 +38,106 @@ export default class LevelSelect extends Phaser.Scene {
 
     const spacingX = 150;
     for (let i = 1; i <= 5; i++) {
-        // Choose image key based on whether the level is unlocked
-        let imageKey = (i <= maxUnlocked) ? `lvl${i}_unlocked` : `lvl${i}_locked`;
-  
-        let posX = 100 + (i - 1) * spacingX;
-        let posY = this.cameras.main.centerY;
-  
-      
-        let levelImage = this.add.image(0, 0, imageKey);
-        levelImage.setOrigin(0.5);
-        
-        let border = this.add.graphics();
-        border.lineStyle(4, 0xffffff, 1);
-        border.strokeRect(
-          levelImage.x - levelImage.displayWidth * levelImage.originX,
-          levelImage.y - levelImage.displayHeight * levelImage.originY,
-          levelImage.displayWidth,
-          levelImage.displayHeight
-        );
+      // Choose image key based on whether the level is unlocked
+      let imageKey = (i <= maxUnlocked) ? `lvl${i}_unlocked` : `lvl${i}_locked`;
 
-        // Put both image and border in a container
-        const levelContainer = this.add.container(posX, posY, [border, levelImage]);
-        levelContainer.setSize(levelImage.width, levelImage.height);
-        levelContainer.setInteractive({ useHandCursor: true });
+      let posX = 100 + (i - 1) * spacingX;
+      let posY = this.cameras.main.centerY;
 
-  
-        // Pointer event for level selection.
-        levelContainer.on('pointerdown', () => {
-          if (i <= maxUnlocked) {
-            console.log(`Starting level ${i}`);
-            this.sound.play("ui_button_press", { volume: 0.5 });
-            this.scene.start('GameScene', { level: i });
-          } else {
-            console.log(`Level ${i} is locked.`);
-            this.sound.play("locked_level", { volume: 0.1 });
-          }
-        });
 
-                // Scale up on hover
-        levelContainer.on('pointerover', () => {
-          if (imageKey !== `lvl${i}_locked`) {
-            this.tweens.add({
-              targets: levelContainer,
-              scale: 1.2,
-              duration: 150,
-              ease: 'Power2'
-            });
-          }
-        });
+      let levelImage = this.add.image(0, 0, imageKey);
+      levelImage.setOrigin(0.5);
 
-        // Reset scale when pointer leaves
-        levelContainer.on('pointerout', () => {
+      let border = this.add.graphics();
+      border.lineStyle(4, 0xffffff, 1);
+      border.strokeRect(
+        levelImage.x - levelImage.displayWidth * levelImage.originX,
+        levelImage.y - levelImage.displayHeight * levelImage.originY,
+        levelImage.displayWidth,
+        levelImage.displayHeight
+      );
+
+      // Put both image and border in a container
+      const levelContainer = this.add.container(posX, posY, [border, levelImage]);
+      levelContainer.setSize(levelImage.width, levelImage.height);
+      levelContainer.setInteractive({ useHandCursor: true });
+
+
+      // Pointer event for level selection.
+      levelContainer.on('pointerdown', () => {
+        if (i <= maxUnlocked) {
+          console.log(`Starting level ${i}`);
+          this.sound.play("ui_button_press", { volume: 0.5 });
+          this.scene.start('GameScene', { level: i });
+        } else {
+          console.log(`Level ${i} is locked.`);
+          this.sound.play("locked_level", { volume: 0.1 });
+        }
+      });
+
+      // Scale up on hover
+      levelContainer.on('pointerover', () => {
+        if (imageKey !== `lvl${i}_locked`) {
           this.tweens.add({
             targets: levelContainer,
-            scale: 1,
+            scale: 1.2,
             duration: 150,
             ease: 'Power2'
           });
+        }
+      });
+
+      // Reset scale when pointer leaves
+      levelContainer.on('pointerout', () => {
+        this.tweens.add({
+          targets: levelContainer,
+          scale: 1,
+          duration: 150,
+          ease: 'Power2'
         });
+      });
     }
-  
+
+    //  Back to Start Menu button
+    const backBtn = this.add.text(centerX, 680, 'Back', {
+      fontFamily: 'PressStart2P',
+      fontSize: '24px',
+      fill: '#ffffff',
+      backgroundColor: '#000000',
+      width: 100,
+      padding: { x: 20, y: 10 }
+    })
+      .setOrigin(0.5)
+      .setInteractive({ useHandCursor: true });
+
+    backBtn.on('pointerdown', () => {
+      this.sound.play("ui_button_press", { volume: 0.5 });
+      this.scene.start('StartMenu');
+    });
+
+    backBtn.on('pointerover', () => {
+      this.tweens.add({
+        targets: backBtn,
+        scale: 1.1,
+        duration: 150,
+        ease: 'Power2'
+      });
+    });
+
+    backBtn.on('pointerout', () => {
+      this.tweens.add({
+        targets: backBtn,
+        scale: 1,
+        duration: 150,
+        ease: 'Power2'
+      });
+    });
+
     const instructionText = this.add.text(
-        this.cameras.main.centerX,
-        this.cameras.main.height - 50,
-        'Click a level to start!',
-        { fontSize: '24px', fill: '#000000', fontFamily: 'PressStart2P', stroke: outlineColor, strokeThickness: outlineThickness}
+      this.cameras.main.centerX,
+      this.cameras.main.height - 50,
+      'Click a level to start!',
+      { fontSize: '24px', fill: '#000000', fontFamily: 'PressStart2P', stroke: outlineColor, strokeThickness: outlineThickness }
     );
     instructionText.setOrigin(0.5);
   }
