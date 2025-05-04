@@ -11,6 +11,8 @@ export default class PreloadScene extends Phaser.Scene {
             frameWidth: 50,
             frameHeight: 50,
         });
+        this.load.image("player_lives", "assets/NewShermie.png");
+        this.load.spritesheet("volume", "assets/volume_icons.png", { frameWidth: 60, frameHeight: 50 });
         this.load.image("tiles", "assets/tilemap/ground_tileset.png");
         this.load.font('PressStart2P', "assets/fonts/PressStart2P-Regular.ttf", 'truetype'); // Current Default game font
         this.load.spritesheet("mask_tileset", "assets/tilemap/mask_tileset.png", { frameWidth: 50, frameHeight: 50 });

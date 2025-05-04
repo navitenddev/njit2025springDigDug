@@ -28,7 +28,7 @@ export default class GameUI extends Phaser.Scene {
         });
 
         const maxLives = 3;
-        const lifeSpacing = 40;
+        const lifeSpacing = 60;
         const livesX = 650;
         const livesY = 85;
 
@@ -38,10 +38,10 @@ export default class GameUI extends Phaser.Scene {
         this.livesIcons = []; // Store references for later updates
 
         for (let i = 0; i < maxLives; i++) {
-            const icon = this.add.image(livesX + (i * lifeSpacing), livesY, 'player')
-                .setScale(0.5)
+            const icon = this.add.image(livesX + (i * lifeSpacing), livesY, 'player_lives')
+                .setScale(1.2)
                 .setOrigin(0.5)
-                .setFrame(0);
+            icon.flipX = true;
 
             this.livesIcons.push(icon); // Save each icon
         }
@@ -116,7 +116,7 @@ export default class GameUI extends Phaser.Scene {
             strokeThickness: outlineThickness
         });
 
-        this.activePowerupTextOne = this.add.text(scaleX, scaleY + 500, "", {
+        this.activePowerupTextOne = this.add.text(scaleX, scaleY + 475, "", {
             fontSize: "25px",
             fill: "#ffffff",
             fontFamily: "PressStart2P",
@@ -124,7 +124,7 @@ export default class GameUI extends Phaser.Scene {
             strokeThickness: outlineThickness
         });
 
-        this.activePowerupTextTwo = this.add.text(scaleX, scaleY + 550, "", {
+        this.activePowerupTextTwo = this.add.text(scaleX, scaleY + 510, "", {
             fontSize: "25px",
             fill: "#ffffff",
             fontFamily: "PressStart2P",
@@ -132,7 +132,7 @@ export default class GameUI extends Phaser.Scene {
             strokeThickness: outlineThickness
         });
 
-        this.activePowerupTextThree = this.add.text(scaleX, scaleY + 600, "", {
+        this.activePowerupTextThree = this.add.text(scaleX, scaleY + 545, "", {
             fontSize: "25px",
             fill: "#ffffff",
             fontFamily: "PressStart2P",
@@ -199,12 +199,33 @@ export default class GameUI extends Phaser.Scene {
         });
 
 
-        const levelText = this.add.text(scaleX, scaleY + 700, `Level:${this.currentLevel}`, {
+        const levelText = this.add.text(scaleX, scaleY + 600, `Level:${this.currentLevel}`, {
             fontSize: "25px",
             fill: "#ffffff",
             fontFamily: 'PressStart2P',
             stroke: outlineColor,
             strokeThickness: outlineThickness
+        });
+
+        //  Implement volume button
+        const volumeLevels = [0.0, 0.25, 0.5, 1.0];
+        const volume = parseInt(localStorage.getItem("volumePref")) ?? 3;   //  Default to max volume
+        this.scene.get('GameScene').sound.volume = volumeLevels[volume];
+        const volumeIcon = this.add.sprite(scaleX, scaleY + 700, 'volume', volume)
+            .setOrigin(0, 1)
+            .setInteractive({ useHandCursor: true });
+
+        // Handle click to cycle through frames
+        volumeIcon.on('pointerdown', () => {
+            if (!this.scene.get('GameScene').isShuttingDown) {
+                const nextFrame = (volumeIcon.frame.name + 1) % 4;
+                volumeIcon.setFrame(nextFrame);
+                this.scene.get('GameScene').sound.volume = volumeLevels[nextFrame];
+                localStorage.setItem("volumePref", nextFrame);
+            }
+            else {
+                volumeIcon.disableInteractive();
+            }
         });
     }
 }
