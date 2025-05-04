@@ -209,7 +209,11 @@ export default class GameUI extends Phaser.Scene {
 
         //  Implement volume button
         const volumeLevels = [0.0, 0.25, 0.5, 1.0];
-        let volume = parseInt(localStorage.getItem("volumePref")) == null ? 3 : parseInt(localStorage.getItem("volumePref"));   //  Default to max volume
+
+        // Get stored value safely
+        let stored = parseInt(localStorage.getItem("volumePref"));
+        let volume = Number.isInteger(stored) && stored >= 0 && stored < volumeLevels.length ? stored : 3;
+
         this.scene.get('GameScene').sound.volume = volumeLevels[volume];
         const volumeIcon = this.add.sprite(scaleX, scaleY + 700, 'volume', volume)
             .setOrigin(0, 1)
