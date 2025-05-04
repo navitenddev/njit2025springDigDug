@@ -11,6 +11,8 @@ export default class PreloadScene extends Phaser.Scene {
             frameWidth: 50,
             frameHeight: 50,
         });
+        this.load.image("player_lives", "assets/NewShermie.png");
+        this.load.spritesheet("volume", "assets/volume_icons.png", { frameWidth: 60, frameHeight: 50 });
         this.load.image("tiles", "assets/tilemap/ground_tileset.png");
         this.load.font('PressStart2P', "assets/fonts/PressStart2P-Regular.ttf", 'truetype'); // Current Default game font
         this.load.spritesheet("mask_tileset", "assets/tilemap/mask_tileset.png", { frameWidth: 50, frameHeight: 50 });
@@ -56,6 +58,12 @@ export default class PreloadScene extends Phaser.Scene {
         this.load.image("lvl5_locked", "assets/levelselectassets/level5_locked.png");
         this.load.image("lvl5_unlocked", "assets/levelselectassets/level5_unlocked.png");
 
+        //  Level Backgrounds
+        this.load.image("background1", "assets/background1.png");
+        this.load.image("background2", "assets/background2.png");
+        this.load.image("background3", "assets/background3.png");
+        this.load.image("background4", "assets/background4.png");
+        this.load.image("background5", "assets/background5.png");
 
         this.load.image("powerup_slowdown", "assets/powerUps/slowdown.png");
         this.load.image("powerup_teleport", "assets/powerUps/teleport.png");
