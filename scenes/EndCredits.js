@@ -56,9 +56,11 @@ export default class EndCreditsScene extends Phaser.Scene {
   
       // Return on SPACE or click
       this.input.keyboard.once('keydown-SPACE', () => {
+        this.sound.play("ui_button_press", { volume: 0.5 });
         this.scene.start('StartMenu');
       });
       this.input.once('pointerdown', () => {
+        this.sound.play("ui_button_press", { volume: 0.5 });
         this.scene.start('StartMenu');
       });
     }

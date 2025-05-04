@@ -28,7 +28,7 @@ export default class GameOverScene extends Phaser.Scene {
       fontSize: '24px',
       fill: '#ffffff',
       backgroundColor: '#000000',
-      padding: { x: 10, y: 6 }
+      padding: { x: 20, y: 10 }
     })
       .setOrigin(0.5)
       .setInteractive({ useHandCursor: true });
@@ -64,7 +64,7 @@ export default class GameOverScene extends Phaser.Scene {
       fontSize: '24px',
       fill: '#ffffff',
       backgroundColor: '#000000',
-      padding: { x: 10, y: 6 }
+      padding: { x: 20, y: 10 }
     })
       .setOrigin(0.5)
       .setInteractive({ useHandCursor: true });
