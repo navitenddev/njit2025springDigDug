@@ -47,9 +47,6 @@ export default class enemy extends Phaser.Physics.Arcade.Sprite {
             else if (this.escapeMode) {
                 this.escapeMove();
             }
-            else if (this.redirectMode) {
-                this.redirectMove();
-            }
             else {
                 this.move(goal);
             }
@@ -88,12 +85,8 @@ export default class enemy extends Phaser.Physics.Arcade.Sprite {
             this.ghostAlignMode = false;
             this.direction = this.getNextDirectionInPath(goal);
 
-            //  Quick exit for redirect mode
-            if (this.redirectMode) {
-                return;
-            }
-
-            if (this.isDestroyed) {
+            if (this.direction == null && this.isDestroyed) {
+                this.destroy();
                 return;
             }
 
@@ -103,6 +96,10 @@ export default class enemy extends Phaser.Physics.Arcade.Sprite {
             }
             else if (this.direction == 'right') {
                 this.flipX = true;
+            }
+            else if (this.direction == null) {
+                console.log("Enemy tried to crash the game!");
+                this.direction = this.getNextDirection(this.scene.player, this.scene.map.getTileAtWorldXY(this.x, this.y))
             }
 
             const offset = {
@@ -292,19 +289,8 @@ export default class enemy extends Phaser.Physics.Arcade.Sprite {
         }
 
         if (!this.currentTile || !goalTile) {
-            console.log(this.currentTile, this.x, this.y);
-            console.log(goalTile);
-            this.redirectTile = this.getNeighboringTiles();
-            if (this.redirectTile) {
-                this.redirectMode = true;
-                console.log("Starting Enemy Redirect Move");
-                return 'left';
-            }
-            else {
-                //  If all fails, just kill the enemy
-                this.isDestroyed = true;
-                return 'left'
-            }
+            this.isDestroyed = true;
+            return null;
         }
 
         // 1. Check available directions from current tile
@@ -522,7 +508,7 @@ export default class enemy extends Phaser.Physics.Arcade.Sprite {
             this.play(this.animationKey, true);
         }
 
-        let newTile = this.scene.map.getTileAtWorldXY(this.x + 25, this.y + 25)
+        let newTile = this.scene.map.getTileAtWorldXY(this.x + 24, this.y + 24)
         let availableTiles = [];
 
         //  Ensures the enemy's current tile is NOT next to the tile it first entered ghost mode from
@@ -568,15 +554,15 @@ export default class enemy extends Phaser.Physics.Arcade.Sprite {
      * Used when the enemy is getting out of ghost mode
      */
     ghostAlignMove() {
-        let tile = this.scene.map.getTileAtWorldXY(this.x + 25, this.y + 25);
+        let tile = this.scene.map.getTileAtWorldXY(this.x + 24, this.y + 24);
         if (tile) {
-            const targetX = tile.x * 50 + 25;
-            const targetY = tile.y * 50 + 25;
+            const targetX = tile.x * 50 + 24;
+            const targetY = tile.y * 50 + 24;
 
             const tolerance = 1; // acceptable drift in pixels
 
-            const diffX = targetX - (this.x + 25);
-            const diffY = targetY - (this.y + 25);
+            const diffX = targetX - (this.x + 24);
+            const diffY = targetY - (this.y + 24);
 
             // If not centered, move to center
             if (Math.abs(diffX) > tolerance || Math.abs(diffY) > tolerance) {
@@ -586,7 +572,7 @@ export default class enemy extends Phaser.Physics.Arcade.Sprite {
             }
             // If centered, stop align mode and go to normal movement
             else {
-                this.setPosition(targetX - 25, targetY - 25); // Snap exactly to center
+                this.setPosition(targetX - 24, targetY - 24); // Snap exactly to center
                 this.direction = null;
                 this.ghostAlignMode = false;
             }
@@ -621,13 +607,13 @@ export default class enemy extends Phaser.Physics.Arcade.Sprite {
         }
 
         if (currentTile) {
-            const targetX = currentTile.x * 50 + 25;
-            const targetY = currentTile.y * 50 + 25;
+            const targetX = currentTile.x * 50 + 24;
+            const targetY = currentTile.y * 50 + 24;
 
             const tolerance = 2; // acceptable drift in pixels
 
-            const diffX = targetX - (this.x + 25);
-            const diffY = targetY - (this.y + 25);
+            const diffX = targetX - (this.x + 24);
+            const diffY = targetY - (this.y + 24);
 
             const speed = this.baseSpeed; // or this.isSlowed ? slowedSpeed : this.baseSpeed
 
@@ -643,7 +629,7 @@ export default class enemy extends Phaser.Physics.Arcade.Sprite {
             }
             // If centered, stop align mode and go to normal movement
             else {
-                this.setPosition(targetX - 25, targetY - 25); // Snap exactly to center
+                this.setPosition(targetX - 24, targetY - 24); // Snap exactly to center
                 this.targetPosition = null;
                 this.alignMode = false;
             }
@@ -673,66 +659,6 @@ export default class enemy extends Phaser.Physics.Arcade.Sprite {
 
         if (this.x == -49) {
             this.scene.enemyWin();
-        }
-    }
-
-    getNeighboringTiles() {
-        let currentTile = this.scene.map.getTileAtWorldXY(this.x, this.y);
-        let tileX = currentTile.x;
-        let tileY = currentTile.y;
-
-        // Define directions and their offsets
-        const directions = [
-            { name: 'up', dx: 0, dy: -1 },
-            { name: 'down', dx: 0, dy: 1 },
-            { name: 'left', dx: -1, dy: 0 },
-            { name: 'right', dx: 1, dy: 0 }
-        ];
-
-        let targetTile = null;
-        for (let dir of directions) {
-            let neighbor = this.scene.map.getTileAt(tileX + dir.dx, tileY + dir.dy, false, 'Ground');
-            if (neighbor && neighbor.properties) {
-                // Check if any directional property is > 0
-                if (
-                    (neighbor.properties.up > 0) ||
-                    (neighbor.properties.down > 0) ||
-                    (neighbor.properties.left > 0) ||
-                    (neighbor.properties.right > 0)
-                ) {
-                    targetTile = neighbor;
-                    break; // Stop at the first match
-                }
-            }
-        }
-
-        return targetTile;
-    }
-
-    redirectMove() {
-        const targetX = this.redirectTile.x * 50 + 25;
-        const targetY = this.redirectTile.y * 50 + 25;
-
-        const tolerance = 1; // acceptable drift in pixels
-
-        const diffX = targetX - (this.x + 25);
-        const diffY = targetY - (this.y + 25);
-
-        // If not centered, move to center
-        if (Math.abs(diffX) > tolerance || Math.abs(diffY) > tolerance) {
-            const newX = Math.abs(diffX) > tolerance ? this.x + Math.sign(diffX) : this.x;
-            const newY = Math.abs(diffY) > tolerance ? this.y + Math.sign(diffY) : this.y;
-            this.setPosition(newX, newY);
-        }
-        // If centered, stop redirect mode and go to normal movement
-        else {
-            this.setPosition(targetX - 25, targetY - 25); // Snap exactly to center
-            this.direction = null;
-            this.redirectMode = false;
-        }
-
-        if (this.anims.animationManager.exists(this.animationKey)) {
-            this.play(this.animationKey, true);
         }
     }
 }
