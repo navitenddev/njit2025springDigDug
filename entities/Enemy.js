@@ -104,6 +104,9 @@ export default class enemy extends Phaser.Physics.Arcade.Sprite {
             else if (this.direction == 'right') {
                 this.flipX = true;
             }
+            else if (this.direction == null) {
+                this.direction = this.getNextDirection(this.scene.player, this.scene.map.getTileAtWorldXY(this.x, this.y))
+            }
 
             const offset = {
                 left: { x: -50, y: 0 },
